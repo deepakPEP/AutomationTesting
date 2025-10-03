@@ -14,10 +14,11 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@faker-js/faker": "^10.0.0",
     "@playwright/test": "^1.54.1",
     "@types/csv-parse": "^1.1.12",
+    "@types/faker": "^6.6.8",
     "@types/node": "^24.0.15",
+    "faker": "^5.5.3",
     "playwright": "^1.54.1",
     "typescript": "^5.8.3"
   },
