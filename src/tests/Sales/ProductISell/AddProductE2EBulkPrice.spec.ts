@@ -24,13 +24,13 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', () =>
     const additionalInfoPage = new AddProdAdditionalInformationPage(page);
     const viewProductDetailsPage = new ViewProductDetailsPage(page);
     const productISellDashboardPage = new ProductISellDashboardPage(page);
-    const loginPage = new LoginPage(page,request);
+    //const loginPage = new LoginPage(page,request);
 
     await test.step('Step 1: Add Product Basic Info', async () => {
       //await page.pause();
       await page.goto('https://sandbox.pepagora.org/en/authenticate');
-      await loginPage.enterEmailAndContinue('9632370046');
-      await loginPage.fetchAndFillOTP();
+      //await loginPage.enterEmailAndContinue('9632370046');
+     // await loginPage.fetchAndFillOTP();
       product = getProductByName('Lcd Tv');
     await page.waitForTimeout(12000);
       await page.locator('div').filter({ hasText: /^Sales$/ }).getByRole('img').click();
