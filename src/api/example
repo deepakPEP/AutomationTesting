@@ -1,0 +1,35 @@
+
+// Example: Login and use session token for product creation
+
+const axios = require('axios');
+
+// Step 1: Login and get token
+async function getSessionToken() {
+  const response = await axios.post('https://api.sandbox.pepagora.org/auth/login', {
+    mobile: '+91 95973-62973',
+    password: 'your_password' // or OTP, as required
+  });
+  return response.data.token; // adjust according to actual response
+}
+
+// Step 2: Use token in product creation
+async function addProduct(token) {
+  const payload = { /* ...your product data... */ };
+  const res = await axios.post(
+    'https://api.sandbox.pepagora.org/sales/product/product-information',
+    payload,
+    {
+      headers: {
+        'usersession': token,
+        'content-type': 'application/json'
+      }
+    }
+  );
+  console.log(res.data);
+}
+
+// Main flow
+(async () => {
+  const token = await getSessionToken();
+  await addProduct(token);
+})();

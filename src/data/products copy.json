@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Stylish Shirt",
+    "description": "Great for professionals.",
+    "price": "79.00",
+    "imageFile": "Cotton",
+    "department": "Apparel & Fashion",
+    "variants": "./products/shirt.jpg"
+  },
+  {
+    "name": "Drill Machine",
+    "price": "120.00",
+    "department": "Tools & Hardware",
+    "imageFile": "./products/drill.jpg"
+  }
+]

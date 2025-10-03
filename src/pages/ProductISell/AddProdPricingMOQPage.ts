@@ -1,0 +1,179 @@
+import { Locator, Page } from "playwright-core";
+
+export class PricingMOQPage {
+  readonly page: Page;
+
+  readonly select_currency: Locator;
+  readonly currency_option: Locator;
+  readonly unitPriceInput: Locator;
+  readonly selectUnitButton: Locator;
+  readonly unitOption: Locator;
+
+  readonly fixedPriceRadio: Locator;
+  readonly bulkPricingRadio: Locator;
+  readonly requestQuoteRadio: Locator;
+  readonly priceRangeRadio: Locator;
+
+  readonly unitTypeDropdown: Locator;
+  readonly quantityFromInput: Locator;
+  readonly quantityToInput: Locator;
+  readonly priceInput: Locator;
+  readonly addTierButton: Locator;
+
+  readonly minPriceInput: Locator;
+  readonly maxPriceInput: Locator;
+
+  readonly minOrderQuantityInput: Locator;
+    
+  constructor(page: Page) {
+    this.page = page;
+
+    //this.select_currency = page.locator('span').filter({ hasText: 'Select Currency' });
+    this.select_currency = page.locator('[aria-label="Select Currency"]');
+    //this.currency_option = page.getByRole('option', { name: 'Indian Rupee' });
+    this.currency_option = page.locator('[aria-label="Indian Rupee"]');
+    this.unitPriceInput =  page.locator('input[placeholder="Enter Unit Price"]');
+    this.selectUnitButton = page.getByRole('button', { name: 'Select Unit' });
+    this.unitOption = page.getByRole('option', { name: 'Pieces' }); //can 
+    this.fixedPriceRadio = this.page.locator('input[type="radio"][value="fixed"]');
+    this.bulkPricingRadio = this.page.locator('input[type="radio"][value="bulk"]');
+    this.requestQuoteRadio = this.page.locator('input[type="radio"][value="request_quote"]');
+    this.priceRangeRadio = this.page.locator('input[type="radio"][value="price_range"]');
+    
+    // Selectors for the Bulk Pricing section
+    this.unitTypeDropdown = this.page.locator('select[name="unit_type"]');
+    this.quantityFromInput = this.page.locator('input[name="quantity_from"]');
+    this.quantityToInput = this.page.locator('input[name="quantity_to"]');
+    this.priceInput = this.page.locator('input[name="price"]');
+    this.addTierButton = this.page.locator('button#add-tier');
+
+    // Selectors for the Price Range section
+    this.minPriceInput = this.page.locator('input[name="min_price"]');
+    this.maxPriceInput = this.page.locator('input[name="max_price"]');
+
+    // Selectors for the Request Quote section
+    this.minOrderQuantityInput = this.page.locator('input[placeholder="Enter Numeric"]');
+  }
+   // Methods for interacting with pricing options
+  async selectFixedPrice() {
+    await this.fixedPriceRadio.click();
+  }
+
+  async selectBulkPricing() {
+    await this.bulkPricingRadio.click();
+  }
+
+  async selectRequestQuote() {
+    await this.requestQuoteRadio.click();
+  }
+
+  async selectPriceRange() {
+    await this.priceRangeRadio.click();
+  }
+
+  // Method to enter Bulk Pricing details
+  // async setBulkPricingDetails(quantityFrom: number, quantityTo: number, price: number,) {
+  //   //await this.unitTypeDropdown.selectOption({label: unitType});
+  //   await this.quantityFromInput.fill(quantityFrom.toString());
+  //   await this.quantityToInput.fill(quantityTo.toString());
+  //   await this.priceInput.fill(price.toString());
+  // }
+
+  // Method to enter Price Range details
+  async setPriceRangeDetails(minPrice:number, maxPrice:number,minOrderQuantity: number) {
+    await this.minPriceInput.fill(minPrice.toString());
+    await this.maxPriceInput.fill(maxPrice.toString());
+    await this.minOrderQuantityInput.fill(minOrderQuantity.toString());
+  }
+  async setFixedPriceDetails(unit_price : number,minOrderQuantity: number) {
+    //await this.minPriceInput.fill(minPrice.toString());
+    //await this.maxPriceInput.fill(maxPrice.toString());
+    console.log('unit_price',unit_price);
+    console.log('minOrderQuantity',minOrderQuantity);
+    await this.unitPriceInput.fill(unit_price.toString());
+    await this.minOrderQuantityInput.fill(minOrderQuantity.toString());
+  }
+  private unitTypeForRow(rowIndex: number) {
+  return this.page.locator(`select[name="unit_type"]`).nth(rowIndex);
+}
+  async setBulkPricingDetails(quantityFrom: number, quantityTo: number, price: number, unitType?: string, rowIndex = 0) {
+  await this.quantityFromInput.nth(rowIndex).fill(String(quantityFrom));
+  await this.quantityToInput.nth(rowIndex).fill(String(quantityTo));
+  if (unitType) {
+    await this.unitTypeForRow(rowIndex).selectOption({ label: unitType });
+  }
+  await this.priceInput.nth(rowIndex).fill(String(price));
+}
+  // Method to enter Request Quote details
+  async setRequestQuoteDetails(minOrderQuantity: number) {
+    await this.minOrderQuantityInput.fill(minOrderQuantity.toString());
+  }
+
+  // Method to add a tier for bulk pricing
+  async addBulkPricingTier( quantityFrom: number, quantityTo: number, price: number) {
+    await this.setBulkPricingDetails(quantityFrom, quantityTo, price);
+   // await this.addTierButton.click();
+  }
+  async fillPricingMOQ(product: any) {
+    await this.select_currency.waitFor({ state: 'attached' }); 
+    await this.select_currency.click();
+    await this.currency_option.click();//can be dynamic based on product
+    //await page.getByRole('radio', { name: 'Fixed Price: Standard per' }).check();
+    //await this.unitPriceInput.click();
+    //await this.unitPriceInput.fill('1000'); //can be dynamic based on product
+    //
+   // await this.setFixedPriceDetails(product?.unit_price || 1000, product?.moq || 1);
+   switch (product.pricing_type) {
+    case 'fixed': {
+      await this.selectFixedPrice();
+      const unitPrice = product.unit_price ?? 1000;
+      const moq = product.moq ?? 1;
+      await this.setFixedPriceDetails(unitPrice, moq);
+      break;
+    }
+
+    case 'bulk': {
+      await this.selectBulkPricing();
+      const tiers = product.bulk && product.bulk.length ? product.bulk : [{ from: 1, to: 10, price: 1000 }];
+      for (let i = 0; i < tiers.length; i++) {
+        const t = tiers[i];
+        // Fill first row
+        if (i === 0) {
+          await this.setBulkPricingDetails(t.from, t.to, t.price, t.unitType, 0);
+        } else {
+          // Add new tier row, then fill it
+          await this.addTierButton.click();
+          await this.setBulkPricingDetails(t.from, t.to, t.price, t.unitType, i);
+        }
+      }
+      break;
+    }
+
+    case 'request_quote': {
+      await this.selectRequestQuote();
+      const moq = product.moq ?? 1;
+      await this.setRequestQuoteDetails(moq);
+      break;
+    }
+
+    case 'price_range': {
+      await this.selectPriceRange();
+      const minPrice = product.min_price ?? 500;
+      const maxPrice = product.max_price ?? 1500;
+      const moq = product.moq ?? 1;
+      await this.setPriceRangeDetails(minPrice, maxPrice, moq);
+      break;
+    }
+
+    default: {
+      // fallback to fixed if unknown
+      await this.selectFixedPrice();
+      const unitPrice = product.unit_price ?? 1000;
+      const moq = product.moq ?? 1;
+      await this.setFixedPriceDetails(unitPrice, moq);
+    }
+    await this.selectUnitButton.click();
+    await this.unitOption.click();//can be dynamic based on product
+  }
+}
+}

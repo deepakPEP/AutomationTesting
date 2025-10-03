@@ -1,0 +1,238 @@
+[
+  {
+    "name": "Electric Screwdriver",
+    "sku_model": "ESD-1001",
+    "department": "Electronics > Laptops > Gaming Laptops",
+    "moq": 10,
+    "unit": "Pieces",
+    "pricing_type": "Fixed",
+    "country_of_origin": "Germany",
+    "currency": "EUR",
+    "available_stock": "InStock",
+    "sample_availablity": "Available",
+    "payment_terms": "50% Advance, 50% Before Dispatch",
+    "ships_internationally": "Yes",
+    "incoterms": "FOB",
+    "dispatch_lead_time": "3-5 Days",
+    "short_description": "High-speed electric screwdriver for industrial use.",
+    "product_category": ["Electronics","Laptops", "Gaming Laptops"],
+    "product_description": "Durable electric screwdriver with ergonomic design and lithium battery support.",
+    "product_specification": "Voltage: 12V, Torque: 4Nm, Speed: 200 RPM",
+    "production_lead_time": "7 Days",
+    "production_capacity": {
+      "value": 500,
+      "unit": "Pieces",
+      "duration": "Per Month"
+    },
+    "sample_price": {
+      "value": 20,
+      "unit": "EUR"
+    },
+    "payment_methods": ["Bank Transfer", "PayPal"],
+    "shipping_modes": ["Air", "Sea"],
+    "port_of_dispatch": "Hamburg",
+    "packaging_type": "Box",
+    "units_per_package": 1,
+    "barcode": "1234567890123",
+    "product_keywords": ["screwdriver", "power tool", "electric"],
+    "brand": "ToolPro",
+    "product_group": "Handheld Tools",
+    "product_video": "https://www.example.com/videos/screwdriver.mp4",
+    "certification_title": "CE Certified",
+    "certifications": ["CE"],
+    "faqs": [
+      {
+        "question": "Is this suitable for heavy-duty use?",
+        "answer": "Yes, it's designed for both household and industrial use."
+      }
+    ],
+    "image": "https://random-image-pepebigotes.vercel.app/api/random-image"
+  },
+  {
+    "name": "Organic Basmati Rice",
+    "sku_model": "OBR-9020",
+    "department": "Food & Agriculture",
+    "moq": 100,
+    "unit": "Kg",
+    "pricing_type": "Negotiable",
+    "country_of_origin": "India",
+    "currency": "INR",
+    "available_stock": "Limited",
+    "sample_availablity": "Available",
+    "payment_terms": "100% Advance",
+    "ships_internationally": "Yes",
+    "incoterms": "CIF",
+    "dispatch_lead_time": "7 Days",
+    "short_description": "Premium organic basmati rice with rich aroma.",
+    "product_category": ["Food & Agriculture", "Grains", "Basmati Rice"],
+    "product_description": "Long-grain aromatic basmati rice grown organically in the foothills of Himalayas.",
+    "product_specification": "Moisture: <13%, Broken: <5%",
+    "production_lead_time": "15 Days",
+    "production_capacity": {
+      "value": 10000,
+      "unit": "Kg",
+      "duration": "Per Month"
+    },
+    "sample_price": {
+      "value": 80,
+      "unit": "INR"
+    },
+    "payment_methods": ["Bank Transfer"],
+    "shipping_modes": ["Sea"],
+    "port_of_dispatch": "Mundra",
+    "packaging_type": "Sack",
+    "units_per_package": 25,
+    "barcode": "9876543210123",
+    "product_keywords": ["basmati", "rice", "organic"],
+    "brand": "FarmFresh",
+    "product_group": "Grains",
+    "certification_title": "Organic India Certified",
+    "certifications": ["FSSAI", "Organic"],
+    "faqs": [
+      {
+        "question": "Is it certified organic?",
+        "answer": "Yes, certified by Organic India."
+      }
+    ],
+    "image": "https://random-image-pepebigotes.vercel.app/api/random-image"
+  },
+  {
+    "name": "Men's Cotton Polo T-Shirt",
+    "sku_model": "MCP-1122",
+    "department": "Apparel & Fashion",
+    "moq": 50,
+    "unit": "Pieces",
+    "pricing_type": "Fixed",
+    "country_of_origin": "Bangladesh",
+    "currency": "USD",
+    "available_stock": "InStock",
+    "sample_availablity": "Available",
+    "payment_terms": "30% Advance, Balance on Dispatch",
+    "ships_internationally": "Yes",
+    "incoterms": "EXW",
+    "dispatch_lead_time": "5 Days",
+    "short_description": "Classic fit cotton polo t-shirt for men.",
+    "product_category": ["Apparel & Fashion", "Men's Wear", "T-Shirts"],
+    "product_description": "100% cotton polo t-shirt with collar and button placket, available in multiple colors.",
+    "product_specification": "Material: Cotton, Sizes: S to XXL",
+    "production_lead_time": "10 Days",
+    "production_capacity": {
+      "value": 2000,
+      "unit": "Pieces",
+      "duration": "Per Month"
+    },
+    "sample_price": {
+      "value": 5,
+      "unit": "USD"
+    },
+    "payment_methods": ["Credit Card", "Bank Transfer"],
+    "shipping_modes": ["Air"],
+    "port_of_dispatch": "Dhaka",
+    "packaging_type": "Polybag",
+    "units_per_package": 1,
+    "barcode": "5566778899001",
+    "product_keywords": ["polo", "tshirt", "menswear"],
+    "brand": "WearWell",
+    "product_group": "Men's Casuals",
+    "certifications": ["ISO 9001"],
+    "faqs": [
+      {
+        "question": "Do you offer customized branding?",
+        "answer": "Yes, MOQ applies for private labels."
+      }
+    ],
+    "image": "https://random-image-pepebigotes.vercel.app/api/random-image"
+  },
+  {
+    "name": "Industrial Hydraulic Pump",
+    "sku_model": "IHP-300X",
+    "department": "Industrial Equipment & Machinery",
+    "moq": 2,
+    "unit": "Units",
+    "pricing_type": "Negotiable",
+    "country_of_origin": "Japan",
+    "currency": "JPY",
+    "available_stock": "PreOrder",
+    "sample_availablity": "NotAvailable",
+    "payment_terms": "LC at Sight",
+    "ships_internationally": "Yes",
+    "incoterms": "DAP",
+    "dispatch_lead_time": "21 Days",
+    "short_description": "High-performance hydraulic pump for industrial systems.",
+    "product_category": ["Industrial Equipment & Machinery", "Hydraulic Systems", "Pumps"],
+    "product_description": "Heavy-duty hydraulic pump suitable for manufacturing and automation lines.",
+    "product_specification": "Pressure: 300 bar, Flow Rate: 50 L/min",
+    "production_lead_time": "30 Days",
+    "production_capacity": {
+      "value": 100,
+      "unit": "Units",
+      "duration": "Per Month"
+    },
+    "payment_methods": ["Letter of Credit"],
+    "shipping_modes": ["Sea", "Air"],
+    "port_of_dispatch": "Yokohama",
+    "packaging_type": "Wooden Crate",
+    "units_per_package": 1,
+    "barcode": "9988776655443",
+    "product_keywords": ["hydraulic", "pump", "industrial"],
+    "brand": "HydroMax",
+    "product_group": "Pumps",
+    "certification_title": "JIS Certified",
+    "certifications": ["JIS", "ISO 14001"],
+    "faqs": [
+      {
+        "question": "Can this operate continuously for 24 hours?",
+        "answer": "Yes, designed for continuous operation."
+      }
+    ],
+    "image": "https://random-image-pepebigotes.vercel.app/api/random-image"
+  },
+  {
+    "name": "Disposable Nitrile Gloves",
+    "sku_model": "DNG-500B",
+    "department": "Health & Personal Care",
+    "moq": 1000,
+    "unit": "Boxes",
+    "pricing_type": "Fixed",
+    "country_of_origin": "Malaysia",
+    "currency": "USD",
+    "available_stock": "InStock",
+    "sample_availablity": "Available",
+    "payment_terms": "Advance Payment",
+    "ships_internationally": "Yes",
+    "incoterms": "CFR",
+    "dispatch_lead_time": "3 Days",
+    "short_description": "Powder-free blue nitrile gloves for medical and industrial use.",
+    "product_category": ["Health & Personal Care", "Medical Supplies", "Gloves"],
+    "product_description": "High-quality, latex-free nitrile gloves with superior puncture resistance.",
+    "product_specification": "Size: S-XL, Color: Blue, Thickness: 4mil",
+    "production_lead_time": "5 Days",
+    "production_capacity": {
+      "value": 100000,
+      "unit": "Boxes",
+      "duration": "Per Month"
+    },
+    "sample_price": {
+      "value": 8,
+      "unit": "USD"
+    },
+    "payment_methods": ["Bank Transfer", "PayPal"],
+    "shipping_modes": ["Air"],
+    "port_of_dispatch": "Port Klang",
+    "packaging_type": "Carton",
+    "units_per_package": 100,
+    "barcode": "4455667788990",
+    "product_keywords": ["nitrile", "gloves", "medical"],
+    "brand": "CareGlove",
+    "product_group": "Protective Gear",
+    "certification_title": "FDA & CE Certified",
+    "certifications": ["FDA", "CE", "ISO 13485"],
+    "faqs": [
+      {
+        "question": "Are these gloves food-safe?",
+        "answer": "Yes, they are FDA approved for food handling."
+      }
+    ],
+    "image": "https://random-image-pepebigotes.vercel.app/api/random-image"
+  }
+]

@@ -1,0 +1,221 @@
+# Page snapshot
+
+```yaml
+- link "Logo":
+  - /url: /
+  - img "Logo"
+- img
+- text: All Categories
+- searchbox "Search for Product and Services"
+- img
+- img
+- text: EN
+- button:
+  - img
+- img "Country Flag"
+- text: IN ₹
+- button:
+  - img
+- button "Post Buying Requirement"
+- img
+- img
+- tablist:
+  - tab "Apparel & Fashion" [selected]:
+    - img
+    - text: Apparel & Fashion
+  - tab "Automotive & Transport":
+    - img
+    - text: Automotive & Transport
+  - tab "Construction":
+    - img
+    - text: Construction
+  - tab "Electronics & Electrical":
+    - img
+    - text: Electronics & Electrical
+  - tab "Food & Agriculture":
+    - img
+    - text: Food & Agriculture
+  - tab "Health & Personal Care":
+    - img
+    - text: Health & Personal Care
+  - tab "Home & Lifestyle":
+    - img
+    - text: Home & Lifestyle
+  - tab "Industrial Equipment & Machinery":
+    - img
+    - text: Industrial Equipment & Machinery
+  - tab "Office Supplies & Equipment":
+    - img
+    - text: Office Supplies & Equipment
+  - tab "Packaging & Printing":
+    - img
+    - text: Packaging & Printing
+  - tab "Raw Materials & Chemicals":
+    - img
+    - text: Raw Materials & Chemicals
+  - tab "Services & Support":
+    - img
+    - text: Services & Support
+  - tab "Sports & Entertainment":
+    - img
+    - text: Sports & Entertainment
+  - tab "Tools & Hardware":
+    - img
+    - text: Tools & Hardware
+- tabpanel:
+  - text: Apparel & Fashion
+  - button "close"
+  - img "Apparel ERP / Inventory Software"
+  - text: Apparel ERP / Inventory Software
+  - img "Bag & Footwear Manufacturers"
+  - text: Bag & Footwear Manufacturers
+  - img "Bags, Clutches, Wallets"
+  - text: Bags, Clutches, Wallets
+  - img "Belts, Ties, Caps, Hats"
+  - text: Belts, Ties, Caps, Hats
+  - img "Blended Fabrics"
+  - text: Blended Fabrics
+  - img "Branding & Packaging for Apparel"
+  - text: Branding & Packaging for Apparel
+  - img "Button, Zipper, Lace, Hook Producers"
+  - text: Button, Zipper, Lace, Hook Producers
+  - img "Casual Wear"
+  - text: Casual Wear
+  - img "Cotton, Linen, Wool, Silk, Rayon"
+  - text: Cotton, Linen, Wool, Silk, Rayon
+  - img "Dresses, Gowns, Skirts"
+  - text: Dresses, Gowns, Skirts
+  - img "Dyed, Printed & Embroidered Fabrics"
+  - text: Dyed, Printed & Embroidered Fabrics
+  - img "Eco-Friendly Dye Units"
+  - text: Eco-Friendly Dye Units
+  - img "Embroidery Services"
+  - text: Embroidery Services
+  - img "Ethnic & Cultural Clothing"
+  - text: Ethnic & Cultural Clothing
+  - img "Ethnic Footwear (Mojaris, Kolhapuris)"
+  - text: Ethnic Footwear (Mojaris, Kolhapuris)
+  - img "Exporters & Buying Houses"
+  - text: Exporters & Buying Houses
+  - img "Fabric Printing & Dyeing Units"
+  - text: Fabric Printing & Dyeing Units
+  - img "Fabric Traders"
+  - text: Fabric Traders
+  - img "Fair Trade Clothing"
+  - text: Fair Trade Clothing
+  - img "Fashion Design Studios"
+  - text: Fashion Design Studios
+  - img "Fashion Photography"
+  - text: Fashion Photography
+  - img "Fashion Retail POS Systems"
+  - text: Fashion Retail POS Systems
+  - img "Formal Wear"
+  - text: Formal Wear
+  - img "Garment Manufacturers (OEM/ODM)"
+  - text: Garment Manufacturers (OEM/ODM)
+  - img "Gloves & Headwear"
+  - text: Gloves & Headwear
+  - img "Hoodies, Sweatshirts"
+  - text: Hoodies, Sweatshirts
+  - link "View More":
+    - /url: /c/apparel-fashion-mcd6ezr10a
+    - img
+    - text: View More
+- text: Contacts
+- link "My Pepagora":
+  - /url: /en/app
+  - img
+  - text: My Pepagora
+- text: Manage
+- img
+- text: Sales
+- link "Leads":
+  - /url: /en/app/leads
+- link "Product I Sell":
+  - /url: /en/app/sales-product
+- link "Sell Offer":
+  - /url: /en/app/sales-sell-offer
+- link "Contacts":
+  - /url: /en/app/sales-connect
+- link "Catalog & Website":
+  - /url: /en/app/catalog
+  - img
+  - text: Catalog & Website
+- img
+- text: Sourcing Setup
+- link "Business Profile":
+  - /url: /en/app/business-profile
+  - img
+  - text: Business Profile
+- link "Settings":
+  - /url: /en/app/settings
+  - img
+  - text: Settings
+- img "Close"
+- img
+- text: Product Information Increase visibility and reach the right buyers with accurate product details.
+- img
+- text: Pricing & MOQ Provide pricing details and quantity
+- img
+- text: Product Specifications Provide product specification and description
+- img
+- img
+- text: Specification
+- img
+- text: Product Description
+- img
+- text: Trade Details Add production and stock details
+- img
+- img
+- text: Product & Stock
+- img
+- text: Payment Terms Shipping and Logistics Add shipping modes, lead time, and packaging details Additional Information Add FAQs and additional product info
+- img
+- heading "Trade Details" [level=1]
+- text: Payment Terms(Optional) 100% Advance
+- button "Select Payment Term":
+  - img
+- textbox "Enter Custom Payment Term"
+- text: Payment Method
+- img
+- text: Credit Card
+- checkbox "Credit Card"
+- img
+- text: Cash
+- checkbox "Cash"
+- img
+- text: Cheque
+- checkbox "Cheque"
+- img
+- text: Demand Draft
+- checkbox "Demand Draft"
+- img
+- text: Paypal
+- checkbox "Paypal"
+- img
+- text: MoneyGram
+- checkbox "MoneyGram"
+- img
+- text: Western Union
+- checkbox "Western Union"
+- img
+- text: Others
+- checkbox "Others"
+- text: At least one payment method must be selected
+- textbox "Enter Other Payment Method"
+- button "Save & Continue Later"
+- button "Continue":
+  - text: Continue
+  - img
+- text: "Product Information Completed 62% SKU: ESD1001"
+- heading "Lcd Tv" [level=2]
+- button:
+  - img
+- link "assets/1BZX__uRHOLsHeo__QrUM.jpg":
+  - /url: https://pepupload.s3.ap-southeast-1.amazonaws.com/assets/1BZX__uRHOLsHeo__QrUM.jpg
+  - img "assets/1BZX__uRHOLsHeo__QrUM.jpg"
+- text: Main Thumbnail
+- img "assets/1BZX__uRHOLsHeo__QrUM.jpg"
+- text: "Min. Order Quantity : 10 pieces Price ₹200"
+- alert: Pricing & MOQ
+```
