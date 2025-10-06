@@ -1,6 +1,7 @@
 // src/pages/SellOfferProductPage.ts
 import { Page, expect } from '@playwright/test';
 import path from 'path';
+import { CurrencySelector, selectCurrency } from '../../utils/CurrencySelector';
 
 export class SellOfferProductPage {
   
@@ -64,19 +65,62 @@ async submitProduct() {
   //   await this.page.getByRole('button', { name: 'Drag & Drop file from' }).setInputFiles(imagePath);
   // }
 
-  async fillProductDetails(description: string, brand: string, unitPrice: string, quantity: string, unit: string) {
+  async fillProductDetails(
+    description: string, 
+    brand: string, 
+    unitPrice: string, 
+    quantity: string, 
+    unit: string, 
+    currency: string = 'INR'
+  ) {
     await this.page.getByRole('textbox', { name: 'Add Product Description' }).fill(description);
-    await this.page.getByRole('textbox', { name: 'Enter Brand Name' }).fill(brand) ;
-    await this.page.locator('span').filter({ hasText: 'Select Currency' }).click();
-    await this.page.getByText('₹ - INR').click();
+    await this.page.getByRole('textbox', { name: 'Enter Brand Name' }).fill(brand);
+    
+    // Use the dynamic currency selector
+    await selectCurrency(this.page, currency);
+    
     await this.page.getByRole('textbox', { name: 'Enter Unit Price' }).click({ force: true });
-   await console.log('Filling unit price', unitPrice);
+    console.log('Filling unit price', unitPrice);
     await this.page.getByPlaceholder('Enter Unit Price').fill(unitPrice);
     await this.page.getByRole('textbox', { name: 'Enter Numeric' }).fill(quantity);
     await this.page.locator('span.p-dropdown-label:has-text("Select Unit")').click({ force: true });
 
-  // 2. Click the list item matching the argument
-  await this.page.locator(`.p-dropdown-item[role="option"] >> text=${unit}`).click();
+    // Select unit dynamically
+    await this.page.locator(`.p-dropdown-item[role="option"] >> text=${unit}`).click();
+  }
+
+  /**
+   * Fill product details with specific currency selection
+   * @param details - Product details object
+   */
+  async fillProductDetailsAdvanced(details: {
+    description: string;
+    brand: string;
+    unitPrice: string;
+    quantity: string;
+    unit: string;
+    currency?: string;
+  }) {
+    const currencySelector = new CurrencySelector(this.page);
+    
+    await this.page.getByRole('textbox', { name: 'Add Product Description' }).fill(details.description);
+    await this.page.getByRole('textbox', { name: 'Enter Brand Name' }).fill(details.brand);
+    
+    // Select currency using the advanced selector
+    if (details.currency) {
+      await currencySelector.selectCurrencyByCode(details.currency);
+    } else {
+      await currencySelector.selectCurrencyByCode('INR'); // Default to INR
+    }
+    
+    await this.page.getByRole('textbox', { name: 'Enter Unit Price' }).click({ force: true });
+    console.log('Filling unit price', details.unitPrice);
+    await this.page.getByPlaceholder('Enter Unit Price').fill(details.unitPrice);
+    await this.page.getByRole('textbox', { name: 'Enter Numeric' }).fill(details.quantity);
+    await this.page.locator('span.p-dropdown-label:has-text("Select Unit")').click({ force: true });
+
+    // Select unit dynamically
+    await this.page.locator(`.p-dropdown-item[role="option"] >> text=${details.unit}`).click();
   }
 
   async clickContinueAfterProduct() {
