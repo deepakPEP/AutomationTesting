@@ -10,8 +10,11 @@ export class SellOfferPreviewPage {
     this.prodInfoPage = new ProductInformationPage(page);
   }
 
-  async  assertSellOfferLeftSidePreview(page: Page, args: {
-    offerType: 'Buy More Get More' | 'Fixed Discount',
+  /**
+   * Main method to assert sell offer left side preview based on offer type
+   */
+  async assertSellOfferLeftSidePreview(page: Page, args: {
+    offerType: 'Buy More Get More' | 'Fixed Discount' | 'Low MOQ Discount',
     price: string,
     unit: string,
     buyQty?: string,
@@ -20,46 +23,186 @@ export class SellOfferPreviewPage {
     discountPercent?: string,
     offerTitle: string,
     productName: string,
-    productCategory: string
-  }) 
-  {
-  // Assert Offer Price and Unit
-  await expect(page.locator('.offer-price-value')).toContainText(args.price);
-  await expect(page.locator('.offer-price-value .o-p-v-pc')).toContainText(args.unit.toLowerCase());
-  if (args.offerType === 'Fixed Discount') {
-     // Striked price
-      if (!args.strikedPrice) {
-    throw new Error('strikedPrice is required for Fixed Discount offer type');
-  }
-    await expect(page.locator('.product-info-group .o-p-b-strike')).toContainText(args.strikedPrice);
+    productCategory: string,
+    actualMOQ?: string,
+    lowMOQ?: string
+  }) {
+    // Common assertions for all offer types
+    await this.assertOfferPriceAndUnit(page, args.price, args.unit);
+    await this.assertOfferTitle(page, args.offerTitle);
 
-  // Discount percentage badge
+    // Type-specific assertions
+    switch (args.offerType) {
+      case 'Fixed Discount':
+        await this.assertFixedDiscountOffer(page, args);
+        break;
+      case 'Buy More Get More':
+        await this.assertBuyMoreGetMoreOffer(page, args);
+        break;
+      case 'Low MOQ Discount':
+        await this.assertLowMOQDiscountOffer(page, args);
+        break;
+      default:
+        throw new Error(`Unsupported offer type: ${args.offerType}`);
+    }
+  }
+
+  /**
+   * Assert common offer price and unit
+   */
+  private async assertOfferPriceAndUnit(page: Page, price: string, unit: string) {
+    // For pages with multiple price elements, use first() to avoid strict mode violation
+    await expect(page.locator('.offer-price-value').first()).toContainText(price);
+    await expect(page.locator('.offer-price-value .o-p-v-pc').first()).toContainText(unit.toLowerCase());
+  }
+
+  /**
+   * Assert offer title/discount section
+   */
+  private async assertOfferTitle(page: Page, offerTitle: string) {
+    await expect(page.locator('.product-info-group:has(.light-label:has-text("Discount")) .discount-price-highlighted'))
+      .toContainText(offerTitle);
+  }
+
+  /**
+   * Assert Fixed Discount offer specific elements
+   */
+  private async assertFixedDiscountOffer(page: Page, args: {
+    strikedPrice?: string,
+    discountPercent?: string,
+    productName: string,
+    productCategory: string
+  }) {
+    // Validate required fields
+    if (!args.strikedPrice) {
+      throw new Error('strikedPrice is required for Fixed Discount offer type');
+    }
     if (!args.discountPercent) {
       throw new Error('discountPercent is required for Fixed Discount offer type');
     }
-      await expect(page.locator('.product-info-group .offer-price-badge')).toContainText(args.discountPercent);
 
-      await expect(page.locator('.product-info-group').nth(2).locator('.dark-label')).toContainText(args.productName);
+    // Assert striked price
+    await expect(page.locator('.product-info-group .o-p-b-strike'))
+      .toContainText(args.strikedPrice);
 
-// Assert Product Category in the 5th .product-info-group
-await expect(page.locator('.product-info-group').nth(2).locator('.light-label').nth(1)).toContainText(args.productCategory);
+    // Assert discount percentage badge
+    await expect(page.locator('.product-info-group .offer-price-badge'))
+      .toContainText(args.discountPercent);
+
+    // Assert product info (Fixed Discount uses nth(2))
+    await this.assertProductInfo(page, args.productName, args.productCategory, 2);
   }
-  else if (args.offerType === 'Buy More Get More') {
-  // Assert Buy Quantity
-  await expect(page.locator('.product-info-group:has(.light-label:has-text("Buy Quantity")) .dark-label')).toContainText(`${args.buyQty} / ${args.unit.toLowerCase()}`);
 
-  // Assert Free Quantity
-  await expect(page.locator('.product-info-group:has(.light-label:has-text("Free Quantity")) .dark-label')).toContainText(`${args.freeQty} / ${args.unit.toLowerCase()}`);
-  await expect(page.locator('.product-info-group').nth(4).locator('.dark-label')).toContainText(args.productName);
+  /**
+   * Assert Buy More Get More offer specific elements
+   */
+  private async assertBuyMoreGetMoreOffer(page: Page, args: {
+    buyQty?: string,
+    freeQty?: string,
+    unit: string,
+    productName: string,
+    productCategory: string
+  }) {
+    // Validate required fields
+    if (!args.buyQty || !args.freeQty) {
+      throw new Error('buyQty and freeQty are required for Buy More Get More offer type');
+    }
 
-// Assert Product Category in the 5th .product-info-group
-await expect(page.locator('.product-info-group').nth(4).locator('.light-label').nth(1)).toContainText(args.productCategory);
+    // Assert buy quantity
+    await expect(page.locator('.product-info-group:has(.light-label:has-text("Buy Quantity")) .dark-label'))
+      .toContainText(`${args.buyQty} / ${args.unit.toLowerCase()}`);
 
+    // Assert free quantity
+    await expect(page.locator('.product-info-group:has(.light-label:has-text("Free Quantity")) .dark-label'))
+      .toContainText(`${args.freeQty} / ${args.unit.toLowerCase()}`);
+
+    // Assert product info (Buy More Get More uses nth(4))
+    await this.assertProductInfo(page, args.productName, args.productCategory, 4);
   }
-  // Assert Offer Title/Discount
-  await expect(page.locator('.product-info-group:has(.light-label:has-text("Discount")) .discount-price-highlighted')).toContainText(args.offerTitle);
 
-  // Assert Product Name in the 5th .product-info-group
+  /**
+   * Assert Low MOQ Discount offer specific elements
+   */
+  private async assertLowMOQDiscountOffer(page: Page, args: {
+    lowMOQ?: string,
+    actualMOQ?: string,
+    unit: string,
+    productName: string,
+    productCategory: string
+  }) {
+    // Validate required fields
+    if (!args.lowMOQ || !args.actualMOQ) {
+      throw new Error('lowMOQ and actualMOQ are required for Low MOQ Discount offer type');
+    }
+
+    const moqSection = this.page.locator('.product-info-group:has(.light-label:text("MOQ"))');
+
+    // Verify MOQ section is visible
+    await expect(moqSection).toBeVisible();
+
+    // Verify MOQ label
+    await expect(moqSection.locator('.light-label')).toHaveText('MOQ');
+
+    // Verify new MOQ value
+    await expect(moqSection.locator('.offer-price-value')).toContainText(args.lowMOQ);
+
+    // Verify original MOQ with strike-through
+    await expect(moqSection.locator('.o-p-b-strike')).toHaveText(args.actualMOQ);
+
+    // Verify unit
+    await expect(moqSection.locator('.o-p-v-pc')).toContainText(`/ ${args.unit.toLowerCase()}`);
+
+    console.log(`✅ Low MOQ offer validated: ${args.lowMOQ} (was ${args.actualMOQ}) per ${args.unit}`);
+
+    // Assert product info for Low MOQ (determine the correct index)
+    await this.assertProductInfo(page, args.productName, args.productCategory, 3);
+  }
+
+  /**
+   * Assert product name and category at specified position
+   */
+  private async assertProductInfo(page: Page, productName: string, productCategory: string, groupIndex: number) {
+    const productGroup = page.locator('.product-info-group').nth(groupIndex);
+    
+    await expect(productGroup.locator('.dark-label')).toContainText(productName);
+    await expect(productGroup.locator('.light-label').nth(1)).toContainText(productCategory);
+  }
+
+  /**
+   * Standalone method to assert MOQ discount details
+   */
+  async assertMOQDiscount(expectedData: {
+    newMOQ: string,
+    originalMOQ: string,
+    unit: string
+  }) {
+    const moqSection = this.page.locator('.product-info-group:has(.light-label:text("MOQ"))');
+    
+    await expect(moqSection).toBeVisible();
+    await expect(moqSection.locator('.light-label')).toHaveText('MOQ');
+    await expect(moqSection.locator('.offer-price-value')).toContainText(expectedData.newMOQ);
+    await expect(moqSection.locator('.o-p-b-strike')).toHaveText(expectedData.originalMOQ);
+    await expect(moqSection.locator('.o-p-v-pc')).toContainText(`/ ${expectedData.unit.toLowerCase()}`);
+    
+    console.log(`✅ MOQ discount verified: ${expectedData.newMOQ} (was ${expectedData.originalMOQ}) per ${expectedData.unit}`);
+  }
+
+  /**
+   * Standalone method to assert discount percentage
+   */
+  async assertDiscountPercentage(expectedDiscount: string) {
+    await expect(this.page.locator('.product-info-group .offer-price-badge')).toContainText(expectedDiscount);
+  }
+
+  /**
+   * Standalone method to assert buy/free quantities
+   */
+  async assertQuantityOffer(buyQty: string, freeQty: string, unit: string) {
+    await expect(this.page.locator('.product-info-group:has(.light-label:has-text("Buy Quantity")) .dark-label'))
+      .toContainText(`${buyQty} / ${unit.toLowerCase()}`);
+    
+    await expect(this.page.locator('.product-info-group:has(.light-label:has-text("Free Quantity")) .dark-label'))
+      .toContainText(`${freeQty} / ${unit.toLowerCase()}`);
   }
 
   async assertViewDetailsSellOffer(args:{

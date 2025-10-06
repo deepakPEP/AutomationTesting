@@ -23,136 +23,278 @@ export class AddSellOfferPage {
   // Assert Offer Price without Discount
 
   /**
- * Fill Offer Details for both "Fixed Discount" and "Buy More Get More" offer types.
- * Handles differences: "Fixed Discount" has unit price/unit, "Buy More Get More" does not.
+ * Fill Offer Details for all offer types with clean modular approach
  */
 async fillOfferDetailsGeneric(params: {
   offerType: 'Fixed Discount' | 'Buy More Get More' | 'LOW MOQ Discount',
-  unitPrice?: string,           // Only for Fixed Discount
-  unit?: string,                // Only for Fixed Discount
+  unitPrice?: string,
+  unit?: string,
   title: string,
   description: string,
-  discountPercent?: number,     // Only for Fixed Discount
-  offerMinOrderQty?: string,   // Optional
-  offerMaxOrderQty?: string,   // Optional
-  buyQty?: string,              // Only for Buy More Get More
-  freeQty?: string,             // Only for Buy More Get More
-  moq?: string,                 // Only for Buy More Get More
-  startDate: string,           // Optional, format: 'DD/MM/YY'
-  endDate: string,             // Optional, format: 'DD/MM/YY'
-  keywords?: string[]           // Optional
+  discountPercent?: number,
+  offerMinOrderQty?: string,
+  offerMaxOrderQty?: string,
+  buyQty?: string,
+  freeQty?: string,
+  moq?: string,
+  startDate: string,
+  endDate: string,
+  keywords?: string[]
 }) {
-  // Select Offer Type
-  //await this.page.locator('.forms-select-2.p-dropdown:has(label.f-g-label:has-text("Offer Type")) .p-dropdown-trigger').click();
-  // Click the Offer Type dropdown trigger (first dropdown)
-await this.page.locator('.forms-select-2.p-dropdown').nth(0).locator('.p-dropdown-trigger').click();
-// Select the desired offer type
-await this.page.locator(`.p-dropdown-item:has-text("${params.offerType}")`).click();
+  // Step 1: Select offer type and fill basic details
+  await this.selectOfferType(params.offerType);
+  await this.fillBasicOfferDetails(params.title, params.description);
 
-await this.page.waitForTimeout(2000);
+  // Step 2: Handle offer type specific configurations
+  await this.handleOfferTypeSpecificSettings(params);
 
- // Fill Offer Title and Description
-    await this.page.getByRole('textbox', { name: 'Enter Title' }).fill(params.title);
-    await this.page.getByRole('textbox', { name: 'Enter Offer Description' }).fill(params.description);
+  // Step 3: Set offer validity dates
+  await this.setOfferValidityDates(params.startDate, params.endDate);
 
-  //await this.page.locator(`.p-dropdown-item:has-text("${params.offerType}")`).click();
+  // Step 4: Add keywords if provided
+  await this.addKeywords(params.keywords);
 
-  if (params.offerType === 'Fixed Discount') {
-    // Assert unit price and unit if provided
-    if (params.unitPrice) {
-      const actualPrice = await this.page.locator('input[name="offerInfo.pricing.unitPrice"]').inputValue();
-      await expect(actualPrice).toBe(params.unitPrice);
-    }
-    if (params.unit) {
-      await expect(this.page.locator('input[readonly][disabled]')).toHaveValue(params.unit);
-    }
+  // Step 5: Submit the form
+  await this.submitOfferForm();
+}
 
-   
-    // Fill Discount Percent
-    const discount = params.discountPercent ?? Math.floor(Math.random() * 100) + 1;
-    await this.page.locator('input[name="offerInfo.discountPercent"]').fill(discount.toString());
+/**
+ * Select the offer type from dropdown
+ */
+private async selectOfferType(offerType: string) {
+  await this.page.locator('.forms-select-2.p-dropdown').nth(0).locator('.p-dropdown-trigger').click();
+  await this.page.locator(`.p-dropdown-item:has-text("${offerType}")`).click();
+  await this.page.waitForTimeout(2000);
+}
+
+/**
+ * Fill basic offer title and description
+ */
+private async fillBasicOfferDetails(title: string, description: string) {
+  await this.page.getByRole('textbox', { name: 'Enter Title' }).fill(title);
+  await this.page.getByRole('textbox', { name: 'Enter Offer Description' }).fill(description);
+}
+
+/**
+ * Handle offer type specific settings
+ */
+private async handleOfferTypeSpecificSettings(params: any) {
+  switch (params.offerType) {
+    case 'Fixed Discount':
+      await this.configureFixedDiscountOffer(params);
+      break;
+    case 'Buy More Get More':
+      await this.configureBuyMoreGetMoreOffer(params);
+      break;
+    case 'LOW MOQ Discount':
+      await this.configureLowMOQDiscountOffer(params);
+      break;
+    default:
+      throw new Error(`Unsupported offer type: ${params.offerType}`);
+  }
+}
+
+/**
+ * Configure Fixed Discount offer specific settings
+ */
+private async configureFixedDiscountOffer(params: {
+  unitPrice?: string,
+  unit?: string,
+  discountPercent?: number,
+  offerMinOrderQty?: string,
+  offerMaxOrderQty?: string
+}) {
+  // Validate unit price and unit if provided
+  await this.validateUnitPriceAndUnit(params.unitPrice, params.unit);
+
+  // Apply discount and validate calculation
+  const discount = params.discountPercent ?? Math.floor(Math.random() * 100) + 1;
+  await this.applyDiscountPercentage(discount, params.unitPrice);
+
+  // Set quantity limits
+  await this.setQuantityLimits(params.offerMinOrderQty || '5', params.offerMaxOrderQty || '50');
+}
+
+/**
+ * Configure Buy More Get More offer specific settings
+ */
+private async configureBuyMoreGetMoreOffer(params: {
+  buyQty?: string,
+  freeQty?: string
+}) {
+  await this.page.locator('input[name="offerInfo.buyQty"]').fill(params.buyQty ?? '1');
+  await this.page.locator('input[name="offerInfo.freeQty"]').fill(params.freeQty ?? '1');
+}
+
+/**
+ * Configure Low MOQ Discount offer specific settings
+ */
+private async configureLowMOQDiscountOffer(params: {
+  moq?: string,
+  offerMinOrderQty?: string,
+  offerMaxOrderQty?: string
+}) {
+  // Validate actual MOQ
+  const actualMOQInput = this.page.locator('.forms-group:has(.f-g-label:has-text("Actual MOQ")) input[name="offerInfo.minOrderQuantity"]');
+  await expect(actualMOQInput).toHaveValue(params.moq || '50');
+  await expect(actualMOQInput).toBeDisabled();
+
+  // Test validation with invalid min quantity
+  await this.testMOQValidation(actualMOQInput, params.offerMinOrderQty || '5');
+
+  // Set final quantity limits
+  await this.setQuantityLimits(params.offerMinOrderQty || '5', params.offerMaxOrderQty || '50');
+}
+
+/**
+ * Validate unit price and unit for Fixed Discount offers
+ */
+private async validateUnitPriceAndUnit(unitPrice?: string, unit?: string) {
+  if (unitPrice) {
+    const actualPrice = await this.page.locator('input[name="offerInfo.pricing.unitPrice"]').inputValue();
+    await expect(actualPrice).toBe(unitPrice);
+  }
+  if (unit) {
+    await expect(this.page.locator('input[readonly][disabled]')).toHaveValue(unit);
+  }
+}
+
+/**
+ * Apply discount percentage and validate price calculation
+ */
+private async applyDiscountPercentage(discount: number, unitPrice?: string) {
+  await this.page.locator('input[name="offerInfo.discountPercent"]').fill(discount.toString());
+  
+  if (unitPrice) {
+    const discounted = parseFloat((parseFloat(unitPrice) * (1 - discount / 100)).toFixed(2));
+    await expect(this.page.locator('input[name="offerInfo.pricing.unitPrice"]')).toHaveValue(String(discounted));
+  }
+}
+
+/**
+ * Set quantity limits (min and max)
+ */
+private async setQuantityLimits(minQty: string, maxQty: string) {
+  await this.page.locator('input[name="offerInfo.minQty"]').fill(minQty);
+  await this.page.locator('input[name="offerInfo.maxQty"]').fill(maxQty);
+}
+
+/**
+ * Test MOQ validation by entering invalid value first
+ */
+private async testMOQValidation(actualMOQInput: any, validMinQty: string) {
+  const actualMOQValue = parseInt(await actualMOQInput.inputValue(), 10);
+  const minQtyInput = this.page.locator('input[name="offerInfo.minQty"]');
+  
+  // Test with invalid value (actual MOQ + 2)
+  const invalidMinQty = (actualMOQValue + 2).toString();
+  await minQtyInput.fill(invalidMinQty);
+  await this.page.waitForTimeout(2000);
+  
+  // Validate error message appears
+  await expect(this.page.locator('.error-txt')).toBeVisible();
+  await expect(this.page.getByText('minQty must be less than actual MOQ')).toBeVisible();
+  await this.page.waitForTimeout(2000);
+  
+  // Set valid value
+  await minQtyInput.fill(validMinQty);
+}
+
+/**
+ * Set offer validity dates with smart date handling
+ */
+private async setOfferValidityDates(startDate: string, endDate: string) {
+  // Set start date
+  await this.page.locator('label[for="StartDate"] + span input.p-inputtext').click();
+  await this.page.locator(`td[aria-label="${startDate}"]`).click();
+  await this.page.waitForTimeout(2000);
+
+  // Set end date with disabled date handling
+  await this.page.locator('label[for="EndDate"] + span input.p-inputtext').click();
+  await this.selectEndDateWithFallback(endDate);
+}
+
+/**
+ * Select end date with fallback for disabled dates
+ */
+private async selectEndDateWithFallback(endDate: string) {
+  const dateLocator = this.page.locator(`td[aria-label="${endDate}"]`);
+  
+  const isDisabled = await this.isDateDisabled(dateLocator);
+  
+  if (isDisabled) {
+    await this.page.locator('button[aria-label="Next Month"]').click();
+  }
+  
+  await this.page.locator(`td[aria-label="${endDate}"]`).click();
+}
+
+/**
+ * Check if a date is disabled in the calendar
+ */
+private async isDateDisabled(dateLocator: any): Promise<boolean> {
+  const checks = await Promise.all([
+    dateLocator.getAttribute('aria-disabled'),
+    dateLocator.locator('span').first().getAttribute('data-p-disabled'),
+    dateLocator.locator('span').first().getAttribute('aria-disabled'),
+    dateLocator.locator('span').first().getAttribute('class')
+  ]);
+
+  return checks[0] === 'true' || 
+         checks[1] === 'true' || 
+         checks[2] === 'true' || 
+         (checks[3] ?? '').includes('p-disabled');
+}
+
+/**
+ * Add keywords to the offer
+ */
+private async addKeywords(keywords?: string[]) {
+  if (keywords && keywords.length > 0) {
+    const chipsInput = this.page.locator('.forms-input.p-chips input[placeholder="Enter Keywords"]');
     
-    // Calculate discounted price and assert
-    if (params.unitPrice) {
-      const discounted = parseFloat((parseFloat(params.unitPrice) * (1 - discount / 100)).toFixed(2));
-      await expect(this.page.locator('input[name="offerInfo.pricing.unitPrice"]')).toHaveValue(String(discounted));
-    }
-
-    // Fill Min/Max quantity if needed (example values)
-    await this.page.locator('input[name="offerInfo.minQty"]').fill(params.offerMinOrderQty || '5');
-    await this.page.locator('input[name="offerInfo.maxQty"]').fill(params.offerMaxOrderQty || '50');
-  }
-
-  if (params.offerType === 'Buy More Get More') {
-    
-    // Fill Buy/Free Quantity
-    await this.page.locator('input[name="offerInfo.buyQty"]').fill(params.buyQty ?? '1');
-    await this.page.locator('input[name="offerInfo.freeQty"]').fill(params.freeQty ?? '1');
-    // No unit price/unit assertion for Buy More Get More
-  }
-  if (params.offerType === 'LOW MOQ Discount') {
-    // Assert Actual MOQ value
-    const actualMOQInput = this.page.locator('.forms-group:has(.f-g-label:has-text("Actual MOQ")) input[name="offerInfo.minOrderQuantity"]');
-    await expect(actualMOQInput).toHaveValue(params.moq || '50' );
-
-    // Assert Actual MOQ input is disabled
-    await expect(actualMOQInput).toBeDisabled();
-
-    const actualMOQValue = parseInt(await actualMOQInput.inputValue(), 10);
-
-    // Fill Offer Minimum Order Quantity with Actual MOQ + 2
-    const minQtyInput = this.page.locator('input[name="offerInfo.minQty"]');
-    const invalidMinQty = (actualMOQValue + 2).toString();
-    await minQtyInput.fill(invalidMinQty);
-
-    await this.page.waitForTimeout(2000); // Wait for validation to trigger
-    // Validate error message
-    await expect(this.page.locator('.error-txt')).toBeVisible();
-    await expect(this.page.getByText('minQty must be less than actual MOQ')).toBeVisible();
-    await this.page.waitForTimeout(2000); // Pause to see the error
-    //const validMinQty = (actualMOQValue - 2).toString();
-    await minQtyInput.fill(params.offerMinOrderQty || '5');
-
-    await this.page.locator('input[name="offerInfo.maxQty"]').fill(params.offerMaxOrderQty || '50');
-    //await this.page.pause();
-  }
-  // let {todayFormatted, futureFormatted } = getTodayAndFutureDate(1);
-   // console.log('futureFormatted: ',futureFormatted);
-    await this.page.locator('label[for="StartDate"] + span input.p-inputtext').click()
-    //await this.page.locator(`td[aria-label="${futureFormatted}"]`).click();
-    await this.page.locator(`td[aria-label="${params.startDate}"]`).click();
-    // await this.page.locator('div').filter({ hasText: /^End Date$/ }).getByPlaceholder('DD/MM/YY').click();
-    await this.page.waitForTimeout(2000);
-    const inputField = this.page.locator('label[for="EndDate"] + span input.p-inputtext');
-    await inputField.click();
-
-     const dateLocator = this.page.locator(`td[aria-label="${params.endDate}"]`);
-         const isDisabled =
-  (await dateLocator.getAttribute('aria-disabled')) === 'true' ||
-  (await dateLocator.locator('span').first().getAttribute('data-p-disabled')) === 'true' ||
-  (await dateLocator.locator('span').first().getAttribute('aria-disabled')) === 'true' ||
-  (await dateLocator.locator('span').first().getAttribute('class') ?? '').includes('p-disabled');
-
-if (isDisabled) {
-  // Click the next-month button in your calendar
-  await this.page.locator('button[aria-label="Next Month"]').click();
-  // Try to click the date again (after month navigation)
-  await this.page.locator(`td[aria-label="${params.endDate}"]`).click();
-} else {
-    await this.page.locator(`td[aria-label="${params.endDate}"]`).click();
-  }
-
-  // Fill Keywords if provided
-  if (params.keywords && params.keywords.length > 0) {
-    for (const keyword of params.keywords) {
-      const chipsInput = this.page.locator('.forms-input.p-chips input[placeholder="Enter Keywords"]');
+    for (const keyword of keywords) {
       await chipsInput.fill(keyword);
       await chipsInput.press('Enter');
     }
   }
+}
 
-  // Submit/Continue
+/**
+ * Submit the offer form
+ */
+private async submitOfferForm() {
   await this.page.locator('button.btn-comp.btn-right.btn-c-primary').click();
+}
+
+/**
+ * Standalone method to validate discount calculation
+ */
+async validateDiscountCalculation(originalPrice: string, discountPercent: number): Promise<number> {
+  const original = parseFloat(originalPrice);
+  const expected = parseFloat((original * (1 - discountPercent / 100)).toFixed(2));
+  
+  const actualPriceText = await this.page.locator('input[name="offerInfo.pricing.unitPrice"]').inputValue();
+  const actual = parseFloat(actualPriceText);
+  
+  await expect(actual).toBeCloseTo(expected, 2);
+  return expected;
+}
+
+/**
+ * Standalone method to set custom quantity limits
+ */
+async setCustomQuantityLimits(minQty: string, maxQty: string) {
+  await this.setQuantityLimits(minQty, maxQty);
+}
+
+/**
+ * Standalone method to add single keyword
+ */
+async addSingleKeyword(keyword: string) {
+  const chipsInput = this.page.locator('.forms-input.p-chips input[placeholder="Enter Keywords"]');
+  await chipsInput.fill(keyword);
+  await chipsInput.press('Enter');
 }
 
   async verifyOfferPriceWithoutDiscount(): Promise<void> {
