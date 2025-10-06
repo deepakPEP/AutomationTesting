@@ -4,7 +4,7 @@ export default defineConfig({
   testDir: './src/tests',
   
   // Retry configuration for failed tests
-  retries: process.env.CI ? 2 : 0, // 2 retries in CI, 0 retries locally
+  retries: process.env.CI ? 1 : 0, // 1 retry in CI, 0 retries locally
   
   // Dynamic tag-based test execution
   grep: process.env.TEST_TAGS ? new RegExp(process.env.TEST_TAGS) : 
