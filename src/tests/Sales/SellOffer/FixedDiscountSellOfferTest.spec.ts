@@ -20,7 +20,7 @@ test.describe('Fixed Discount Sell Offer Flow',  { tag: ['@critical', '@product'
     const previewPage = new SellOfferPreviewPage(page);
     const sellOfferDashboardPage = new SellDashboardPage(page);
     const product = getProductByName('Door Wardrobes')
-    const discountPercent = '10';
+    const discountPercent = 10;
     const discounted = parseFloat((parseFloat(product?.unit_price || '70000') * (1 - Number(discountPercent) / 100)).toFixed(2));
     const offerMinOrderQty = '20';
     const offerMaxOrderQty = '50';
@@ -93,7 +93,7 @@ await test.step('Step 3: Preview, Shipping & Validate', async () => {
     price: discounted.toString() || '70000',
     unit: product?.unit || 'Pieces',
     strikedPrice:product?.unit_price,
-    discountPercent:discountPercent,
+    discountPercent:discountPercent.toString(),
     offerTitle: 'Test Fixed Discount Offer',
     productName: product?.name || 'Industrial Hydraulic Pump',
     productCategory: product?.product_category || 'Electronics > Mobile Phones > Smartphones'
