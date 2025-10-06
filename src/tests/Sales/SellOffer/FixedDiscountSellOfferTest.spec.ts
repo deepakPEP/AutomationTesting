@@ -14,7 +14,7 @@ import { SellDashboardPage } from '../../../pages/SellOffer/SellOfferDashboardPa
 import { LoginPage } from '../../../pages/LoginPage';
 
 // Bug - offer price not correct in preview page for Fixed Discount offer type
-test.describe('Fixed Discount Sell Offer Flow', () => {
+test.describe('Fixed Discount Sell Offer Flow',  { tag: ['@critical', '@product'] }, () => {
   test('Sell Offer Flow through add new product', async ({ page }) => {
     const addProductPreviewPage = new AddProductPreviewPage(page);
     const previewPage = new SellOfferPreviewPage(page);

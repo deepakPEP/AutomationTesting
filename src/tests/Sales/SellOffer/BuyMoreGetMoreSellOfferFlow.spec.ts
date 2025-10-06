@@ -11,7 +11,7 @@ import { AddProductPreviewPage } from '../../../pages/ProductISell/AddProductPre
 import { getTodayAndFutureDate} from '../../../utils/Dateutlis';
 import { SellDashboardPage } from '../../../pages/SellOffer/SellOfferDashboardPage';
 //
-test.describe('Buy More Get More Sell Offer Flow', () => {
+test.describe('Buy More Get More Sell Offer Flow', { tag: ['@critical'] }, () => {
   test('Sell Offer Flow through add new product', async ({ page }) => {
     const addProductPreviewPage = new AddProductPreviewPage(page);
     const previewPage = new SellOfferPreviewPage(page);

@@ -11,7 +11,7 @@ import { ViewProductDetailsPage } from '../../../pages/ProductISell/AddViewProdu
 import { ProductISellDashboardPage } from '../../../pages/ProductISell/ProductISellDashboardPage';
 let product: any;
 
-test.describe('Add Product E2E for Fixed Price without variants in Sales', () => {
+test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag: ['@critical', '@product'] }, () => {
 
 // covering 113 testcases in this single e2e
   test('Complete Add Product Flow without variants - AUTO_SAL_ADD_PROD_001_to_006', async ({page}) => {
