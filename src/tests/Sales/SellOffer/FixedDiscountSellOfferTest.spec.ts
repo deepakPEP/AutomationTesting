@@ -1,7 +1,7 @@
 // tests/SellOfferFlowTest.spec.ts
 
 import { test, expect } from '@playwright/test';
-import { SellOfferSignInPage } from '../../../pages/SellOffer/SellOfferSignInPage';
+
 import { SellOfferProductPage } from '../../../pages/SellOffer/SellOfferProductPage';
 import { AddSellOfferPage } from '../../../pages/ProductISell/AddSellOfferPage'
 import { SellOfferPreviewPage } from '../../../pages/SellOffer/SellOfferPreviewPage';
@@ -11,6 +11,8 @@ import { ProductInformationPage } from '../../../pages/ProductISell/AddProductIn
 import { AddProductPreviewPage } from '../../../pages/ProductISell/AddProductPreviewPage';
 import { getTodayAndFutureDate} from '../../../utils/Dateutlis';
 import { SellDashboardPage } from '../../../pages/SellOffer/SellOfferDashboardPage';
+import { LoginPage } from '../../../pages/LoginPage';
+
 // Bug - offer price not correct in preview page for Fixed Discount offer type
 test.describe('Fixed Discount Sell Offer Flow', () => {
   test('Sell Offer Flow through add new product', async ({ page }) => {
@@ -22,17 +24,18 @@ test.describe('Fixed Discount Sell Offer Flow', () => {
     const discounted = parseFloat((parseFloat(product?.unit_price || '70000') * (1 - Number(discountPercent) / 100)).toFixed(2));
     const offerMinOrderQty = '20';
     const offerMaxOrderQty = '50';
-    
+    const loginPage = new LoginPage(page);
+
     test.setTimeout(180000);
     let {todayFormatted, futureFormatted } = getTodayAndFutureDate(1);
       
     await test.step('Step 1: Add Product', async () => {
-      const signInPage = new SellOfferSignInPage(page);
+      
       const productPage = new SellOfferProductPage(page);
       const productInformationPage = new ProductInformationPage(page);
       
-     
-          await signInPage.goto();
+     await loginPage.enterEmailAndContinue('9632370046');
+          
       //await signInPage.signIn('+91 95973-62973');
       //await page.waitForTimeout(60000);
       await page.waitForTimeout(12000);

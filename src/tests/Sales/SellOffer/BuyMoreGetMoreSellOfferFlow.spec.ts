@@ -1,7 +1,6 @@
 // tests/SellOfferFlowTest.spec.ts
-
+import { LoginPage } from '../../../pages/LoginPage';
 import { test, expect } from '@playwright/test';
-import { SellOfferSignInPage } from '../../../pages/SellOffer/SellOfferSignInPage';
 import { SellOfferProductPage } from '../../../pages/SellOffer/SellOfferProductPage';
 import { AddSellOfferPage } from '../../../pages/ProductISell/AddSellOfferPage'
 import { SellOfferPreviewPage } from '../../../pages/SellOffer/SellOfferPreviewPage';
@@ -22,16 +21,13 @@ test.describe('Buy More Get More Sell Offer Flow', () => {
     let {todayFormatted, futureFormatted } = getTodayAndFutureDate(1);
       
     await test.step('Step 1: Add Product', async () => {
-      const signInPage = new SellOfferSignInPage(page);
       const productPage = new SellOfferProductPage(page);
       const productInformationPage = new ProductInformationPage(page);
-      
-     
-          await signInPage.goto();
-      //await signInPage.signIn('+91 95973-62973');
-      //await page.waitForTimeout(60000);
-      await page.waitForTimeout(12000);
+      const loginPage = new LoginPage(page);
 
+      await loginPage.enterEmailAndContinue('9632370046');
+      
+      await page.waitForTimeout(12000);
 
       await productPage.navigateToSellOfferSection();
       await console.log('product ',product);

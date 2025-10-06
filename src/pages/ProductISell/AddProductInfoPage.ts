@@ -40,8 +40,8 @@ export class ProductInformationPage {
     //this.countryTextbox = page.locator('form div').filter({ hasText: 'Country of Origin Select' }).getByRole('textbox');
     this.countryTextbox = page.locator('input.p-dropdown-filter')
     this.indiaOption = page.getByRole('option', { name: 'India', exact: true });
-    //this.continueBtn = page.getByRole('button', { name: 'Continue', exact: true });
-    this.continueBtn = page.locator("//span[text()='Continue']//parent::button");
+    this.continueBtn = page.getByRole('button', { name: 'Continue', exact: true });
+    //this.continueBtn = page.locator("//span[text()='Continue']//parent::button");
     this.productTitle = page.locator('h2.product-title-txt');
     this.skuText = page.locator('span.sku-txt');
     this.imgMain = page.locator('img[width="380"][height="360"]');

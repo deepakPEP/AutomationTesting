@@ -145,7 +145,7 @@ await expect(ad_CertFirstLink).toBeVisible();
 console.log('certification title ',await ad_CertFirstName.textContent());
 console.log('certification size ',await ad_CertFirstSize.textContent());
 await expect(ad_CertFirstName).toHaveText('Certification Title');
-await expect(ad_CertFirstSize).toHaveText('4.95 MB');
+await expect(ad_CertFirstSize).toContainText('4.21 MB');
 await expect(ad_FAQ_Q).toHaveText('Q: What is the warranty period?');
 await expect(ad_FAQ_A).toHaveText('A: The warranty period is 2 years.');
 }

@@ -5,7 +5,8 @@ export default defineConfig({
   reporter: [['html', { outputFolder: 'playwright-report', open: 'never' }]],
   timeout: 30000,
   use: {
-    headless: false,
+    // Use headless mode in CI environments, headed mode locally
+    headless: !!process.env.CI,
     baseURL: 'http://localhost:3000',
     video: 'on',
     screenshot: 'on',
