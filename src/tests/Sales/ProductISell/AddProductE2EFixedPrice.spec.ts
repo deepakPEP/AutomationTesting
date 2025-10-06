@@ -12,8 +12,8 @@ import { ProductISellDashboardPage } from '../../../pages/ProductISell/ProductIS
 let product: any;
 
 test.describe('Add Product E2E for Fixed Price without variants in Sales', () => {
-  
 
+// covering 113 testcases in this single e2e
   test('Complete Add Product Flow without variants - AUTO_SAL_ADD_PROD_001_to_006', async ({page}) => {
     test.setTimeout(480000);
     const productPage = new ProductInformationPage(page);
@@ -26,10 +26,11 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', () =>
     const productISellDashboardPage = new ProductISellDashboardPage(page);
     const loginPage = new LoginPage(page);
     await test.step('Step 1: Add Product Basic Info', async () => {
-      //await page.pause();
+      
       
       //await page.goto('https://sandbox.pepagora.org/en/authenticate');
       await loginPage.enterEmailAndContinue('9632370046');
+    //  await page.pause();
       product = getProductByName('Lcd Tv');
     await page.waitForTimeout(12000);
       await page.locator('div').filter({ hasText: /^Sales$/ }).getByRole('img').click();
@@ -51,6 +52,7 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', () =>
       test.setTimeout(120000);
       await page.waitForTimeout(2000);
       await pricingPage.fillPricingMOQ(product);
+     // await page.pause();
       await productPage.submitProduct();
       await addProductPreviewPage.validateProgressBar('25%');
       await addProductPreviewPage.assertMOQ(page, product?.moq || '1',product.unit || 'Pieces');
@@ -85,7 +87,8 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', () =>
       await addProductPreviewPage.validateProgressBar('62%');
       //await productPage.submitProduct();
       await page.waitForTimeout(2000);
-      await tradeDetailsPage.setPaymentTerms(product?.payment_term || '100% Advance', product?.payment_option || 'Credit Card');
+      await tradeDetailsPage.setPaymentTerms(product?.payment_term || '100% Advance');
+      await tradeDetailsPage.selectPaymentOptions(product?.payment_option || 'Credit Card');
       await productPage.submitProduct();
       await addProductPreviewPage.validateProgressBar('75%');
       await productPage.validateProductAddStepCompletion('Trade Details');
@@ -113,12 +116,13 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', () =>
       await additionalInfoPage.fillAdditionalInformation({ isCustomizable: false, brandName: product.brand || 'Generic Brand' });
       await productPage.submitProduct();
       await console.log('Product submitted', product);
+      await page.waitForTimeout(10000);
       await viewProductDetailsPage.assertProductDetails(product);
       await page.goto('https://sandbox.pepagora.org/en/app/sales-product');
       await productISellDashboardPage.validateFirstContactRow({ productName: product?.name || 'Generic Product',
-      noOfVariants: '0',
+      noOfVariants: 'No Variants',
       category: product?.category || 'General',
-      stockAvailability: 'In Stock',
+      stockAvailability: 'In stock',
       display: product?.display || 'No',
       price: product?.unit_price || '100',
       status: product?.status || 'pending',

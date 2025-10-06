@@ -130,7 +130,7 @@ for (let i = 0; i < count; i++) {
     }
   }
 
-  async setPaymentTerms(paymentTerm: string, paymentOptions: string) {
+  async setPaymentTerms(paymentTerm: string) {
     if (await this.selectPaymentTerm.count() > 0) {
       await this.selectPaymentTerm.click();
       const dropdownItems = this.page.locator('.p-dropdown-items');

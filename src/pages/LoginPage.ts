@@ -7,6 +7,7 @@ export class LoginPage {
    readonly emailInput: Locator;
    readonly continueButton: Locator;
    readonly otpInputs: Locator;
+   readonly acceptCookiesButton: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -14,6 +15,7 @@ export class LoginPage {
     this.emailInput = page.getByRole('textbox', { name: 'Email' });
     this.continueButton = page.getByRole('button', { name: 'Continue with Email' });
     this.otpInputs = page.locator('input.forms-otp[type="text"][maxlength="1"][inputmode="numeric"]'); // Assumes OTP inputs are textboxes
+    this.acceptCookiesButton = page.getByRole('button', { name: 'Accept cookies' });
   }
 
   // Step 1: Enter email and continue
@@ -63,9 +65,23 @@ export class LoginPage {
     for (let i = 0; i < otp.length; i++) {
       await this.otpInputs.nth(i).fill(otp[i]);
     }
-
+    
+     // wait for 5 seconds to ensure OTP is processed
     console.log('OTP filled successfully');
+    await this.page.waitForTimeout(5000);
+    await this.acceptCookiesIfPresent();
+    
+  }
+  
+
+async acceptCookiesIfPresent() {
+  try {
+    await this.acceptCookiesButton.waitFor({ state: 'visible', timeout: 5000 });
+    await this.acceptCookiesButton.click();
+    console.log('✅ Cookies accepted');
+  } catch (error) {
+    console.log('ℹ️ Cookie banner not present or already dismissed');
   }
 }
-
+}
 

@@ -28,25 +28,7 @@ if (!res.ok()) {
 
   const json = await res.json();
   console.log('--- OTP API Response ---',json);
-  // Try path 1: data.parameteres[].name === 'Verification Code'
-  // const p = json?.data?.parameteres;
-  // const codeFromParameters =
-  //   Array.isArray(p)
-  //     ? p.find((x: any) => (x?.name || '').toLowerCase() === 'verification code')?.value
-  //     : undefined;
-
-  // if (codeFromParameters) return String(codeFromParameters).trim();
-
-  // // Try path 2: data.contact.customParams[].name === 'verification_code'
-  // const cp = json?.data?.contact?.customParams;
-  // const codeFromCustomParams =
-  //   Array.isArray(cp)
-  //     ? cp.find((x: any) => (x?.name || '').toLowerCase() === 'verification_code')?.value
-  //     : undefined;
-
-  // if (codeFromCustomParams) return String(codeFromCustomParams).trim();
-
- // throw new Error('OTP not found in API response.');
+  
  return json?.otp || '';
 }
 
