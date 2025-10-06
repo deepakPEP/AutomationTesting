@@ -1,7 +1,7 @@
 // tests/SellOfferFlowTest.spec.ts
 
 import { test, expect } from '@playwright/test';
-import { SellOfferSignInPage } from '../../../pages/SellOffer/SellOfferSignInPage';
+
 import { SellOfferProductPage } from '../../../pages/SellOffer/SellOfferProductPage';
 import { AddSellOfferPage } from '../../../pages/ProductISell/AddSellOfferPage'
 import { SellOfferPreviewPage } from '../../../pages/SellOffer/SellOfferPreviewPage';
@@ -11,6 +11,10 @@ import { ProductInformationPage } from '../../../pages/ProductISell/AddProductIn
 import { AddProductPreviewPage } from '../../../pages/ProductISell/AddProductPreviewPage';
 import { getTodayAndFutureDate} from '../../../utils/Dateutlis';
 import { SellDashboardPage } from '../../../pages/SellOffer/SellOfferDashboardPage';
+import { LoginPage } from '../../../pages/LoginPage';
+import { PriceFormatter, formatDashboardPrice } from '../../../utils/PriceFormatter';
+import { off } from 'process';
+
 // Bug - offer price not correct in preview page for Fixed Discount offer type
 test.describe('LOW MOQ Sell Offer Flow', () => {
   test('Sell Offer Flow through add new product', async ({ page }) => {
@@ -18,25 +22,26 @@ test.describe('LOW MOQ Sell Offer Flow', () => {
     const previewPage = new SellOfferPreviewPage(page);
     const sellOfferDashboardPage = new SellDashboardPage(page);
     const product = getProductByName('Door Wardrobes')
-    const discountPercent = '10';
+    const discountPercent = 25;
     const discounted = parseFloat((parseFloat(product?.unit_price || '70000') * (1 - Number(discountPercent) / 100)).toFixed(2));
-    const offerMinOrderQty = '20';
-    const offerMaxOrderQty = '50';
+    const offerMinOrderQty = '5';
+    const offerMaxOrderQty = '500';
+    const offerTitle = 'Test LOW MOQ Discount Offer';
     
     test.setTimeout(180000);
     let {todayFormatted, futureFormatted } = getTodayAndFutureDate(1);
       
     await test.step('Step 1: Add Product', async () => {
-      const signInPage = new SellOfferSignInPage(page);
       const productPage = new SellOfferProductPage(page);
       const productInformationPage = new ProductInformationPage(page);
       
-     
-          await signInPage.goto();
-      //await signInPage.signIn('+91 95973-62973');
-      //await page.waitForTimeout(60000);
-      await page.waitForTimeout(12000);
 
+      const loginPage = new LoginPage(page);
+
+      await loginPage.enterEmailAndContinue('8778085411');
+      
+      
+      await page.waitForTimeout(12000);
 
       await productPage.navigateToSellOfferSection();
       await console.log('product ',product);
@@ -61,13 +66,14 @@ await test.step('Step 2: Add Offer Info', async () => {
   
   await addOfferPage.fillOfferDetailsGeneric({
     offerType: 'LOW MOQ Discount',
-    title: 'Test LOW MOQ Discount Offer',
+    title: offerTitle,
     description: 'Test Description',
     unitPrice: product?.unit_price || '70000',
     unit: product?.unit || 'Pieces',
-    discountPercent: 10,
+    discountPercent: discountPercent,
     offerMinOrderQty: offerMinOrderQty,
     offerMaxOrderQty: offerMaxOrderQty,
+    moq: product?.moq || '5',
     startDate: todayFormatted,
     endDate: futureFormatted,
     keywords: ['test', 'offer']
@@ -86,12 +92,12 @@ await test.step('Step 3: Preview, Shipping & Validate', async () => {
   await shippingPage.fillShipping(product);
   
   await previewPage.assertSellOfferLeftSidePreview(page, {
-    offerType: 'Fixed Discount',
-    price: discounted.toString() || '70000',
+    offerType: 'Low MOQ Discount',
+    price: product?.unit_price || '70000',
     unit: product?.unit || 'Pieces',
-    strikedPrice:product?.unit_price,
-    discountPercent:discountPercent,
-    offerTitle: 'Test Fixed Discount Offer',
+    lowMOQ: offerMinOrderQty,
+    actualMOQ: product?.moq || '5',
+    offerTitle: 'Test LOW MOQ Discount Offer',
     productName: product?.name || 'Industrial Hydraulic Pump',
     productCategory: product?.product_category || 'Electronics > Mobile Phones > Smartphones'
   });
@@ -110,9 +116,9 @@ await test.step('Step 3: Preview, Shipping & Validate', async () => {
    currency: product?.currency || '₹ - INR',
    basePrice: product?.unit_price || '₹500',
    moq: product?.moq || '2 pieces',
-   offerTitle: 'Test Fixed Discount Offer',
+   offerTitle: offerTitle,
    offerDescription: 'Test Description',
-   offerType: 'fixedDiscount',
+   offerType: 'lowMOQ',
    offerMinOrderQty: offerMinOrderQty,
    offerMaxOrderQty: offerMaxOrderQty,
    offerPrice: discounted.toString() || '₹500',
@@ -134,9 +140,9 @@ await previewPage.clickPreviousButton();
 
 await sellOfferDashboardPage.validateFirstContactRow({
   productName: product?.name || 'Industrial Hydraulic Pump',
-  offerType: 'Fixed Discount',
-  offerTitle: 'Test Fixed Discount Offer',
-  offerPrice: '₹ ' + discounted.toString() +' / per Unit'|| '₹500',
+  offerType: 'Low MOQ Discount',
+  offerTitle: offerTitle,
+  offerPrice: formatDashboardPrice(product?.unit_price || '70000',product?.currency || '₹'),  // Use proper formatting
   MOQ: offerMinOrderQty,
   display: 'No',
   dateCreated: todayFormatted,

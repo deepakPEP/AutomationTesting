@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { Locator, Page } from "playwright-core";
+import { PriceFormatter, comparePrices, createPriceMatcher } from '../../utils/PriceFormatter';
 // SellOfferDashboardPage.js (Page Object)
 
 export class SellDashboardPage {
@@ -36,7 +37,22 @@ export class SellDashboardPage {
       const checkbox = firstRow.locator('td[data-pc-name="datatable"] .forms-toggle input[type="checkbox"]');
 
       await expect(checkbox).not.toBeChecked();
-        await expect(await cells.nth(4)).toContainText(expectedSellOfferDetails.offerPrice);
+      // Price validation with flexible formatting
+      const actualPrice = await cells.nth(4).textContent();
+      console.log('Expected price:', expectedSellOfferDetails.offerPrice);
+      console.log('Actual price:', actualPrice?.trim());
+      
+      // Use flexible price matching to handle formatting differences
+      if (actualPrice) {
+        const priceMatches = comparePrices(expectedSellOfferDetails.offerPrice, actualPrice);
+        if (!priceMatches) {
+          // If exact comparison fails, try pattern matching
+          const priceMatcher = createPriceMatcher(expectedSellOfferDetails.offerPrice);
+          await expect(actualPrice.trim()).toMatch(priceMatcher);
+        }
+      } else {
+        throw new Error('Price cell is empty or not found');
+      }
       //console.log('display:', expectedProductISellDetails.display);
       await expect(await cells.nth(5)).toContainText(expectedSellOfferDetails.MOQ);
       console.log('dateCreated:', expectedSellOfferDetails.dateCreated);
