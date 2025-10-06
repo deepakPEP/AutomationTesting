@@ -162,17 +162,54 @@ for (let i = 0; i < count; i++) {
 };
   const paymentOptionStrings = paymentOptions.split(',');
   await console.log('Payment options:', paymentOptionStrings);
+  
   for (const key in paymentOptionStrings) {
     const labelText = labelToId[paymentOptionStrings[key]] ?? paymentOptionStrings[key];
     await console.log('Payment options text:', labelText);
+    
     const optionLocator = this.page.locator(`input#${labelText}`);
-    await optionLocator.check({force:true}); // Check the checkbox
-    await console.log(`Selected payment option: ${labelText}`);
-    if (labelText === 'Others') 
-      {
-        const inputLocator = await this.page.locator('input[name="otherPaymentMethod"]');
-        await inputLocator.fill('Cash');
+    
+    try {
+      // Wait for element to be present and attached to DOM
+      await optionLocator.waitFor({ state: 'attached', timeout: 10000 });
+      
+      // Additional wait for element to be actionable in CI
+      await optionLocator.waitFor({ state: 'visible', timeout: 5000 });
+      
+      // Scroll element into view if needed (helps in CI)
+      await optionLocator.scrollIntoViewIfNeeded();
+      
+      // Small delay for CI stability
+      await this.page.waitForTimeout(500);
+      
+      // Check if element is enabled before checking
+      if (await optionLocator.isEnabled()) {
+        await optionLocator.check({ force: true });
+        await console.log(`✅ Selected payment option: ${labelText}`);
+      } else {
+        console.log(`⚠️ Payment option ${labelText} is disabled`);
       }
+      
+    } catch (error) {
+      console.log(`❌ Failed to select payment option ${labelText}:`, error);
+      
+      // Fallback: Try alternative selector or approach
+      try {
+        // Try clicking the label instead of the input
+        const labelLocator = this.page.locator(`label[for="${labelText}"]`);
+        await labelLocator.click({ force: true });
+        await console.log(`✅ Selected payment option via label: ${labelText}`);
+      } catch (fallbackError) {
+        console.log(`❌ Fallback also failed for ${labelText}:`, fallbackError);
+        throw new Error(`Unable to select payment option: ${labelText}`);
+      }
+    }
+    
+    if (labelText === 'Others') {
+      const inputLocator = this.page.locator('input[name="otherPaymentMethod"]');
+      await inputLocator.waitFor({ state: 'visible', timeout: 5000 });
+      await inputLocator.fill('Cash');
+    }
   }}
 // Pass names like: ["Credit Card", "Cash", "Western Union"]
  async  selectPaymentMethods(methods: string[]) {

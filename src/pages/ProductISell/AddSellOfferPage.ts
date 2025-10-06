@@ -48,6 +48,13 @@ async fillOfferDetailsGeneric(params: {
 await this.page.locator('.forms-select-2.p-dropdown').nth(0).locator('.p-dropdown-trigger').click();
 // Select the desired offer type
 await this.page.locator(`.p-dropdown-item:has-text("${params.offerType}")`).click();
+
+await this.page.waitForTimeout(2000);
+
+ // Fill Offer Title and Description
+    await this.page.getByRole('textbox', { name: 'Enter Title' }).fill(params.title);
+    await this.page.getByRole('textbox', { name: 'Enter Offer Description' }).fill(params.description);
+
   //await this.page.locator(`.p-dropdown-item:has-text("${params.offerType}")`).click();
 
   if (params.offerType === 'Fixed Discount') {
@@ -60,10 +67,7 @@ await this.page.locator(`.p-dropdown-item:has-text("${params.offerType}")`).clic
       await expect(this.page.locator('input[readonly][disabled]')).toHaveValue(params.unit);
     }
 
-    // Fill Offer Title and Description
-    await this.page.getByRole('textbox', { name: 'Enter Title' }).fill(params.title);
-    await this.page.getByRole('textbox', { name: 'Enter Offer Description' }).fill(params.description);
-
+   
     // Fill Discount Percent
     const discount = params.discountPercent ?? Math.floor(Math.random() * 100) + 1;
     await this.page.locator('input[name="offerInfo.discountPercent"]').fill(discount.toString());
@@ -80,10 +84,7 @@ await this.page.locator(`.p-dropdown-item:has-text("${params.offerType}")`).clic
   }
 
   if (params.offerType === 'Buy More Get More') {
-    // Fill Offer Title and Description
-    await this.page.getByRole('textbox', { name: 'Enter Title' }).fill(params.title);
-    await this.page.getByRole('textbox', { name: 'Enter Offer Description' }).fill(params.description);
-
+    
     // Fill Buy/Free Quantity
     await this.page.locator('input[name="offerInfo.buyQty"]').fill(params.buyQty ?? '1');
     await this.page.locator('input[name="offerInfo.freeQty"]').fill(params.freeQty ?? '1');
@@ -106,15 +107,14 @@ await this.page.locator(`.p-dropdown-item:has-text("${params.offerType}")`).clic
 
     await this.page.waitForTimeout(2000); // Wait for validation to trigger
     // Validate error message
-    const errorMsg = this.page.locator('.forms-group:has(input[name="offerInfo.minQty"]) .error-msg');
-    await expect(errorMsg).toBeVisible();
-    await expect(errorMsg).toHaveText(/Minimum Order Quantity cannot exceed Actual MOQ/i);
-
-    const validMinQty = (actualMOQValue - 2).toString();
-    await minQtyInput.fill(validMinQty);
+    await expect(this.page.locator('.error-txt')).toBeVisible();
+    await expect(this.page.getByText('minQty must be less than actual MOQ')).toBeVisible();
+    await this.page.waitForTimeout(2000); // Pause to see the error
+    //const validMinQty = (actualMOQValue - 2).toString();
+    await minQtyInput.fill(params.offerMinOrderQty || '5');
 
     await this.page.locator('input[name="offerInfo.maxQty"]').fill(params.offerMaxOrderQty || '50');
-
+    //await this.page.pause();
   }
   // let {todayFormatted, futureFormatted } = getTodayAndFutureDate(1);
    // console.log('futureFormatted: ',futureFormatted);
