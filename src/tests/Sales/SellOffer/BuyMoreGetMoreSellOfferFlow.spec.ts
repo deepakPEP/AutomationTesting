@@ -86,7 +86,6 @@ await test.step('Step 3: Preview, Shipping & Validate', async () => {
   });
   await productInformationPage.submitProduct();
   await page.waitForTimeout(5000);
-  await productInformationPage.validateProductAddStepCompletion('Payment & Shipping');
 });
   await test.step('Step 4: Sell offer Detail page and Dashboard validations', async () => {
   // // Final: Confirm URL

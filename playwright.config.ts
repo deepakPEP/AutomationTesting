@@ -11,7 +11,12 @@ export default defineConfig({
         process.env.CI ? /@critical/ : undefined,
   
   reporter: [
-    ['html', { outputFolder: 'playwright-report', open: 'never' }],
+    ['html', { 
+      outputFolder: 'playwright-report', 
+      open: 'never',
+      attachments: 'on', // Enable attachments to see console logs
+    }],
+    ['list'], // Console reporter to see logs during execution
     // ['./src/reporters/ZohoPlaywrightReporter.ts'], // Enhanced Zoho reporting - uncomment when ready
     // ['json', { outputFile: 'test-results/results.json' }]
   ],
