@@ -16,13 +16,14 @@ test.describe('Buy More Get More Sell Offer Flow', { tag: ['@critical'] }, () =>
     const addProductPreviewPage = new AddProductPreviewPage(page);
     const previewPage = new SellOfferPreviewPage(page);
     const sellOfferDashboardPage = new SellDashboardPage(page);
+    const productInformationPage = new ProductInformationPage(page);
     const product = getProductByName('Industrial Hydraulic Pump')
     test.setTimeout(180000);
     let {todayFormatted, futureFormatted } = getTodayAndFutureDate(1);
       
     await test.step('Step 1: Add Product', async () => {
       const productPage = new SellOfferProductPage(page);
-      const productInformationPage = new ProductInformationPage(page);
+      
       const loginPage = new LoginPage(page);
 
       await loginPage.enterEmailAndContinue('9632370046');
@@ -40,6 +41,7 @@ test.describe('Buy More Get More Sell Offer Flow', { tag: ['@critical'] }, () =>
       await productPage.submitProduct();
       await page.waitForTimeout(5000);
       await addProductPreviewPage.validateProgressBar('33%');
+      await productInformationPage.validateProductAddStepCompletion('Product Details');
 });
 
 await test.step('Step 2: Add Offer Info', async () => {
@@ -62,6 +64,7 @@ await test.step('Step 2: Add Offer Info', async () => {
   await productInformationPage.submitProduct();
   await page.waitForTimeout(5000);
     await addProductPreviewPage.validateProgressBar('66%');
+    await productInformationPage.validateProductAddStepCompletion('Offer Details');
 });
 await test.step('Step 3: Preview, Shipping & Validate', async () => {
   
@@ -83,6 +86,7 @@ await test.step('Step 3: Preview, Shipping & Validate', async () => {
   });
   await productInformationPage.submitProduct();
   await page.waitForTimeout(5000);
+  await productInformationPage.validateProductAddStepCompletion('Payment & Shipping');
 });
   await test.step('Step 4: Sell offer Detail page and Dashboard validations', async () => {
   // // Final: Confirm URL
