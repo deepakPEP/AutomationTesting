@@ -103,17 +103,7 @@ export class CurrencySelector {
    * Open the currency dropdown
    */
   private async openCurrencyDropdown(): Promise<void> {
-    // Check if dropdown is already open
-    const dropdownWrapper = this.page.locator('.p-dropdown-items-wrapper');
-    const isOpen = await dropdownWrapper.isVisible().catch(() => false);
-    
-    if (!isOpen) {
-      // Find and click the dropdown trigger
-      await this.page.locator('.p-dropdown-trigger, .p-dropdown').click();
-      
-      // Wait for dropdown to be visible
-      await dropdownWrapper.waitFor({ state: 'visible' });
-    }
+    await this.page.locator('.p-dropdown-trigger[aria-label="Select Currency"]').click();
   }
 
   /**

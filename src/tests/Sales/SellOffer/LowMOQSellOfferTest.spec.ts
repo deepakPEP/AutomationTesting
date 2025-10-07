@@ -113,7 +113,7 @@ await test.step('Step 3: Preview, Shipping & Validate', async () => {
    category: product?.product_category || 'Industrial Equipment & Machinery > Hydraulic & Pneumatic Equipment > Hand Operated Hydraulic Pumps',
    brand: product?.brand || 'HydroMax',
    productDescription: product?.short_description || 'Test Description',
-   currency: product?.currency || 'INR',
+   currency: product?.currency || '₹ - INR',
    basePrice: product?.unit_price || '₹500',
    moq: product?.moq || '2 pieces',
    offerTitle: offerTitle,
