@@ -1,8 +1,6 @@
 import { Page, test } from '@playwright/test';
-import { EnhancedZohoReporter } from './EnhancedZohoReporter';
 
 export class TestLogger {
-  private static reporter = new EnhancedZohoReporter();
   private static logs: string[] = []; // Store logs for HTML report
 
   /**
@@ -56,6 +54,34 @@ export class TestLogger {
   }
 
   /**
+   * Warning logging
+   */
+  static warn(message: string): void {
+    this.log(`⚠️ ${message}`);
+  }
+
+  /**
+   * Debug logging
+   */
+  static debug(message: string): void {
+    this.log(`🐛 ${message}`);
+  }
+
+  /**
+   * Clear all stored logs
+   */
+  static clearLogs(): void {
+    this.logs = [];
+  }
+
+  /**
+   * Get current log count
+   */
+  static getLogCount(): number {
+    return this.logs.length;
+  }
+
+  /**
    * Enhanced step logging with test.step integration
    */
   static async logStep<T>(stepName: string, stepFunction: () => Promise<T>): Promise<T> {
@@ -86,26 +112,24 @@ export class TestLogger {
     const startTime = Date.now();
     
     try {
+      this.log(`🏁 Starting test: ${testName}`);
       const result = await testFunction();
       
       // Log successful test
-      await this.reporter.logTestResult({
-        testName,
-        status: 'passed',
-        duration: Date.now() - startTime,
-        browserName: test.info().project.name
-      }, page);
+      const duration = Date.now() - startTime;
+      this.success(`Test completed successfully: ${testName} (${duration}ms)`);
       
       return result;
     } catch (error) {
       // Log failed test with enhanced context
-      await this.reporter.logTestResult({
-        testName,
-        status: 'failed',
-        duration: Date.now() - startTime,
-        browserName: test.info().project.name,
-        screenshotPath: await this.captureScreenshot(page, testName)
-      }, page, error as Error);
+      const duration = Date.now() - startTime;
+      this.error(`Test failed: ${testName} (${duration}ms) - ${error}`);
+      
+      // Capture screenshot for failed test
+      const screenshotPath = await this.captureScreenshot(page, testName);
+      if (screenshotPath) {
+        this.log(`📸 Screenshot saved: ${screenshotPath}`);
+      }
       
       throw error; // Re-throw to maintain test failure
     }
@@ -163,12 +187,7 @@ export class TestLogger {
       );
       
       // Log the enhanced error
-      await this.reporter.logTestResult({
-        testName: stepName,
-        status: 'failed',
-        duration: timeout,
-        browserName: test.info().project.name
-      }, page, enhancedError);
+      this.error(`${stepName} failed: ${enhancedError.message}`);
       
       throw enhancedError;
     }
