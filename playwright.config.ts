@@ -20,9 +20,10 @@ export default defineConfig({
     // Use headless mode in CI environments, headed mode locally
     headless: !!process.env.CI,
     baseURL: 'http://localhost:3000',
-    video: 'retain-on-failure', // Only keep videos for failures
-    screenshot: 'only-on-failure', // Only take screenshots on failure
-    trace: 'retain-on-failure', // Only keep traces for failures
+    // Keep artifacts only on failure (both CI and local)
+    video: 'retain-on-failure',
+    screenshot: 'only-on-failure', 
+    trace: 'retain-on-failure',
   },
   // Create directories for test results
   outputDir: 'test-results',
