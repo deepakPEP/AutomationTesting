@@ -27,13 +27,20 @@ async submitProduct() {
     await this.page.waitForTimeout(3000);
     await this.page.getByRole('link', { name: 'Sell Offer', exact: true }).click();
     await this.page.waitForTimeout(2000);
-    console.log('condition ',await  this.page.getByRole('button', { name: /Create Your First Offer/i }).count());
-    if (await this.page.getByRole('button', { name: 'Create Your First Offer' }).isVisible()) {
-      await this.page.getByRole('button', { name: 'Create Your First Offer' }).click();
+    
+    // Debug: Check different locator strategies
+    const buttonByRole = this.page.getByRole('button', { name: /Create Your First Offer/i });
+    
+    // Try multiple strategies
+    if (await buttonByRole.isVisible().catch(() => false)) {
+      console.log('✅ Clicking "Create Your First Offer" button by role');
+      await buttonByRole.click();
       await this.page.waitForTimeout(1000);
     } else {
-      const button = await this.page.locator('button:has-text("New Sell Offer")');
-      await button.click();
+      console.log('🔍 First button not found, trying "New Sell Offer" button');
+      const newOfferButton = this.page.locator('button:has-text("New Sell Offer")');
+      await newOfferButton.click();
+
       await this.page.waitForTimeout(1000);
     }
   }
