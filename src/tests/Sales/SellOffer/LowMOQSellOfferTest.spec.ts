@@ -16,7 +16,7 @@ import { PriceFormatter, formatDashboardPrice } from '../../../utils/PriceFormat
 import { off } from 'process';
 
 // Bug - offer price not correct in preview page for Fixed Discount offer type
-test.describe('LOW MOQ Sell Offer Flow', () => {
+test.describe('LOW MOQ Sell Offer Flow', { tag: ['@critical']},() => {
   test('Sell Offer Flow through add new product', async ({ page }) => {
     const addProductPreviewPage = new AddProductPreviewPage(page);
     const previewPage = new SellOfferPreviewPage(page);
@@ -38,7 +38,7 @@ test.describe('LOW MOQ Sell Offer Flow', () => {
 
       const loginPage = new LoginPage(page);
 
-      await loginPage.enterEmailAndContinue('8778085411');
+      await loginPage.enterEmailAndContinue('9632370046');
       
       
       await page.waitForTimeout(12000);
@@ -49,7 +49,7 @@ test.describe('LOW MOQ Sell Offer Flow', () => {
       await console.log('product category:', product?.product_category);
       await productInformationPage.selectAICategory(product?.product_category || 'Electronics > Mobile Phones > Smartphones');
       await productInformationPage.uploadImage();
-      await productPage.fillProductDetails(product?.short_description||'Test Description',product?.brand || 'Samsung', product?.unit_price || '70000',product?.moq || '5',product?.unit || 'Pieces');
+      await productPage.fillProductDetails(product?.short_description||'Test Description',product?.brand || 'Samsung', product?.unit_price || '70000',product?.moq || '5',product?.unit || 'Pieces',product?.currency || 'INR');
       // product?.'brand' || Samsung
       //await productInformationPage.submitProduct();
       await productPage.submitProduct();
@@ -113,7 +113,7 @@ await test.step('Step 3: Preview, Shipping & Validate', async () => {
    category: product?.product_category || 'Industrial Equipment & Machinery > Hydraulic & Pneumatic Equipment > Hand Operated Hydraulic Pumps',
    brand: product?.brand || 'HydroMax',
    productDescription: product?.short_description || 'Test Description',
-   currency: product?.currency || '₹ - INR',
+   currency: product?.currency || 'INR',
    basePrice: product?.unit_price || '₹500',
    moq: product?.moq || '2 pieces',
    offerTitle: offerTitle,
