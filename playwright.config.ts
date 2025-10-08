@@ -3,6 +3,9 @@ import { defineConfig } from '@playwright/test';
 export default defineConfig({
   testDir: './src/tests',
   
+  // Force single worker execution (no parallel execution)
+  workers: 1,
+  
   // Retry configuration for failed tests
   retries: process.env.CI ? 1 : 0, // 1 retry in CI, 0 retries locally
   
@@ -11,7 +14,12 @@ export default defineConfig({
         process.env.CI ? /@critical/ : undefined,
   
   reporter: [
-    ['html', { outputFolder: 'playwright-report', open: 'never' }],
+    ['html', { 
+      outputFolder: 'playwright-report', 
+      open: 'never',
+      attachments: 'on', // Enable attachments to see console logs
+    }],
+    ['list'], // Console reporter to see logs during execution
     // ['./src/reporters/ZohoPlaywrightReporter.ts'], // Enhanced Zoho reporting - uncomment when ready
     // ['json', { outputFile: 'test-results/results.json' }]
   ],

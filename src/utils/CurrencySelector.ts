@@ -48,7 +48,7 @@ export class CurrencySelector {
     await this.page.locator(
       `.p-dropdown-item:has(.p-dropdown-item-label:has-text("${currency.displayText}"))`
     ).click();
-    
+    await this.page.waitForTimeout(1000); // Wait for selection to register
     console.log(`✅ Currency selected: ${currency.displayText}`);
   }
 
@@ -104,6 +104,7 @@ export class CurrencySelector {
    */
   private async openCurrencyDropdown(): Promise<void> {
     await this.page.locator('.p-dropdown-trigger[aria-label="Select Currency"]').click();
+    await this.page.waitForTimeout(2000); // Wait for dropdown animation
   }
 
   /**
