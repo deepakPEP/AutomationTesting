@@ -42,8 +42,12 @@ export class SellDashboardPage {
       console.log('Expected price:', expectedSellOfferDetails.offerPrice);
       console.log('Actual price:', actualPrice?.trim());
       
-      // Use flexible price matching to handle formatting differences
-      if (actualPrice) {
+      // Handle 'NA' price case
+      if (actualPrice?.trim() === 'NA') {
+        // If actual price is 'NA', just assert it equals expected price
+        await expect(actualPrice.trim()).toBe(expectedSellOfferDetails.offerPrice);
+      } else if (actualPrice && actualPrice.trim() !== '') {
+        // Use flexible price matching to handle formatting differences
         const priceMatches = comparePrices(expectedSellOfferDetails.offerPrice, actualPrice);
         if (!priceMatches) {
           // If exact comparison fails, try pattern matching
