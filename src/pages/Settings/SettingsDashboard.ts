@@ -21,7 +21,8 @@ export class SettingsPage {
 // ).toBeVisible();
     await expect(this.page.locator('span.st-c-c-c-w-title:has-text("Tax Settings")')).toBeVisible();
     await expect(this.page.locator('span.st-c-c-c-w-title:has-text("Compliance Settings")')).toBeVisible();
-    await expect(this.page.locator('.dashboard-section-block:has(h2.setting-sub-title:has-text("Account settings")) .st-explore-card-comp:has(.st-c-c-c-w-title:has-text("Data & Privacy Settings"))')).toBeVisible();
+    //await expect(this.page.locator('.dashboard-section-block:has(h2.setting-sub-title:has-text("Account settings")) .st-explore-card-comp:has(.st-c-c-c-w-title:has-text("Data & Privacy Settings"))')).toBeVisible();
+    await expect(this.page.locator('span.st-c-c-c-w-title:has-text("Data & Privacy Settings")')).toBeVisible();
   }
 
   /**
