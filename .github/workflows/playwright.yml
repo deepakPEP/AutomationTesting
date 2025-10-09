@@ -55,22 +55,23 @@ jobs:
             playwright-report/**/*.png
             playwright-report/**/*.zip
           retention-days: 30  # Keep artifacts for 30 days
-    #   - name: Generate timestamp
-    #     id: timestamp
-    #     run: echo "ts=$(date +'%Y%m%d-%H%M%S')" >> "$GITHUB_OUTPUT"
+      - name: Generate timestamp
+        id: timestamp
+        run: echo "ts=$(date +'%Y%m%d-%H%M%S')" >> "$GITHUB_OUTPUT"
 
-    #   - name: Upload HTML Report to S3 with Timestamp
-    #     if: always()
-    #     uses: jakejarvis/s3-sync-action@master
-    #     with:
-    #       args: ""
-    #     env:
-    #       AWS_S3_BUCKET: peptestassets
-    #       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #       AWS_REGION: ${{ secrets.AWS_REGION }}
-    #       SOURCE_DIR: playwright-report
-    #       DEST_DIR: reports/${{ steps.timestamp.outputs.ts }}
+      - name: Upload HTML Report to S3 with Timestamp
+        if: always()
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: ""
+        env:
+          AWS_S3_BUCKET: peptestassets
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SOURCE_DIR: playwright-report
+          DEST_DIR: reports/${{ steps.timestamp.outputs.ts }}
+
     #   - name: Send Playwright report via email (with attachment)
     #     if: always()
     #     uses: dawidd6/action-send-mail@v3
