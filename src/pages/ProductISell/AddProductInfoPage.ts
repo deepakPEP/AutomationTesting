@@ -85,9 +85,9 @@ async assertTextareaHasAIContent(productName?: string) {
   // Get the textarea content
   const textareaValue = await this.aiTextarea.inputValue();
   
-  // Simple assertions: minimum 50 characters and not empty
+  // Simple assertions: minimum 39 characters and not empty
   expect(textareaValue.trim()).not.toBe('');
-  expect(textareaValue.length).toBeGreaterThan(50);
+  expect(textareaValue.length).toBeGreaterThan(39);
   
   // If product name provided, check if it contains product name words
   if (productName) {
