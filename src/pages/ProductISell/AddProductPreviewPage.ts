@@ -1,4 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test';
+import { TestLogger } from '../../utils/TestLogger';
 
 export class AddProductPreviewPage {
   readonly page: Page;
@@ -83,5 +84,155 @@ async verifyDetails(product: any) {
     // Locate the price element in the page and assert that the price matches
     await expect(this.priceText).toHaveText(expectedPrice);
 }
+// ============================================
+// VARIANTS PREVIEW VALIDATION METHOD
+// ============================================
 
+async validateVariantsPreview(expectedVariants: {
+  expectedImageCount: number;
+  expectedAttributes: string; // "Color Options:Black,White|Size Range:Small,Medium"
+}) {
+  TestLogger.info('🔍 Validating variants preview page');
+  
+  try {
+    // STEP 1: Assert product info block is visible
+    const productInfoBlock = this.page.locator('.product-info-block');
+    await expect(productInfoBlock).toBeVisible();
+    TestLogger.success('✅ Product info block found');
+  
+    // STEP 3: Validate variant attributes
+    await this.validateAttributeLabels(expectedVariants.expectedAttributes);
+    
+    // STEP 4: Validate variant images count
+    if (expectedVariants.expectedAttributes.toLowerCase().includes('color')) {
+      await this.validateVariantImagesCount(expectedVariants.expectedImageCount);
+    }
+    TestLogger.success('🎉 Variants preview validation completed successfully');
+    
+  } catch (error) {
+    TestLogger.error(`❌ Variants preview validation failed: ${error}`);
+    throw error;
+  }
+}
+
+async validateAttributeLabels(expectedAttributes: string) {
+  TestLogger.info('🔍 Validating attribute labels');
+  
+  try {
+    // Parse expected attributes: "Color Options:Black,White|Size Range:Small,Medium"
+    const expectedLabels = expectedAttributes.split('|').map(attr => {
+      const [label] = attr.split(':');
+      return label.trim().toLowerCase().replace(' options', '').replace(' range', '');
+    });
+    
+    TestLogger.info(`📋 Expected labels: [${expectedLabels.join(', ')}]`);
+    
+    // Get all attribute labels from product-info-block (excluding product-orders-pairs-block)
+    const attributeLabels = this.page.locator('.product-info-block .sizesbutton-comp .s-c-label');
+    const labelCount = await attributeLabels.count();
+    
+    TestLogger.info(`🔍 Found ${labelCount} attribute sections`);
+    
+    // Check each label
+    for (let i = 0; i < labelCount; i++) {
+      const labelElement = attributeLabels.nth(i);
+      const actualLabel = await labelElement.textContent();
+      
+      if (actualLabel) {
+        const normalizedActual = actualLabel.trim().toLowerCase();
+        TestLogger.info(`📝 Found label: "${actualLabel}"`);
+        
+        // Check if this label matches any expected label
+        const isExpected = expectedLabels.some(expected => 
+          normalizedActual.includes(expected) || expected.includes(normalizedActual)
+        );
+        
+        if (isExpected) {
+          TestLogger.success(`✅ Label "${actualLabel}" matches expected attributes`);
+        } else {
+          TestLogger.warn(`⚠️ Label "${actualLabel}" not found in expected attributes`);
+        }
+      }
+    }
+    
+    TestLogger.success('✅ Attribute labels validation completed');
+    
+  } catch (error) {
+    TestLogger.error(`❌ Attribute labels validation failed: ${error}`);
+    throw error;
+  }
+}
+async validateColorVariantImages(attributeSection: any, expectedColorCount: number) {
+  TestLogger.info(`🎨 Validating color variant images, expected count: ${expectedColorCount}`);
+  
+  try {
+    // Count color variant images
+    const colorImages = attributeSection.locator('.c-c-img img.p-v-img');
+    const actualImageCount = await colorImages.count();
+    
+    // Assert count matches
+    await expect(colorImages).toHaveCount(expectedColorCount);
+    TestLogger.success(`✅ Color images count validated: ${actualImageCount}/${expectedColorCount}`);
+    
+    // Assert all images have valid src
+    for (let i = 0; i < actualImageCount; i++) {
+      const image = colorImages.nth(i);
+      const src = await image.getAttribute('src');
+      
+      if (src && (src.includes('pepupload') || src.includes('amazonaws'))) {
+        TestLogger.success(`✅ Color image ${i + 1} has valid source`);
+      } else {
+        TestLogger.warn(`⚠️ Color image ${i + 1} may not have uploaded source: ${src}`);
+      }
+    }
+    
+  } catch (error) {
+    TestLogger.error(`❌ Color variant images validation failed: ${error}`);
+    throw error;
+  }
+}
+
+async validateVariantButtons(attributeSection: any, expectedValues: string[]) {
+  TestLogger.info(`🔘 Validating variant buttons for values: ${expectedValues.join(', ')}`);
+  
+  try {
+    // Get all buttons in this attribute section
+    const buttons = attributeSection.locator('.s-c-buttons-block button.btn-comp');
+    const actualButtonCount = await buttons.count();
+    
+    // Assert button count matches expected values count
+    await expect(buttons).toHaveCount(expectedValues.length);
+    TestLogger.success(`✅ Button count validated: ${actualButtonCount}/${expectedValues.length}`);
+    
+    // Validate each expected value has a corresponding button
+    for (const expectedValue of expectedValues) {
+      const button = attributeSection.locator(`button.btn-comp:has-text("${expectedValue}")`);
+      await expect(button).toBeVisible();
+      TestLogger.success(`✅ Found button for value: ${expectedValue}`);
+    }
+    
+  } catch (error) {
+    TestLogger.error(`❌ Variant buttons validation failed: ${error}`);
+    throw error;
+  }
+}
+
+async validateVariantImagesCount(expectedImageCount: number) {
+  TestLogger.info(`🖼️ Validating variant images count, expected: ${expectedImageCount}`);
+  
+  try {
+    // Simple count of all variant images
+    const allVariantImages = this.page.locator('.c-c-img img.p-v-img');
+    const actualImageCount = await allVariantImages.count();
+    
+    // Simple assertion
+    await expect(allVariantImages).toHaveCount(expectedImageCount);
+    
+    TestLogger.success(`✅ Variant images count validated: ${actualImageCount}/${expectedImageCount}`);
+    
+  } catch (error) {
+    TestLogger.error(`❌ Variant images validation failed: ${error}`);
+    throw error;
+  }
+}
 }

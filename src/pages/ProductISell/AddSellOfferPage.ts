@@ -10,8 +10,6 @@ export class AddSellOfferPage {
 
   readonly sellOfferProductPage: SellOfferProductPage;
   readonly prodInfoPage: ProductInformationPage;
-  
-  
 
   constructor(private page: Page) {
     this.sellOfferProductPage = new SellOfferProductPage(page);

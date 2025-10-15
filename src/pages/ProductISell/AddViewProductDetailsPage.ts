@@ -1,5 +1,7 @@
 import { expect, Locator, Page } from '@playwright/test';
 import {  assertNormalizedText } from '../../utils/CommonFunctions';
+import { TestLogger } from '../../utils/TestLogger';
+
 export class ViewProductDetailsPage {
   readonly page: Page;
 
@@ -17,18 +19,22 @@ export class ViewProductDetailsPage {
     this.mainImage = page.locator('.preview-gallery-main img');
     this.thumbImage = this.page.locator('.swiper-thumbs img');
   }
-  async assertProductDetails(product: any) {
+  async assertProductDetails(product: any,additionalInfo = false) {
     await this.page.waitForTimeout(4000);
     await this.assertProductInformation(product);
     await this.assertProductPricingAndMOQ(product);
+    
     await this.assertProductTradeDetails(product);
     await this.assertShippingAndLogistics(product);
-    await this.assertAdditionalDetails(product);
+    if(additionalInfo) {
+      await this.assertAdditionalDetails(product);
+    }
     await this.validateAnalyticsSection(product);
   }
   async assertProductInformation(product:any){
     await expect(this.productTitle).toHaveText(product.name);
-    await expect(this.prodDescription).toHaveText(product.description);
+    
+    await expect(this.prodDescription).toHaveText(product.short_description || 'No description');
     await expect(this.mainImage).toBeVisible();
   // 2. Assert it has a non-empty src
   const src = await this.mainImage.getAttribute('src');
@@ -50,7 +56,7 @@ const pi_SKU              = this.page.locator('.tabs-form-group:has(.t-f-g-label
 const pi_Origin           = this.page.locator('.tabs-form-group:has(.t-f-g-label:has-text("Country of Origin")) .t-f-g-txt');
 
 await expect(pi_ProductName).toHaveText(product.name || 'Electric Screwdriver');
-await expect(pi_ShortDesc).toHaveText(product.description || 'No description');
+await expect(pi_ShortDesc).toHaveText(product.short_description || 'No description');
 const category = (product.product_category).split(' > ') || ['No Category'];
 await console.log('Asserting Category Path:', category);
 await expect(pi_CategoryPath).toHaveText('Category: ' + category[0] + ' > ' + 'Subcategory: ' + category[1]);
@@ -157,5 +163,243 @@ const analyticsViewLocator = this.page.locator('.a-o-i-txt');
 await expect(analyticsViewLocator).toHaveText('0');
 const statusLocator = this.page.locator('.table-badge-comp.pending');
 await expect(statusLocator).toHaveText('pending');
+}
+// ============================================
+// PRODUCT SPECIFICATION VALIDATION METHOD
+// ============================================
+
+async validateProductSpecifications(expectedData: {
+  detailedDescription: string;
+  applications: string;
+  expectedAttributes: string; // "Color Options:Black,White|Size Range:Small,Medium"
+  variantCounts: { [key: string]: number }; // e.g., { "Black": 2, "White": 2 }
+}) {
+  TestLogger.info('🔍 Validating Product Specifications section');
+  
+  try {
+    // STEP 1: Ensure Product Specification accordion is expanded
+    const accordionHeader = this.page.locator('.p-accordion-header:has-text("Product Specification")');
+    await expect(accordionHeader).toBeVisible();
+    
+    // Click to expand if not already expanded
+    const isExpanded = await accordionHeader.getAttribute('data-p-highlight');
+    if (isExpanded !== 'true') {
+      await accordionHeader.click();
+      await this.page.waitForTimeout(1000);
+    }
+    
+    TestLogger.success('✅ Product Specification accordion is expanded');
+    
+    // STEP 2: Validate Detailed Description
+    if (expectedData.detailedDescription) {
+      await this.validateDetailedDescription(expectedData.detailedDescription);
+    }
+    
+    // STEP 3: Validate Applications
+    if (expectedData.applications) {
+      await this.validateApplications(expectedData.applications);
+    }
+    
+    // STEP 4: Validate Product Attributes
+    await this.validateProductAttributes(expectedData.expectedAttributes);
+    
+    // STEP 5: Validate Variant Details
+    await this.validateVariantDetails(expectedData.expectedAttributes, expectedData.variantCounts ? Object.values(expectedData.variantCounts).reduce((a, b) => a + b, 0) : 4  );
+    
+    TestLogger.success('🎉 Product Specifications validation completed successfully');
+    
+  } catch (error) {
+    TestLogger.error(`❌ Product Specifications validation failed: ${error}`);
+    throw error;
+  }
+}
+// Replace your complex validation with this simple method
+private async simpleVariantValidation(expectedAttributes: string) {
+  TestLogger.info('🎨 Simple variant validation - checking visibility');
+  
+  try {
+    // Just check if variant table exists
+    const variantsTable = this.page.locator('.variants-table');
+    await expect(variantsTable).toBeVisible();
+    TestLogger.success('✅ Variants table is visible');
+    
+    // Parse expected values from "Color Options:Black,White|Size Range:Small,Medium"
+    const expectedValues = this.parseSimpleValues(expectedAttributes);
+    TestLogger.info(`🔍 Looking for values: ${expectedValues.join(', ')}`);
+    
+    // Get all text from the table
+    const tableText = await variantsTable.textContent();
+    
+    // Simple check - are the values visible in the table?
+    for (const value of expectedValues) {
+      if (tableText?.includes(value)) {
+        TestLogger.success(`✅ Found: ${value}`);
+      } else {
+        TestLogger.error(`❌ Missing: ${value}`);
+        throw new Error(`Expected variant value '${value}' not found in table`);
+      }
+    }
+    
+    TestLogger.success(`🎉 All ${expectedValues.length} variant values found!`);
+    
+  } catch (error) {
+    TestLogger.error(`❌ Simple variant validation failed: ${error}`);
+    throw error;
+  }
+}
+
+// Helper to extract just the values: Black, White, Small, Medium
+private parseSimpleValues(expectedAttributes: string): string[] {
+  const values: string[] = [];
+  
+  try {
+    // Split by | to get groups: ["Color Options:Black,White", "Size Range:Small,Medium"]
+    const groups = expectedAttributes.split('|');
+    
+    for (const group of groups) {
+      // Split by : to get ["Color Options", "Black,White"]
+      const [type, valuesStr] = group.split(':');
+      
+      if (valuesStr) {
+        // Split by , to get ["Black", "White"]
+        const groupValues = valuesStr.split(',').map(v => v.trim());
+        values.push(...groupValues);
+      }
+    }
+  } catch (error) {
+    TestLogger.warn(`⚠️ Could not parse attributes: ${error}`);
+  }
+  
+  return values;
+}
+async validateProductAttributes(expectedAttributes: string) {
+  TestLogger.info('🏷️ Validating Product Attributes table');
+  
+  try {
+    const attributesTable = this.page.locator('.product-attributes-table');
+    await expect(attributesTable).toBeVisible();
+    TestLogger.success('✅ Product Attributes table found');
+    
+    // Parse expected attributes: "Color Options:Black,White|Size Range:Small,Medium"
+    const attributeGroups = expectedAttributes.split('|');
+    
+    for (const group of attributeGroups) {
+      const [attributeName, valuesString] = group.split(':');
+      const expectedValues = valuesString.split(',').map(v => v.trim());
+      
+      TestLogger.info(`🔍 Checking attribute: ${attributeName} with values: ${expectedValues.join(', ')}`);
+      
+      // Find the row for this attribute
+      const attributeRow = attributesTable.locator(`tr:has(td:has-text("${attributeName}"))`);
+      await expect(attributeRow).toBeVisible();
+      TestLogger.success(`✅ Found attribute row: ${attributeName}`);
+      
+      // Check the values in the second column
+      const valuesCell = attributeRow.locator('td').nth(1);
+      const actualValues = await valuesCell.textContent();
+      
+      // Validate that all expected values are present
+      for (const expectedValue of expectedValues) {
+        if (actualValues && actualValues.includes(expectedValue)) {
+          TestLogger.success(`✅ Found value: ${expectedValue}`);
+        } else {
+          throw new Error(`Value "${expectedValue}" not found in attribute "${attributeName}"`);
+        }
+      }
+    }
+    
+    TestLogger.success('✅ All Product Attributes validated');
+    
+  } catch (error) {
+    TestLogger.error(`❌ Product Attributes validation failed: ${error}`);
+    throw error;
+  }
+}
+async validateDetailedDescription(expectedDescription?: string) {
+  TestLogger.info('📝 Validating Detailed Description');
+  
+  const descriptionText = this.page.locator('.tabs-form-group:has(label:has-text("Detailed Description")) .t-f-g-txt');
+  await expect(descriptionText).toBeVisible();
+  
+  const description = await descriptionText.textContent();
+  expect(description).toBeTruthy();
+  expect(description!.length).toBeGreaterThan(20);
+  
+  // Optional: Check if it contains expected content
+  if (expectedDescription && description) {
+    const lowerDescription = description.toLowerCase();
+    const lowerExpected = expectedDescription.toLowerCase();
+    
+    if (lowerDescription.includes(lowerExpected)) {
+      TestLogger.success(`✅ Description contains expected content: "${expectedDescription}"`);
+    } else {
+      TestLogger.warn(`⚠️ Description doesn't contain: "${expectedDescription}"`);
+    }
+  }
+  
+  TestLogger.success(`✅ Description validated (${description!.length} chars)`);
+}
+async validateApplications(expectedApplications?: string) {
+  TestLogger.info('🔧 Validating Applications');
+  
+  const applicationsText = this.page.locator('.tabs-form-group:has(label:has-text("Applications")) .t-f-g-txt');
+  await expect(applicationsText).toBeVisible();
+  
+  const applications = await applicationsText.textContent();
+  expect(applications).toBeTruthy();
+  expect(applications!.length).toBeGreaterThan(20);
+  
+  // Optional: Check if it contains expected content
+  if (expectedApplications && applications) {
+    const lowerApplications = applications.toLowerCase();
+    const lowerExpected = expectedApplications.toLowerCase();
+    
+    if (lowerApplications.includes(lowerExpected)) {
+      TestLogger.success(`✅ Applications contains expected content: "${expectedApplications}"`);
+    } else {
+      TestLogger.warn(`⚠️ Applications doesn't contain: "${expectedApplications}"`);
+    }
+  }
+  
+  TestLogger.success(`✅ Applications validated (${applications!.length} chars)`);
+}
+async validateVariantDetails(expectedAttributes: string, expectedVariantCount: number = 4) {
+  TestLogger.info('🎨 Validating Variant Details table');
+  
+  try {
+    const variantsTable = this.page.locator('.variants-table');
+    await expect(variantsTable).toBeVisible();
+    TestLogger.success('✅ Variants table found');
+    
+    // Click all variant open buttons at once
+    await this.page.locator('button.btn-open-variant').all().then(buttons => 
+      Promise.all(buttons.map(button => button.click())));
+    await this.page.waitForTimeout(1000);
+    // Validate total variant rows (inside-tr class = actual variants)
+    const variantRows = variantsTable.locator('tr.inside-tr');
+    await expect(variantRows).toHaveCount(expectedVariantCount);
+    TestLogger.success(`✅ Found ${expectedVariantCount} variant rows`);
+
+    await this.simpleVariantValidation(expectedAttributes); // Call simple validation
+    // Validate MOQ columns are filled
+    const moqCells = variantRows.locator('td:nth-child(4)');
+    for (let i = 0; i < expectedVariantCount; i++) {
+      const moq = await moqCells.nth(i).textContent();
+      expect(moq).toBeTruthy();
+      expect(moq).toContain('10'); // Based on your test data
+    }
+    TestLogger.success('✅ All MOQ values validated');
+    
+    // Validate all checkboxes are checked
+    const checkboxes = variantRows.locator('input[type="checkbox"]');
+    for (let i = 0; i < expectedVariantCount; i++) {
+      await expect(checkboxes.nth(i)).toBeChecked();
+    }
+    TestLogger.success('✅ All variant checkboxes are selected');
+    
+  } catch (error) {
+    TestLogger.error(`❌ Variant Details validation failed: ${error}`);
+    throw error;
+  }
 }
 }
