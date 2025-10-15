@@ -17,6 +17,7 @@ export class SellOfferProductPage {
 async submitProduct() {
   //const continueButton = this.page.locator('.offcanvas-sidebar-comp.variants-sidebar.addnewproduct-sidebar .btn-comp.btn-right.btn-c-primary.btn-c-lg:has-text("Continue")');
   //const continueButton = this.page.locator('.o-s-c-btn-group button:has-text("Continue")');
+  await this.page.waitForLoadState('domcontentloaded', { timeout: 15000 });
   await this.page.locator('.o-s-c-btn-group button:has-text("Continue")').click({force:true});
   
  await this.page.waitForSelector('.loader', { state: 'hidden', timeout: 10000 });

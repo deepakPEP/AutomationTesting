@@ -109,8 +109,12 @@ for (let i = 0; i < count; i++) {
 
   async checkSampleAvailability(sampleAvailability: SampleAvailability, samplePriceValue: number | null) {
     console.log('Checking sample availability:', sampleAvailability);
+    await this.page.waitForTimeout(2000);
     if (sampleAvailability != SampleAvailability.None) {
-      await this.page.getByRole('radio', { name: sampleAvailability }).check();
+      //await this.page.getByRole('radio', { name: sampleAvailability }).check();
+       const radioValue = sampleAvailability.toLowerCase(); // "Free" -> "free"
+    const radioButton = this.page.locator(`input[type="radio"][id="${radioValue}"]`);
+    await radioButton.click({force: true});
     }
     if (sampleAvailability === SampleAvailability.Paid || sampleAvailability === SampleAvailability.Refundable) {
       await this.samplePrice.fill(samplePriceValue?.toString() || '');
@@ -122,8 +126,11 @@ for (let i = 0; i < count; i++) {
 
   async selectAvailableStock(value : boolean) {
     await this.selectDropdown.click();
+    await this.page.waitForTimeout(2000);
     if (value) {
-      await this.inStockOption.click();
+      await this.inStockOption.click({force:true});
+      await this.page.waitForTimeout(2000);
+      
     } else {
       
         await this.outOfStockOption.click();

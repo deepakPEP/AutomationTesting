@@ -15,6 +15,7 @@ import { LoginPage } from '../../../pages/LoginPage';
 import { TestLogger } from '../../../utils/TestLogger';
 
 // Bug - offer price not correct in preview page for Fixed Discount offer type
+// 40 testcases covered in this single e2e
 test.describe('Fixed Discount Sell Offer Flow',  { tag: ['@critical', '@product'] }, () => {
   test('Sell Offer Flow through add new product', async ({ page }, testInfo) => {
     const addProductPreviewPage = new AddProductPreviewPage(page);
@@ -39,8 +40,6 @@ test.describe('Fixed Discount Sell Offer Flow',  { tag: ['@critical', '@product'
       TestLogger.log('🔐 Logging in with phone number: 9632370046');
       await loginPage.enterEmailAndContinue('9632370046');
           
-      //await signInPage.signIn('+91 95973-62973');
-      //await page.waitForTimeout(60000);
       await page.waitForTimeout(12000);
 
       TestLogger.log('📱 Navigating to Sell Offer section');
@@ -66,7 +65,7 @@ test.describe('Fixed Discount Sell Offer Flow',  { tag: ['@critical', '@product'
       
       TestLogger.log('📊 Validating progress bar at 33%');
       await addProductPreviewPage.validateProgressBar('33%');
-      
+      await productInformationPage.validateProductAddStepCompletion('Product Details');
       TestLogger.success('✅ Step 1 completed: Product successfully added');
 });
 
@@ -106,7 +105,7 @@ await test.step('Step 2: Add Offer Info', async () => {
   
   TestLogger.log('📊 Validating progress bar at 66%');
   await addProductPreviewPage.validateProgressBar('66%');
-  
+  await productInformationPage.validateProductAddStepCompletion('Offer Details');
   TestLogger.success('✅ Step 2 completed: Fixed Discount offer configured');
 });
 await test.step('Step 3: Preview, Shipping & Validate', async () => {
