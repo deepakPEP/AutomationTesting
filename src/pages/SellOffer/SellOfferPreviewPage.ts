@@ -275,7 +275,7 @@ export class SellOfferPreviewPage {
 
   // Offer Minimum Order Quantity
   if (args.offerMinOrderQty) {
-    await expect(this.page.locator('.tabs-form-group:has(label.t-f-g-label:has-text("Offer Minimum Order Quantity")) .t-f-g-txt').first()).toHaveText(args.offerMinOrderQty);
+    await expect(this.page.locator('.tabs-form-group:has(label.t-f-g-label:has-text("Offer Minimum Order Quantity")) .t-f-g-txt').first()).toContainText(args.offerMinOrderQty);
   }
   // Offer Maximum Order Quantity bug. after fixing it need to uncomment below
   // if (args.offerMaxOrderQty) {

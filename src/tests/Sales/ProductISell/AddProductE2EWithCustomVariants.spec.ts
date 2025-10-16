@@ -196,6 +196,7 @@ test.describe('Add Product E2E with Custom variants in Sales', { tag: ['@critica
     });
     
     // Attach all test logs to the HTML report
+    TestLogger.log(`🛒 Final product details: ${JSON.stringify(product, null, 2)}`);
     await TestLogger.attachLogsToTest(testInfo);
     TestLogger.success('✅ Complete Add Product Flow E2E test completed successfully');
   });

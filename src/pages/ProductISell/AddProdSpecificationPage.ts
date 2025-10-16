@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { TestLogger } from '../../utils/TestLogger';
-import path from 'path/win32';
+import path from 'path';
 
 export class AddProdSpecificationPage {
   readonly page: Page;

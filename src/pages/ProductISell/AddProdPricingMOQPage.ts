@@ -1,4 +1,5 @@
 import { Locator, Page } from "playwright-core";
+import { expect } from "@playwright/test";
 
 export class PricingMOQPage {
   readonly page: Page;
@@ -13,6 +14,7 @@ export class PricingMOQPage {
   readonly bulkPricingRadio: Locator;
   readonly requestQuoteRadio: Locator;
   readonly priceRangeRadio: Locator;
+  readonly negotiablePriceRadio: Locator;
 
   readonly unitTypeDropdown: Locator;
   readonly quantityFromInput: Locator;
@@ -37,8 +39,9 @@ export class PricingMOQPage {
     this.unitOption = page.getByRole('option', { name: 'Pieces' }); //can 
     this.fixedPriceRadio = this.page.locator('input[type="radio"][value="fixed"]');
     this.bulkPricingRadio = this.page.locator('input[type="radio"][value="bulk"]');
-    this.requestQuoteRadio = this.page.locator('input[type="radio"][value="request_quote"]');
+    this.requestQuoteRadio = this.page.locator('input[type="radio"][id="requestQuote"]');
     this.priceRangeRadio = this.page.locator('input[type="radio"][value="price_range"]');
+    this.negotiablePriceRadio = this.page.locator('input[type="radio"][id="negotiable"]');
     
     // Selectors for the Bulk Pricing section
     this.unitTypeDropdown = this.page.locator('select[name="unit_type"]');
@@ -57,20 +60,27 @@ export class PricingMOQPage {
    // Methods for interacting with pricing options
   async selectFixedPrice() {
     await this.fixedPriceRadio.click();
+    await expect(this.fixedPriceRadio).toBeChecked();
   }
 
   async selectBulkPricing() {
     await this.bulkPricingRadio.click();
+    await expect(this.bulkPricingRadio).toBeChecked();
   }
 
   async selectRequestQuote() {
     await this.requestQuoteRadio.click();
+    await expect(this.requestQuoteRadio).toBeChecked();
   }
 
   async selectPriceRange() {
     await this.priceRangeRadio.click();
+    await expect(this.priceRangeRadio).toBeChecked();
   }
-
+  async selectNegotiablePrice() {
+    await this.negotiablePriceRadio.click();
+    await expect(this.negotiablePriceRadio).toBeChecked();
+  }
   // Method to enter Bulk Pricing details
   // async setBulkPricingDetails(quantityFrom: number, quantityTo: number, price: number,) {
   //   //await this.unitTypeDropdown.selectOption({label: unitType});
@@ -118,13 +128,16 @@ export class PricingMOQPage {
     await this.select_currency.waitFor({ state: 'attached' }); 
     await this.select_currency.click();
     await this.currency_option.click();//can be dynamic based on product
+    await this.selectUnit(product.unit || 'Pieces');
+    await this.page.waitForTimeout(3000);
+    //await this.unitOption.click(); //can be dynamic based on product
     //await page.getByRole('radio', { name: 'Fixed Price: Standard per' }).check();
     //await this.unitPriceInput.click();
     //await this.unitPriceInput.fill('1000'); //can be dynamic based on product
     //
    // await this.setFixedPriceDetails(product?.unit_price || 1000, product?.moq || 1);
    switch (product.pricing_type) {
-    case 'fixed': {
+    case 'Fixed': {
       await this.selectFixedPrice();
       const unitPrice = product.unit_price ?? 1000;
       const moq = product.moq ?? 1;
@@ -153,6 +166,9 @@ export class PricingMOQPage {
       await this.selectRequestQuote();
       const moq = product.moq ?? 1;
       await this.setRequestQuoteDetails(moq);
+      await this.selectUnitButton.click();
+    await this.selectUnit(product.unit || 'Pieces');
+    await this.page.waitForTimeout(3000);
       break;
     }
 
@@ -162,18 +178,28 @@ export class PricingMOQPage {
       const maxPrice = product.max_price ?? 1500;
       const moq = product.moq ?? 1;
       await this.setPriceRangeDetails(minPrice, maxPrice, moq);
+      await this.selectUnitButton.click();
+    await this.selectUnit(product.unit || 'Pieces');
+    await this.page.waitForTimeout(3000);
       break;
     }
 
-    default: {
-      // fallback to fixed if unknown
-      await this.selectFixedPrice();
-      const unitPrice = product.unit_price ?? 1000;
-      const moq = product.moq ?? 1;
-      await this.setFixedPriceDetails(unitPrice, moq);
+    case 'negotiable': {
+      await this.selectNegotiablePrice();
+      
+    await this.selectUnit(product.unit || 'Pieces');
+    await this.page.waitForTimeout(3000);
+      break;
     }
-    await this.selectUnitButton.click();
-    await this.unitOption.click();//can be dynamic based on product
+    
   }
+}
+async selectUnit(unitName: string) {
+  // Open the unit dropdown
+  await this.selectUnitButton.click();
+  // Select the unit by visible text
+  await this.page.locator('.p-dropdown-items .p-dropdown-item')
+    .filter({ hasText: unitName })
+    .click();
 }
 }
