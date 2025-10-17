@@ -21,7 +21,7 @@ export default defineConfig({
     }],
     ['list'], // Console reporter to see logs during execution
     // ['./src/reporters/ZohoPlaywrightReporter.ts'], // Enhanced Zoho reporting - uncomment when ready
-    // ['json', { outputFile: 'test-results/results.json' }]
+    ['json', { outputFile: 'test-results/results.json' }]
   ],
   timeout: 30000,
   use: {

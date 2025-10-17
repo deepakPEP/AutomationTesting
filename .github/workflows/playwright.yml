@@ -1,7 +1,7 @@
 name: Playwright Tests
 
 on:
-  workflow_dispatch:  # Manual trigger only
+  workflow_dispatch:  # Manual trigger
 
 jobs:
   test:
@@ -22,39 +22,83 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      - name: Run Playwright tests
-        run: npx playwright test --config=playwright.config.ts --reporter=html
+      - name: Run Playwright tests (capture stdout)
+        run: |
+          # run tests using config (do not override reporters) and capture stdout/stderr
+          npx playwright test --config=playwright.config.ts 2>&1 | tee test-output.log
         env:
-            CI: true
+          CI: true
 
-      - name: Clean up unnecessary files (keep failure videos)
+      - name: Show playwright-report size & top files (debug)
         if: always()
         run: |
-          # Keep failure videos but remove other unnecessary files
-          # Remove any test-results files that aren't needed
-          rm -rf test-results-minimal || true
-          # Remove any temp files
-          find playwright-report -name "*.tmp" -delete || true
-          find playwright-report -name "*.log" -delete || true
-          # Show remaining files and total size
-          echo "Remaining files in playwright-report:"
-          du -sh playwright-report/ || true
-          find playwright-report -type f | head -20
+          echo "=== playwright-report summary ==="
+          du -sh playwright-report || echo "playwright-report not found"
+          echo "Top files:"
+          find playwright-report -type f -print0 | xargs -0 du -h | sort -rh | head -20 || true
 
-      - name: Upload Playwright Report with Failure Videos
-        if: always()  # ensures it runs even if tests fail
+      - name: Zip Playwright report (exclude videos)
+        if: always()
+        run: |
+          mkdir -p artifacts
+          if [ -d "playwright-report" ]; then
+            zip -r artifacts/playwright-report-no-videos.zip playwright-report -x "*.webm"
+            echo "Zipped playwright-report excluding videos"
+          else
+            echo "No playwright-report directory to zip"
+          fi
+
+      - name: Upload Playwright Report (no videos)
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-with-failures
-          path: |
-            playwright-report/index.html
-            playwright-report/**/*.html
-            playwright-report/**/*.css
-            playwright-report/**/*.js
-            playwright-report/**/*.webm
-            playwright-report/**/*.png
-            playwright-report/**/*.zip
-          retention-days: 30  # Keep artifacts for 30 days
+          name: playwright-report-no-videos
+          path: artifacts/playwright-report-no-videos.zip
+          retention-days: 30
+
+      - name: Upload raw test stdout
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-output-log
+          path: test-output.log
+          retention-days: 30
+
+      - name: Upload test-results (screenshots/traces only)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results
+          retention-days: 30
+
+      - name: Find failure videos
+        id: find_videos
+        if: always()
+        run: |
+          mkdir -p artifacts
+          # list any .webm files under playwright-report
+          find playwright-report -type f -name '*.webm' -print > artifacts/video-list.txt || true
+          if [ -s artifacts/video-list.txt ]; then
+            echo "has_videos=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_videos=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Zip failure videos (only if present)
+        if: steps.find_videos.outputs.has_videos == 'true'
+        run: |
+          echo "Zipping failure videos"
+          tar -czf artifacts/failure-videos.tar.gz -T artifacts/video-list.txt
+
+      - name: Upload failure videos (only on failures)
+        if: steps.find_videos.outputs.has_videos == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-failure-videos
+          path: artifacts/failure-videos.tar.gz
+          retention-days: 30
+
       - name: Generate timestamp
         id: timestamp
         run: echo "ts=$(date +'%Y%m%d-%H%M%S')" >> "$GITHUB_OUTPUT"
@@ -71,7 +115,6 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           SOURCE_DIR: playwright-report
           DEST_DIR: reports/${{ steps.timestamp.outputs.ts }}
-
     #   - name: Send Playwright report via email (with attachment)
     #     if: always()
     #     uses: dawidd6/action-send-mail@v3
