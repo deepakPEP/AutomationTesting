@@ -82,7 +82,7 @@ test.describe('Add Product E2E with Custom variants in Sales', { tag: ['@critica
       TestLogger.success('Step 2 completed: Pricing and MOQ added');
     });
 
-    await test.step('Step 3: Select AI variants', async () => {
+    await test.step('Step 3: Select Custom variants', async () => {
       TestLogger.info('🔄 Step 3: Selecting Product AI Variants');
       test.setTimeout(480000);
       await page.waitForTimeout(7000);  

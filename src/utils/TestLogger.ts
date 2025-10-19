@@ -16,19 +16,32 @@ export class TestLogger {
     // Output to console
     console.log(logMessage);
   }
+  static getCollectedLogs(): string {
+    return this.logs.join('\n');
+  }
 
-  /**
-   * Attach all captured logs to test info for HTML report
-   */
-  static async attachLogsToTest(testInfo: any): Promise<void> {
-    if (this.logs.length > 0) {
-      await testInfo.attach('Console Logs', {
-        body: this.logs.join('\n'),
-        contentType: 'text/plain',
+  // Attach per-test logs to Playwright test result so they appear in HTML report
+  // Pass the Playwright testInfo object from tests: await TestLogger.attachLogsToTest(testInfo)
+  static async attachLogsToTest(testInfo: any, name = 'test-logs.txt') {
+    try {
+      const content = this.getCollectedLogs() || 'No logs collected';
+      // Attach to Playwright test (shown in HTML report as attachment)
+      await testInfo.attach(name, {
+        body: Buffer.from(content, 'utf-8'),
+        contentType: 'text/plain'
       });
-      
-      // Clear logs for next test
-      this.logs = [];
+    } catch (err) {
+      // Fallback: write into repo output so workflow can upload it
+      const fs = require('fs');
+      const path = require('path');
+      const outDir = process.cwd();
+      const outFile = path.join(outDir, 'test-output.log');
+      try {
+        fs.appendFileSync(outFile, '\n' + this.getCollectedLogs(), { encoding: 'utf8' });
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to write fallback test-output.log', e);
+      }
     }
   }
 
