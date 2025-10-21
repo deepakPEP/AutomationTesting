@@ -77,12 +77,18 @@ async verifyDetails(product: any) {
     //await console.log(await this.moqLocator.textContent(), `Min. Order Quantity : ${moq} ${unit.toLowerCase()}`);
     //await expect(this.moqLocator).toHaveText(`Min. Order Quantity : ${moq} ${unit.toLowerCase()}`);
     }
-    async  assertPrice(page: Page, unitPrice: string) {
-    const expectedPrice = `₹${unitPrice}`; // need to apppend currency symbol
+    async  assertPrice(unitPrice: string,unitType='₹') {
+      let expectedPrice;
+    if (unitPrice.includes('-')) {
+      expectedPrice = unitType + unitPrice.split('-')[0]+`-`+unitType + unitPrice.split('-')[1];
+    }
+    else
+    expectedPrice = unitType + unitPrice; // need to apppend currency symbol
     console.log('Expected Price:', expectedPrice);
     console.log('Price Text:', await this.priceText.textContent());
     // Locate the price element in the page and assert that the price matches
     await expect(this.priceText).toHaveText(expectedPrice);
+    return expectedPrice;
 }
 // ============================================
 // VARIANTS PREVIEW VALIDATION METHOD

@@ -40,7 +40,7 @@ export class PricingMOQPage {
     this.fixedPriceRadio = this.page.locator('input[type="radio"][value="fixed"]');
     this.bulkPricingRadio = this.page.locator('input[type="radio"][value="bulk"]');
     this.requestQuoteRadio = this.page.locator('input[type="radio"][id="requestQuote"]');
-    this.priceRangeRadio = this.page.locator('input[type="radio"][value="price_range"]');
+    this.priceRangeRadio = this.page.locator('input[type="radio"][value="priceRange"]');
     this.negotiablePriceRadio = this.page.locator('input[type="radio"][id="negotiable"]');
     
     // Selectors for the Bulk Pricing section
@@ -51,8 +51,8 @@ export class PricingMOQPage {
     this.addTierButton = this.page.locator('button#add-tier');
 
     // Selectors for the Price Range section
-    this.minPriceInput = this.page.locator('input[name="min_price"]');
-    this.maxPriceInput = this.page.locator('input[name="max_price"]');
+    this.minPriceInput = this.page.locator('input[name="pricing.minPrice"]');
+    this.maxPriceInput = this.page.locator('input[name="pricing.maxPrice"]');
 
     // Selectors for the Request Quote section
     this.minOrderQuantityInput = this.page.locator('input[placeholder="Enter Numeric"]');
@@ -191,10 +191,16 @@ export class PricingMOQPage {
       await this.selectPriceRange();
       await expect(fixedPriceSection).toHaveCount(0);
       await expect(bulkSection).toHaveCount(0);
-      await expect(priceRangeSection).toBeVisible();
-
-      const minPrice = product.min_price ?? 500;
-      const maxPrice = product.max_price ?? 1500;
+      await expect(priceRangeSection).toHaveCount(2);
+      
+      // const parts = product.unit_price.split('-').map(str => str.trim());
+      // const minPrice = parts[0] ? parseFloat(parts[0]) : 0;
+      // const maxPrice = parts[1] ? parseFloat(parts[1]) : 0;
+      const raw = product?.unit_price ?? '';
+      const unitPriceStr = typeof raw === 'number' ? String(raw) : (raw as string);
+      const [minStr = '', maxStr = ''] = unitPriceStr.split('-').map(s => s.trim());
+      const minPrice = parseFloat(minStr.replace(/[^\d.]/g, '')) || 0;
+      const maxPrice = parseFloat(maxStr.replace(/[^\d.]/g, '')) || 0;
       const moq = product.moq ?? 1;
       await this.setPriceRangeDetails(minPrice, maxPrice, moq);
     await this.selectUnit(product.unit || 'Pieces');
