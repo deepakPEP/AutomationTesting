@@ -2,9 +2,7 @@ name: Playwright Tests with Reports
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ main ]
-
+  
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -42,24 +40,77 @@ jobs:
       - name: Show largest files (debug)
         if: ${{ always() }}
         run: |
-          echo "=== playwright-report summary ==="
-          [ -d playwright-report ] && du -sh playwright-report || echo "no playwright-report"
-          [ -d playwright-report ] && find playwright-report -type f -print0 | xargs -0 du -h | sort -rh | head -20 || true
-          echo "=== test-results summary ==="
-          [ -d test-results ] && du -sh test-results || echo "no test-results"
-          [ -d test-results ] && find test-results -type f -print0 | xargs -0 du -h | sort -rh | head -20 || true
+          echo "WORKDIR: $(pwd)"
+          echo "LIST ROOT:"
+          ls -la || true
 
-     # ...existing code...
-      - name: Create compressed report archive (tar.xz) and set output
-        id: create_archive
+          echo "=== ARTIFACTS FOLDER ==="
+          ls -la artifacts || echo "artifacts missing"
+
+          echo "=== PLAYWRIGHT-REPORT ==="
+          if [ -d "playwright-report" ]; then
+            du -sh playwright-report || true
+            echo "Top files in playwright-report:"
+            find playwright-report -type f -print0 | xargs -0 du -h | sort -rh | head -40 || true
+          else
+            echo "no playwright-report directory"
+          fi
+
+          echo "=== TEST-RESULTS ==="
+          if [ -d "test-results" ]; then
+            du -sh test-results || true
+            echo "Top files in test-results:"
+            find test-results -type f -print0 | xargs -0 du -h | sort -rh | head -40 || true
+          else
+            echo "no test-results directory"
+          fi
+
+      - name: Create compressed report archive (tar.xz) with fallback
         if: ${{ always() }}
         run: |
-          # ...existing archive creation code...
-          # debug listing
+          set -eux
+          mkdir -p artifacts
+          rc=$(cat artifacts/tests_failed 2>/dev/null || echo 1)
+          echo "tests exit code: $rc"
+
+          if [ "$rc" -eq 0 ]; then
+            if [ -d "playwright-report" ]; then
+              echo "Creating compact tar.xz (exclude videos/traces/screenshots)"
+              tar -cJf artifacts/playwright-report.tar.xz \
+                --exclude='**/*.webm' --exclude='**/trace.zip' --exclude='**/*.png' --exclude='**/*.jpg' \
+                -C . playwright-report
+            else
+              echo "playwright-report missing; creating empty placeholder tar.xz"
+              tar -cJf artifacts/playwright-report.tar.xz --files-from /dev/null
+            fi
+          else
+            to_archive=""
+            [ -d "playwright-report" ] && to_archive="$to_archive playwright-report"
+            [ -d "test-results" ] && to_archive="$to_archive test-results"
+            if [ -n "$to_archive" ]; then
+              echo "Creating tar.xz including: $to_archive"
+              tar -cJf artifacts/playwright-report.tar.xz -C . $to_archive || true
+            else
+              echo "no report/test-results found; creating empty placeholder tar.xz"
+              tar -cJf artifacts/playwright-report.tar.xz --files-from /dev/null
+            fi
+          fi
+
           echo "ARTIFACTS CONTENTS:"
           ls -la artifacts || true
-          # ensure we don't rely on conditional outputs for upload
-# ...existing code...
+          du -h artifacts/* || true
+
+          # fallback to zip if tar.xz not created for any reason
+          if [ ! -f artifacts/playwright-report.tar.xz ]; then
+            echo "tar.xz missing, creating zip fallback"
+            rm -f artifacts/playwright-report.zip || true
+            if [ -d "playwright-report" ] || [ -d "test-results" ]; then
+              zip -r -9 artifacts/playwright-report.zip playwright-report test-results || true
+            else
+              # empty zip placeholder
+              zip -r artifacts/playwright-report.zip --filesync --junk-paths /dev/null || true
+            fi
+          fi
 
       - name: Upload produced artifacts (always)
         if: ${{ always() }}
@@ -68,4 +119,7 @@ jobs:
           name: playwright-report
           path: artifacts/*
           retention-days: 30
-# ...existing code...
+
+      - name: Post Checkout
+        if: ${{ always() }}
+        run: echo "done"
