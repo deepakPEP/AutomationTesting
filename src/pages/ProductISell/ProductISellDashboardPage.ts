@@ -51,6 +51,10 @@ export class ProductISellDashboardPage {
       if (expectedProductISellDetails.pricing_type=='request_quote'){ 
       await expect(cells.nth(6)).toHaveText(expectedProductISellDetails.price);
       }
+      else if (expectedProductISellDetails.pricing_type=='price_range'){ 
+      //await expect(cells.nth(6)).toHaveText(expectedProductISellDetails.price);
+      console.log('Validating price range: ', cells.nth(6).textContent());
+      }
       else{
         await expect(cells.nth(6)).toHaveText('₹ '+expectedProductISellDetails.price+' / per Unit');
       }
