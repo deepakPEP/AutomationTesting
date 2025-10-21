@@ -1,0 +1,72 @@
+name: Playwright Tests with Reports
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright tests (capture exit code)
+        id: run_tests
+        run: |
+          set -o pipefail
+          mkdir -p artifacts
+          # Run tests using config (do NOT override reporters)
+          npx playwright test --config=playwright.config.ts
+          rc=$?
+          echo "$rc" > artifacts/tests_failed
+        env:
+          CI: true
+
+      - name: Prepare artifacts dir
+        if: ${{ always() }}
+        run: mkdir -p artifacts
+
+      - name: Zip report according to result (no workflow-level if exprs)
+        if: ${{ always() }}
+        run: |
+          rc=$(cat artifacts/tests_failed 2>/dev/null || echo 1)
+          echo "tests failed rc=$rc"
+          # success: include report but exclude large video files
+          if [ "$rc" -eq 0 ]; then
+            if [ -d "playwright-report" ]; then
+              zip -r artifacts/playwright-report.zip playwright-report -x "*.webm" -x "test-results/**"
+              echo "Zipped report without videos -> artifacts/playwright-report.zip"
+            else
+              echo "playwright-report not found"
+            fi
+          else
+            # failure: include full report + test-results (videos)
+            if [ -d "playwright-report" ] || [ -d "test-results" ]; then
+              zip -r artifacts/playwright-report.zip playwright-report test-results || true
+              echo "Zipped report WITH videos -> artifacts/playwright-report.zip"
+            else
+              echo "no report/test-results found"
+            fi
+          fi
+
+      - name: Upload single Playwright report artifact
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: artifacts/playwright-report.zip
+          retention-days: 30

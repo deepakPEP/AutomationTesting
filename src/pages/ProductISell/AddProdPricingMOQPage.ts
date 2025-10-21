@@ -61,6 +61,8 @@ export class PricingMOQPage {
   async selectFixedPrice() {
     await this.fixedPriceRadio.click();
     await expect(this.fixedPriceRadio).toBeChecked();
+    await this.page.waitForTimeout(2000);
+    
   }
 
   async selectBulkPricing() {
@@ -125,28 +127,37 @@ export class PricingMOQPage {
    // await this.addTierButton.click();
   }
   async fillPricingMOQ(product: any) {
+
+    const fixedPriceSection = this.page.locator('input[placeholder*="Unit Price"], input[name*="pricing.unitPrice"]');
+    const bulkSection = this.page.locator('input[name*="pricing.bulkPrices.0.minQty"], input[name*="pricing.bulkPrices.0.price"], button:has-text("Add tier")');
+    const priceRangeSection = this.page.locator('input[placeholder*="Min"],input[placeholder*="Max"]');
+
     await this.select_currency.waitFor({ state: 'attached' }); 
     await this.select_currency.click();
     await this.currency_option.click();//can be dynamic based on product
     await this.selectUnit(product.unit || 'Pieces');
     await this.page.waitForTimeout(3000);
-    //await this.unitOption.click(); //can be dynamic based on product
-    //await page.getByRole('radio', { name: 'Fixed Price: Standard per' }).check();
-    //await this.unitPriceInput.click();
-    //await this.unitPriceInput.fill('1000'); //can be dynamic based on product
-    //
-   // await this.setFixedPriceDetails(product?.unit_price || 1000, product?.moq || 1);
+    
    switch (product.pricing_type) {
     case 'Fixed': {
       await this.selectFixedPrice();
+      await expect(fixedPriceSection).toBeVisible();
+      await expect(bulkSection).toHaveCount(0);
+      await expect(priceRangeSection).toHaveCount(0);
       const unitPrice = product.unit_price ?? 1000;
       const moq = product.moq ?? 1;
+      await this.selectUnit(product.unit || 'Pieces');
       await this.setFixedPriceDetails(unitPrice, moq);
+      
       break;
     }
 
     case 'bulk': {
       await this.selectBulkPricing();
+      await expect(fixedPriceSection).toHaveCount(0);
+      await expect(bulkSection).toBeVisible();
+      await expect(priceRangeSection).toHaveCount(0);
+
       const tiers = product.bulk && product.bulk.length ? product.bulk : [{ from: 1, to: 10, price: 1000 }];
       for (let i = 0; i < tiers.length; i++) {
         const t = tiers[i];
@@ -164,9 +175,13 @@ export class PricingMOQPage {
 
     case 'request_quote': {
       await this.selectRequestQuote();
+      await expect(fixedPriceSection).toHaveCount(0);
+      await expect(bulkSection).toHaveCount(0);
+      await expect(priceRangeSection).toHaveCount(0);
+
       const moq = product.moq ?? 1;
+      await this.page.pause();
       await this.setRequestQuoteDetails(moq);
-      await this.selectUnitButton.click();
     await this.selectUnit(product.unit || 'Pieces');
     await this.page.waitForTimeout(3000);
       break;
@@ -174,11 +189,14 @@ export class PricingMOQPage {
 
     case 'price_range': {
       await this.selectPriceRange();
+      await expect(fixedPriceSection).toHaveCount(0);
+      await expect(bulkSection).toHaveCount(0);
+      await expect(priceRangeSection).toBeVisible();
+
       const minPrice = product.min_price ?? 500;
       const maxPrice = product.max_price ?? 1500;
       const moq = product.moq ?? 1;
       await this.setPriceRangeDetails(minPrice, maxPrice, moq);
-      await this.selectUnitButton.click();
     await this.selectUnit(product.unit || 'Pieces');
     await this.page.waitForTimeout(3000);
       break;
@@ -186,7 +204,10 @@ export class PricingMOQPage {
 
     case 'negotiable': {
       await this.selectNegotiablePrice();
-      
+      await expect(fixedPriceSection).toHaveCount(0);
+      await expect(bulkSection).toHaveCount(0);
+      await expect(priceRangeSection).toHaveCount(0);
+
     await this.selectUnit(product.unit || 'Pieces');
     await this.page.waitForTimeout(3000);
       break;
@@ -194,12 +215,12 @@ export class PricingMOQPage {
     
   }
 }
+
 async selectUnit(unitName: string) {
-  // Open the unit dropdown
+  const name = (unitName || '').trim();
+  // open dropdown (safe to call even if already open)
   await this.selectUnitButton.click();
-  // Select the unit by visible text
-  await this.page.locator('.p-dropdown-items .p-dropdown-item')
-    .filter({ hasText: unitName })
-    .click();
+  await this.page.locator('li.p-dropdown-item[aria-label="' + unitName + '"]').click({force:true});
 }
+
 }

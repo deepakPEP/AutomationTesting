@@ -159,7 +159,7 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag
         category: product?.category || 'General',
         stockAvailability: 'In stock',
         display: product?.display || 'No',
-        price: product?.unit_price || '100',
+        price: product?.unit_price || 'Request Quote',
         status: product?.status || 'pending',
         sku_code: product?.sku_model || 'SKU123' 
       });

@@ -158,7 +158,7 @@ async assertTextareaHasAIContent(productName?: string) {
     await this.continueBtn1.click({ force: true });
    }
 
-    await this.page.waitForTimeout(3000);
+    await this.page.waitForTimeout(6000);
   }
 
   async verifyDetails(product: any) {

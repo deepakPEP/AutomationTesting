@@ -65,11 +65,28 @@ await expect(pi_Origin).toHaveText('India');
   }
   async assertProductPricingAndMOQ(product:any){
     const pm_Currency         = this.page.locator('.tabs-form-group:has(.t-f-g-label:has-text("Currency")) .t-f-g-txt');
-const pm_FixedPricing     = this.page.locator('.tabs-form-group:has(.t-f-g-label:has-text("Fixed Pricing")) .t-f-g-txt');
+//const pm_FixedPricing     = this.page.locator('.tabs-form-group:has(.t-f-g-label:has-text("Fixed Pricing")) .t-f-g-txt');
 const pm_MOQ              = this.page.locator('.tabs-form-group:has(.t-f-g-label:has-text("Minimum Order Quantity")) .t-f-g-txt');
 await expect(pm_Currency).toHaveText('₹ - INR');
 //  as of now checking indian rupee 
-await expect(pm_FixedPricing).toHaveText('₹' + (product.unit_price || '0'));
+//await expect(pm_FixedPricing).toHaveText('₹' + (product.unit_price || '0'));
+const pricing_type = this.page.locator('.p-accordion-tab:has(.p-accordion-header-text:has-text("Pricing & MOQ"))')
+  .locator('.tabs-form-group')
+  .nth(1).locator('.t-f-g-label');
+const pricing_value = this.page.locator('.p-accordion-tab:has(.p-accordion-header-text:has-text("Pricing & MOQ"))')
+  .locator('.tabs-form-group')
+  .nth(1).locator('.t-f-g-txt');
+if (product.pricing_type ==='Fixed') {
+  await expect(pricing_type).toHaveText('Fixed Pricing');
+  await expect(pricing_value).toHaveText('₹' + (product.unit_price || '0'));
+}
+else if (product.pricing_type ==='Price Range') {
+  await expect(pricing_type).toHaveText('Price Range');
+  await expect(pricing_value).toHaveText('₹' + (product.min_price || '0') + ' - ' + '₹' + (product.max_price || '0'));
+} else {
+  await expect(pricing_type).toHaveText('Request Quote');
+  await expect(pricing_value).toHaveText('--');
+}
 await expect(pm_MOQ).toHaveText(product.moq + " " + product.unit.toLowerCase());
 
   }
