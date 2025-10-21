@@ -1,7 +1,9 @@
 name: Playwright Tests with Reports
 
 on:
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:
+  push:
+    branches: [ main ]
 
 jobs:
   test:
@@ -40,46 +42,79 @@ jobs:
       - name: Show largest files (debug)
         if: ${{ always() }}
         run: |
-          if [ -d "playwright-report" ]; then
-            echo "Top files in playwright-report:"
-            find playwright-report -type f -print0 | xargs -0 du -h 2>/dev/null | sort -rh | head -30 || true
-          fi
-          if [ -d "test-results" ]; then
-            echo "Top files in test-results:"
-            find test-results -type f -print0 | xargs -0 du -h 2>/dev/null | sort -rh | head -30 || true
-          fi
+          echo "=== playwright-report summary ==="
+          [ -d playwright-report ] && du -sh playwright-report || echo "no playwright-report"
+          [ -d playwright-report ] && find playwright-report -type f -print0 | xargs -0 du -h | sort -rh | head -20 || true
+          echo "=== test-results summary ==="
+          [ -d test-results ] && du -sh test-results || echo "no test-results"
+          [ -d test-results ] && find test-results -type f -print0 | xargs -0 du -h | sort -rh | head -20 || true
 
-      - name: Create compressed report archive (tar.xz)
+      - name: Create compressed report archive (tar.xz) and set output
+        id: create_archive
         if: ${{ always() }}
         run: |
+          set -eux
+          mkdir -p artifacts
           rc=$(cat artifacts/tests_failed 2>/dev/null || echo 1)
-          echo "tests failed rc=$rc"
+          echo "tests exit code: $rc"
 
-          # success: exclude videos/traces/screenshots for a compact archive
+          # prefer tar.xz (xz available on ubuntu runners)
           if [ "$rc" -eq 0 ]; then
+            # success -> exclude heavy assets (videos/traces/screenshots) to keep archive small
             if [ -d "playwright-report" ]; then
+              echo "Creating tar.xz WITHOUT videos/traces/screenshots..."
               tar -cJf artifacts/playwright-report.tar.xz \
-                --exclude='*.webm' --exclude='**/trace.zip' --exclude='**/*.png' --exclude='**/*.jpg' \
+                --exclude='**/*.webm' --exclude='**/trace.zip' --exclude='**/*.png' --exclude='**/*.jpg' \
                 -C . playwright-report
-              echo "Created artifacts/playwright-report.tar.xz (no videos)"
             else
-              echo "playwright-report not found"
+              echo "playwright-report missing; creating empty placeholder tar.xz"
+              tar -cJf artifacts/playwright-report.tar.xz --files-from /dev/null
             fi
           else
-            # failure: include full report and test-results so index.html can play videos
-            if [ -d "playwright-report" ] || [ -d "test-results" ]; then
-              # include both directories; tar will include only existing ones
-              tar -cJf artifacts/playwright-report.tar.xz -C . playwright-report test-results || true
-              echo "Created artifacts/playwright-report.tar.xz (with videos)"
+            # failure -> include full report and test-results so index.html can play videos
+            to_archive=""
+            [ -d "playwright-report" ] && to_archive="$to_archive playwright-report"
+            [ -d "test-results" ] && to_archive="$to_archive test-results"
+            if [ -n "$to_archive" ]; then
+              echo "Creating tar.xz including: $to_archive"
+              tar -cJf artifacts/playwright-report.tar.xz -C . $to_archive || true
             else
-              echo "no report/test-results found"
+              echo "no report/test-results found; creating empty placeholder tar.xz"
+              tar -cJf artifacts/playwright-report.tar.xz --files-from /dev/null
             fi
           fi
 
-      - name: Upload single Playwright report artifact (tar.xz)
-        if: ${{ always() }}
+          # verify artifact creation
+          if [ -f artifacts/playwright-report.tar.xz ]; then
+            echo "created_tar=true" >> "$GITHUB_OUTPUT"
+            echo "Created artifacts/playwright-report.tar.xz"
+            ls -lh artifacts/playwright-report.tar.xz || true
+          else
+            # fallback: create zip and mark created_tar=false
+            echo "tar.xz not created — falling back to zip"
+            rm -f artifacts/playwright-report.zip || true
+            if [ -d "playwright-report" ] || [ -d "test-results" ]; then
+              zip -r -9 artifacts/playwright-report.zip playwright-report test-results || true
+            else
+              # create empty zip placeholder
+              zip -r artifacts/playwright-report.zip --filesync --out artifacts/playwright-report.zip --junk-paths /dev/null || true
+            fi
+            echo "created_tar=false" >> "$GITHUB_OUTPUT"
+            ls -lh artifacts || true
+          fi
+
+      - name: Upload tar.xz (if created)
+        if: ${{ steps.create_archive.outputs.created_tar == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: artifacts/playwright-report.tar.xz
+          retention-days: 30
+
+      - name: Upload zip (fallback if tar.xz missing)
+        if: ${{ steps.create_archive.outputs.created_tar == 'false' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: artifacts/playwright-report.zip
           retention-days: 30
