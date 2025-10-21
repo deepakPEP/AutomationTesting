@@ -54,6 +54,13 @@ export class ProductISellDashboardPage {
       else if (expectedProductISellDetails.pricing_type=='price_range'){ 
       //await expect(cells.nth(6)).toHaveText(expectedProductISellDetails.price);
       console.log('Validating price range: ', cells.nth(6).textContent());
+      const rawPrice = (await cells.nth(6).textContent()) || '';
+      // keep only digits and hyphen, e.g. "₹  200 - ₹  400 / per Unit" -> "200-400"
+      const actualRange = rawPrice.replace(/[^\d-]/g, '').trim();
+      const expectedRange = (expectedProductISellDetails.price || '').replace(/[^\d-]/g, '').trim();
+      await expect(actualRange).toBe(expectedRange);
+      // optional: ensure unit suffix exists
+      await expect(rawPrice).toContain('/ per Unit');
       }
       else{
         await expect(cells.nth(6)).toHaveText('₹ '+expectedProductISellDetails.price+' / per Unit');

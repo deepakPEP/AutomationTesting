@@ -40,6 +40,7 @@ test.describe('Add Product E2E for Price Price without variants in Sales', { tag
       await loginPage.enterEmailAndContinue('9591603604');
     //  await page.pause();
       product = getProductByName('Hydraulic Power Press Machine');
+      await console.log('Product from CSV',product.pricing_type);
       TestLogger.log(`📦 Loaded product from CSV: ${product?.name || 'Unknown'}`);
     await page.waitForTimeout(12000);
       TestLogger.log('🛍️ Navigating to Sales > Product I Sell');
@@ -158,18 +159,20 @@ test.describe('Add Product E2E for Price Price without variants in Sales', { tag
       await productISellDashboardPage.validateFirstContactRow({ 
         productName: product?.name || 'Generic Product',
         noOfVariants: 'No Variants',
-        category: product?.category || 'General',
+        category: product?.product_category || 'General',
         stockAvailability: 'In stock',
         display: product?.display || 'No',
         price: product?.unit_price || 'Request Quote',
         status: product?.status || 'pending',
-        sku_code: product?.sku_model || 'SKU123' 
+        sku_code: product?.sku_model || 'SKU123',
+        pricing_type: product?.pricing_type || 'price_range'
       });
       TestLogger.success('Step 6 completed: Product successfully added and validated on dashboard');
       //await page.pause();
     });
     
     // Attach all test logs to the HTML report
+    TestLogger.log(`🛒 Final product details: ${JSON.stringify(product, null, 2)}`);
     await TestLogger.attachLogsToTest(testInfo);
     TestLogger.success('✅ Complete Add Product Flow E2E test completed successfully');
   });
