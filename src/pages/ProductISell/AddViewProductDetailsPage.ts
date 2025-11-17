@@ -80,9 +80,17 @@ if (product.pricing_type ==='Fixed') {
   await expect(pricing_type).toHaveText('Fixed Pricing');
   await expect(pricing_value).toHaveText('₹' + (product.unit_price || '0'));
 }
-else if (product.pricing_type ==='Price Range') {
-  await expect(pricing_type).toHaveText('Price Range');
-  await expect(pricing_value).toHaveText('₹' + (product.min_price || '0') + ' - ' + '₹' + (product.max_price || '0'));
+else if (product.pricing_type ==='price_range') {
+  // await expect(pricing_type).toHaveText('Variable Pricing');
+  // await expect(pricing_value).toHaveText(product.unit_price || 'No price range  defined');
+  await expect(pricing_type).toHaveText('Variable Pricing');
+
+  const rawActual = (await pricing_value.textContent()) || '';
+  const normalize = (s: string) => s.replace(/\s+/g, '').trim(); // removes spaces/newlines
+  const actualNorm = normalize(rawActual);
+  const expectedNorm = normalize(String(product.unit_price || 'No price range defined'));
+
+  expect(actualNorm).toContain(expectedNorm);
 } else {
   await expect(pricing_type).toHaveText('Request Quote');
   await expect(pricing_value).toHaveText('--');

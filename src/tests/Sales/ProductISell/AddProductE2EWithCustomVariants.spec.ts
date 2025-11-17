@@ -77,7 +77,7 @@ test.describe('Add Product E2E with Custom variants in Sales', { tag: ['@critica
       TestLogger.log('📊 Validating progress and pricing details');
       await addProductPreviewPage.validateProgressBar('25%');
       await addProductPreviewPage.assertMOQ(page, product?.moq || '1',product.unit || 'Pieces');
-      await addProductPreviewPage.assertPrice(page, product?.unit_price || '100');
+      await addProductPreviewPage.assertPrice(product?.unit_price || '100');
       await productPage.validateProductAddStepCompletion('Pricing & MOQ');
       TestLogger.success('Step 2 completed: Pricing and MOQ added');
     });
@@ -184,7 +184,7 @@ test.describe('Add Product E2E with Custom variants in Sales', { tag: ['@critica
       await productISellDashboardPage.validateFirstContactRow({ 
         productName: product?.name || 'Generic Product',
         noOfVariants: '4',
-        category: product?.category || 'General',
+        category: product?.product_category || 'General',
         stockAvailability: 'In stock',
         display: product?.display || 'No',
         price: product?.unit_price || '100',

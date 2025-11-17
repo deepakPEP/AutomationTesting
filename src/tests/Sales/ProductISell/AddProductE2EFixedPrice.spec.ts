@@ -72,7 +72,7 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag
       TestLogger.log('📊 Validating progress and pricing details');
       await addProductPreviewPage.validateProgressBar('25%');
       await addProductPreviewPage.assertMOQ(page, product?.moq || '1',product.unit || 'Pieces');
-      await addProductPreviewPage.assertPrice(page, product?.unit_price || '100');
+      await addProductPreviewPage.assertPrice(product?.unit_price || '100');
       await productPage.validateProductAddStepCompletion('Pricing & MOQ');
       TestLogger.success('Step 2 completed: Pricing and MOQ added');
     });
@@ -156,10 +156,10 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag
       await productISellDashboardPage.validateFirstContactRow({ 
         productName: product?.name || 'Generic Product',
         noOfVariants: 'No Variants',
-        category: product?.category || 'General',
+        category: product?.product_category || 'General',
         stockAvailability: 'In stock',
         display: product?.display || 'No',
-        price: product?.unit_price || 'Request Quote',
+        price: product?.unit_price || 'Fixed Price',
         status: product?.status || 'pending',
         sku_code: product?.sku_model || 'SKU123' 
       });

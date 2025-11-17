@@ -4,7 +4,8 @@ export default defineConfig({
   testDir: './src/tests',
   
   // Force single worker execution (no parallel execution)
-  workers: 1,
+  //workers: 1,
+  workers: process.env.CI ? 2 : 1, // 2 workers in CI, 1 worker locally
   
   // Retry configuration for failed tests
   retries: process.env.CI ? 1 : 0, // 1 retry in CI, 0 retries locally
