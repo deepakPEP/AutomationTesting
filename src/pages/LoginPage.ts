@@ -110,7 +110,7 @@ export class LoginPage {
       // Fetch OTP from API
       const apiRequest = await request.newContext();
       const opts: GetOtpOptions = {
-        url: 'http://13.234.126.192:4000/findOtp',
+        url: 'http://13.234.126.192:4000/findOtp/sandbox',
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
