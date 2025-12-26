@@ -39,8 +39,8 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag
       TestLogger.info('📝 Step 1: Adding Product Basic Information');
       
       //await page.goto('https://sandbox.pepagora.org/en/authenticate');
-      TestLogger.log('🔐 Logging in with phone number: 9632370046');
-      await loginPage.enterEmailAndContinue('9632370046');
+      TestLogger.log('🔐 Logging in with phone number: 9591603604');
+      await loginPage.enterEmailAndContinue('9591603604');
     //  await page.pause();
       product = getProductByName('Lcd Tv');
       TestLogger.log(`📦 Loaded product from CSV: ${product?.name || 'Unknown'}`);

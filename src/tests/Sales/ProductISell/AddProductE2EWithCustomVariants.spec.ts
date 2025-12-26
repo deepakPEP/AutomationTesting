@@ -39,8 +39,8 @@ test.describe('Add Product E2E with Custom variants in Sales', { tag: ['@critica
       TestLogger.info('📝 Step 1: Adding Product Basic Information');
       
       //await page.goto('https://sandbox.pepagora.org/en/authenticate');
-      TestLogger.log('🔐 Logging in with phone number: 9632370046');
-      await loginPage.enterEmailAndContinue('9632370046');
+      TestLogger.log('🔐 Logging in with phone number: 9591603604');
+      await loginPage.enterEmailAndContinue('9591603604');
    // await page.goto('https://sandbox.pepagora.org/en/app/sales-product/68ef36872f48bd35bc3f7022');
       product = getProductByName('Mens Cotton Polo T-Shirt');
       //TestLogger.log(`📦 Loaded product from CSV: ${product?.name || 'Unknown'}`);
