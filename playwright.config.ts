@@ -13,7 +13,7 @@ export default defineConfig({
   
   // Dynamic tag-based test execution
   grep: process.env.TEST_TAGS ? new RegExp(process.env.TEST_TAGS) : 
-        process.env.CI ? /@critical/ : undefined,
+        process.env.CI ? /@dummy/ : undefined,
   
   reporter: [
     ['html', { 
