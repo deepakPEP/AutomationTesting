@@ -157,7 +157,7 @@ async assertTextareaHasAIContent(productName?: string) {
     await this.continueBtn1.waitFor({ state: 'attached', timeout: 10000 });
     await this.continueBtn1.click({ force: true });
    }
-
+   
     await this.page.waitForTimeout(6000);
   }
 

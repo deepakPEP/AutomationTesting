@@ -71,24 +71,64 @@ async verifyDetails(product: any) {
     // Assert the expected text
     const expectedText = `Min. Order Quantity : ${moq} ${unit.toLowerCase()}`;
      console.log(await this.moqLocator.textContent(), expectedText);
-
   // Assert exact match
     await expect(this.moqLocator).toHaveText(expectedText);
     //await console.log(await this.moqLocator.textContent(), `Min. Order Quantity : ${moq} ${unit.toLowerCase()}`);
     //await expect(this.moqLocator).toHaveText(`Min. Order Quantity : ${moq} ${unit.toLowerCase()}`);
     }
-    async  assertPrice(unitPrice: string,unitType='₹') {
-      let expectedPrice;
-    if (unitPrice.includes('-')) {
-      expectedPrice = unitType + unitPrice.split('-')[0]+`-`+unitType + unitPrice.split('-')[1];
+    async  assertPrice(unitPrice: any,unitType='₹',pricing_type='Fixed Price') {
+    
+    let expectedPrice;
+    if (pricing_type==='Bulk Pricing') {
+      const bulkCell = unitPrice;
+  let expectedTiers: any[] = [];
+  if (Array.isArray(bulkCell)) expectedTiers = bulkCell;
+  else if (typeof bulkCell === 'string' && bulkCell.trim()) {
+    expectedTiers = JSON.parse(bulkCell);
+    
+    console.log('Parsed bulk pricing tiers:', expectedTiers); 
+    const root = this.page.locator('.product-orders-pairs-block');
+    await expect(root).toBeVisible();
+
+    
+    const pairs = root.locator('.pairs-count');
+    const count = await pairs.count();
+    expect(count).toBe(expectedTiers.length);
+
+    for (let i = 0; i < expectedTiers.length; i++) {
+      const label = (await pairs.nth(i).locator('.p-c-label').innerText()).trim();
+      const value = (await pairs.nth(i).locator('.p-c-value').innerText()).trim();
+
+      // extract numbers from label "100-200 rolls" -> [100,200]
+      const nums = label.match(/(\d+)/g) || [];
+      const min = Number(nums[0] ?? 0);
+      const max = Number(nums[1] ?? 0);
+      await console.log('Label Text:', label, 'Value Text:', value);
+      
+      const priceNum = parseFloat(value.replace(/[^\d.]/g, '')) || 0;
+
+      expect(min).toBe(expectedTiers[i].minQty);
+      console.log('Expected min:', expectedTiers[i].minQty, 'Actual min:', min);
+      expect(max).toBe(expectedTiers[i].maxQty);
+      expect(priceNum).toBe(expectedTiers[i].price);
     }
-    else
-    expectedPrice = unitType + unitPrice; // need to apppend currency symbol
-    console.log('Expected Price:', expectedPrice);
-    console.log('Price Text:', await this.priceText.textContent());
-    // Locate the price element in the page and assert that the price matches
-    await expect(this.priceText).toHaveText(expectedPrice);
-    return expectedPrice;
+  }
+}
+
+  // ...existing code...
+
+      //if (unitPrice.includes('-')) {
+      if (pricing_type==='price_range') {
+        expectedPrice = unitType + unitPrice.split('-')[0]+`-`+unitType + unitPrice.split('-')[1];
+      }
+      else if (pricing_type != 'Bulk Pricing') {
+        expectedPrice = unitType + unitPrice; // need to apppend currency symbol
+        console.log('Expected Price:', expectedPrice);
+        console.log('Price Text:', await this.priceText.textContent());
+        // Locate the price element in the page and assert that the price matches
+        await expect(this.priceText).toHaveText(expectedPrice);
+      }
+      return expectedPrice;
 }
 // ============================================
 // VARIANTS PREVIEW VALIDATION METHOD
