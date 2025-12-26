@@ -1,7 +1,7 @@
 import { request } from "@playwright/test";
 
 async function globalSetup() {
-  const phoneNo = '9999999999';
+  const phoneNo = '9591603604';
   //const phoneNo = process.env.TEST_PHONE_NO;
 
   if (!phoneNo) {
