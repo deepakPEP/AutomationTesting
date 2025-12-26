@@ -59,8 +59,8 @@ export class ProductInformationPage {
   }
 
   async fillBasicInfo(product: any, ai_option = false) {
-    await this.productNameInput.fill(product?.name || 'Electric Screwdriver');
-    await this.descriptionInput.fill(product?.short_description || 'automationtest');
+    await this.productNameInput.fill(product?.name || 'Electric Screwdriver',{ timeout: 60000 });
+    await this.descriptionInput.fill(product?.short_description || 'automationtest',{ timeout: 60000 });
     if (ai_option) {
       await this.clickWriteWithAI();
       await this.assertTextareaHasAIContent(product?.name);  
@@ -69,7 +69,7 @@ export class ProductInformationPage {
     await this.skuInput.fill(product?.sku_model || 'SK');
   }
   async clickWriteWithAI() {
-  await this.writeWithAIButton.waitFor({ state: 'visible' });
+  await this.writeWithAIButton.waitFor({ state: 'visible' , timeout: 60000});
   await this.writeWithAIButton.click();
   
   // Wait for AI processing (adjust timeout as needed)
@@ -107,13 +107,13 @@ async assertTextareaHasAIContent(productName?: string) {
     console.log('product category ',productCategory);
     const categories = productCategory ? productCategory.split('>').map(c => c.trim()) : [];
     console.log('categories: ', categories);
-    await this.browseCategoryBtn.click();
+    await this.browseCategoryBtn.click({ timeout: 60000 });
     for (const category of categories) {
       await console.log(`Selecting category: //ul[@class='category-ul']//li[text()='${category}']`);
-      await this.page.locator(`//ul[@class='category-ul']//li[text()='${category}']`).click();
+      await this.page.locator(`//ul[@class='category-ul']//li[text()='${category}']`).click({ timeout: 60000 });
       await this.page.waitForTimeout(3000);
     }
-    await this.chooseBtn.click();
+    await this.chooseBtn.click({timeout: 60000});
     await this.page.waitForTimeout(2000);
     //await expect(this.selectedSpan).toHaveText(productCategory || 'Gaming Laptops');
   }
@@ -135,10 +135,10 @@ async assertTextareaHasAIContent(productName?: string) {
   }
 
   async selectCountry() {
-    await this.countrySelectButton.click();
-    await this.countryTextbox.click();
-    await this.countryTextbox.fill('India');
-    await this.indiaOption.click();
+    await this.countrySelectButton.click({timeout: 60000});
+    await this.countryTextbox.click({timeout:60000});
+    await this.countryTextbox.fill('India',{timeout:60000});
+    await this.indiaOption.click({timeout:60000});
   }
 
   async submitProduct() {

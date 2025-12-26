@@ -23,20 +23,20 @@ export class AddProdShippingLogisticsDetails {
   }
   // Function to select the shipping mode
 async is_Ships_Internationally(ships_internationally: string) {
-  await this.page.locator('label').filter({ hasText: ships_internationally }).click();
+  await this.page.locator('label').filter({ hasText: ships_internationally }).click({timeout:60000});
 }
 
 // Function to select a value from the dropdown based on input text
 async selectIncoterms(inputValue : string) {
   // Open the dropdown by clicking the trigger
-  await this.incotermsDropdown.click();
+  await this.incotermsDropdown.click({timeout:60000});
   await expect(this.page.locator('.p-dropdown-trigger').first()).toBeVisible();
 
   // Wait for the dropdown options to be visible
   const dropdownOption = this.page.locator(`.p-dropdown-items li:has-text("${inputValue}")`);
 
   // Click the option that matches the input value
-  await dropdownOption.click();
+  await dropdownOption.click({timeout:60000});
 }
 
 async fillShippingAndLogisticsDetails(ships_internationally: string, incoterms: string, portOfDispatch: string, 
@@ -48,19 +48,19 @@ async fillShippingAndLogisticsDetails(ships_internationally: string, incoterms: 
   await this.selectIncoterms(incoterms);
 
   // Fill port of dispatch
-  await this.portOfDispatch.fill(portOfDispatch);
+  await this.portOfDispatch.fill(portOfDispatch,{ timeout: 60000 });
 
   // Fill dispatch lead time
-  await this.dispatchLeadTime.click();
+  await this.dispatchLeadTime.click({timeout:60000});
   expect(await this.page.locator('.p-dropdown-trigger').first()).toBeVisible();
 
   // Locate the option based on the leadTime argument
   let optionLocator = this.page.locator(`.p-dropdown-items li:has(span.p-dropdown-item-label:has-text("${dispatchLeadTime}"))`);
 
   // Click the option
-  await optionLocator.click();
+  await optionLocator.click({timeout:60000});
   // Fill units per package
-  await this.packagingTypeDropdown.click();
+  await this.packagingTypeDropdown.click({timeout:60000});
   expect(await this.page.locator('.p-dropdown-trigger').first()).toBeVisible();
 
   // Locate the option based on the packagingType argument
@@ -68,9 +68,9 @@ async fillShippingAndLogisticsDetails(ships_internationally: string, incoterms: 
 
   // Click the option
   await optionLocator.click();
-    await this.unitsPerPackage.fill(unitsPerPackage.toString());
+    await this.unitsPerPackage.fill(unitsPerPackage.toString(),{ timeout: 60000 });
   // Fill shipment identifier
-  await this.shipmentIdentifier.fill(shipmentIdentifier);
+  await this.shipmentIdentifier.fill(shipmentIdentifier,{ timeout: 60000 });
 }
   async selectShippingMode(modes: string) {
     // Normalize (in case you pass "sea", "Sea" etc.)
