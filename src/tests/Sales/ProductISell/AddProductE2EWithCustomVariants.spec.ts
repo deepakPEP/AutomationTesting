@@ -17,7 +17,7 @@ test.describe('Add Product E2E with Custom variants in Sales', { tag: ['@critica
 
 // covering 113 testcases in this single e2e
   test('Complete Add Product Flow with variants', async ({page}, testInfo) => {
-    test.setTimeout(1200000);
+    test.setTimeout(480000);
     
     // Initialize TestLogger for this test
     TestLogger.info('🚀 Starting Complete Add Product Flow E2E test');

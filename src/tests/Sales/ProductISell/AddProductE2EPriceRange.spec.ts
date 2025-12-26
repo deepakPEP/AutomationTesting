@@ -12,7 +12,7 @@ import { ViewProductDetailsPage } from '../../../pages/ProductISell/AddViewProdu
 import { ProductISellDashboardPage } from '../../../pages/ProductISell/ProductISellDashboardPage';
 let product: any;
 
-test.describe('Add Product E2E for Price Price without variants in Sales', { tag: ['@critical'] }, () => {
+test.describe('Add Product E2E for Price Price without variants in Sales', { tag: ['@dummy'] }, () => {
 
 // covering 113 testcases in this single e2e
   test('Price Range Product Test', async ({page}, testInfo) => {
