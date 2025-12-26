@@ -91,12 +91,69 @@ else if (product.pricing_type ==='price_range') {
   const expectedNorm = normalize(String(product.unit_price || 'No price range defined'));
 
   expect(actualNorm).toContain(expectedNorm);
-} else {
+}
+else if (product.pricing_type ==='negotiable') {
+  // await expect(pricing_type).toHaveText('Variable Pricing');
+  // await expect(pricing_value).toHaveText(product.unit_price || 'No price range  defined');
+  await expect(pricing_type).toHaveText('Negotiable Pricing');
+  await expect(pricing_value).toHaveText('--');
+  
+}
+else if (product.pricing_type ==='bulk') { 
+  await expect(pricing_type).toHaveText('Bulk Pricing');
+    
+
+    // 🔹 BULK TABLE VALIDATION
+    const table = this.page.locator('.variants-table');
+    await expect(table).toBeVisible();
+
+    const rows = table.locator('tbody tr');
+    const rowCount = await rows.count();
+
+    let pricingData = product.unit_price;
+      
+      // If it's a string, parse it as JSON
+      if (typeof pricingData === 'string') {
+        try {
+          pricingData = JSON.parse(pricingData);
+        } catch (e) {
+          TestLogger.error(`❌ Failed to parse unit_price: ${pricingData}`);
+          throw new Error(`Invalid unit_price format: ${pricingData}`);
+        }
+      }
+
+      // Ensure it's an array
+      if (!Array.isArray(pricingData)) {
+        throw new Error(`unit_price must be an array, got: ${typeof pricingData}`);
+      }
+
+      const expectedRowCount = pricingData.length;
+
+    expect(rowCount).toBe(expectedRowCount); 
+
+    for (let i = 0; i < rowCount; i++) {
+      const row = rows.nth(i).locator('td');
+
+      const qtyFrom = await row.nth(0).innerText();
+      const qtyTo   = await row.nth(1).innerText();
+      const price   = await row.nth(2).innerText();
+
+      // UI → Expected
+    const expectedFrom  = `${pricingData[i].minQty} ${product.unit.toLowerCase()}`;
+    const expectedTo    = `${pricingData[i].maxQty} ${product.unit.toLowerCase()}`;
+    const expectedPrice = `₹${pricingData[i].price}`;
+
+
+      expect(qtyFrom).toBe(expectedFrom);
+      expect(qtyTo).toBe(expectedTo);
+      expect(price).toBe(expectedPrice)
+}}
+else {
   await expect(pricing_type).toHaveText('Request Quote');
   await expect(pricing_value).toHaveText('--');
-}
-await expect(pm_MOQ).toHaveText(product.moq + " " + product.unit.toLowerCase());
 
+await expect(pm_MOQ).toHaveText(product.moq + " " + product.unit.toLowerCase());
+}
   }
   async assertProductTradeDetails(product:any){
     const td_ProdLeadTime     = this.page.locator('.tabs-form-group:has(.t-f-g-label:has-text("Production Lead Time")) .t-f-g-txt');

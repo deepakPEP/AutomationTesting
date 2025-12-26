@@ -3,6 +3,7 @@ import { defineConfig } from '@playwright/test';
 export default defineConfig({
   testDir: './src/tests',
   
+  globalSetup: require.resolve('./playwright.global-setup'),
   // Force single worker execution (no parallel execution)
   //workers: 1,
   workers: process.env.CI ? 2 : 1, // 2 workers in CI, 1 worker locally

@@ -92,18 +92,16 @@ export class PricingMOQPage {
   // }
 
   // Method to enter Price Range details
-  async setPriceRangeDetails(minPrice:number, maxPrice:number,minOrderQuantity: number) {
+  async setPriceRangeDetails(minPrice:number, maxPrice:number) {
     await this.minPriceInput.fill(minPrice.toString());
     await this.maxPriceInput.fill(maxPrice.toString());
-    await this.minOrderQuantityInput.fill(minOrderQuantity.toString());
+    //await this.minOrderQuantityInput.fill(minOrderQuantity.toString());
   }
-  async setFixedPriceDetails(unit_price : number,minOrderQuantity: number) {
+  async setFixedPriceDetails(unit_price : number) {
     //await this.minPriceInput.fill(minPrice.toString());
     //await this.maxPriceInput.fill(maxPrice.toString());
     console.log('unit_price',unit_price);
-    console.log('minOrderQuantity',minOrderQuantity);
     await this.unitPriceInput.fill(unit_price.toString());
-    await this.minOrderQuantityInput.fill(minOrderQuantity.toString());
   }
   private unitTypeForRow(rowIndex: number) {
   return this.page.locator(`select[name="unit_type"]`).nth(rowIndex);
@@ -135,7 +133,6 @@ export class PricingMOQPage {
     await this.select_currency.waitFor({ state: 'attached' }); 
     await this.select_currency.click();
     await this.currency_option.click();//can be dynamic based on product
-    await this.selectUnit(product.unit || 'Pieces');
     await this.page.waitForTimeout(3000);
     
    switch (product.pricing_type) {
@@ -146,8 +143,8 @@ export class PricingMOQPage {
       await expect(priceRangeSection).toHaveCount(0);
       const unitPrice = product.unit_price ?? 1000;
       const moq = product.moq ?? 1;
-      await this.selectUnit(product.unit || 'Pieces');
-      await this.setFixedPriceDetails(unitPrice, moq);
+      await this.selectUnit(product.unit || 'Pieces', moq);
+      await this.setFixedPriceDetails(unitPrice);
       
       break;
     }
@@ -155,23 +152,39 @@ export class PricingMOQPage {
     case 'bulk': {
       await this.selectBulkPricing();
       await expect(fixedPriceSection).toHaveCount(0);
-      await expect(bulkSection).toBeVisible();
+      await expect(bulkSection).toHaveCount(3)
       await expect(priceRangeSection).toHaveCount(0);
+      await this.selectUnitButton.click();
+  await this.page.locator('li.p-dropdown-item[aria-label="' + product.unit + '"]').click({force:true});
+      //await this.selectUnit(product.unit || 'Pieces', product.moq);
 
-      const tiers = product.bulk && product.bulk.length ? product.bulk : [{ from: 1, to: 10, price: 1000 }];
-      for (let i = 0; i < tiers.length; i++) {
-        const t = tiers[i];
-        // Fill first row
-        if (i === 0) {
-          await this.setBulkPricingDetails(t.from, t.to, t.price, t.unitType, 0);
-        } else {
-          // Add new tier row, then fill it
-          await this.addTierButton.click();
-          await this.setBulkPricingDetails(t.from, t.to, t.price, t.unitType, i);
-        }
-      }
-      break;
+     const bulkCell = product.unit_price;
+  let bulk: any[] = [];
+  if (Array.isArray(bulkCell)) bulk = bulkCell;
+  else if (typeof bulkCell === 'string' && bulkCell.trim()) {
+    try { bulk = JSON.parse(bulkCell); } catch { bulk = []; }
+  }
+  if (!bulk.length) break;
+
+  for (let i = 0; i < bulk.length; i++) {
+    const tier = bulk[i];
+    if (i > 0) {
+      await this.page.locator('button', { hasText: 'Add Tier' }).first().click();
+      await this.page.waitForTimeout(200);
     }
+
+    const minSel = `input[name="pricing.bulkPrices.${i}.minQty"]`;
+    const maxSel = `input[name="pricing.bulkPrices.${i}.maxQty"]`;
+    const priceSel = `input[name="pricing.bulkPrices.${i}.price"]`;
+
+    await this.page.locator(minSel).fill(String(tier.minQty ?? ''));
+    await this.page.locator(maxSel).fill(String(tier.maxQty ?? ''));
+    await this.page.locator(priceSel).fill(String(tier.price ?? ''));
+
+    await this.page.keyboard.press('Tab');
+  }
+  break;
+}
 
     case 'request_quote': {
       await this.selectRequestQuote();
@@ -180,9 +193,9 @@ export class PricingMOQPage {
       await expect(priceRangeSection).toHaveCount(0);
 
       const moq = product.moq ?? 1;
-      await this.page.pause();
-      await this.setRequestQuoteDetails(moq);
-    await this.selectUnit(product.unit || 'Pieces');
+      
+      //await this.setRequestQuoteDetails(moq);
+    await this.selectUnit(product.unit || 'Pieces', product.moq);
     await this.page.waitForTimeout(3000);
       break;
     }
@@ -193,17 +206,14 @@ export class PricingMOQPage {
       await expect(bulkSection).toHaveCount(0);
       await expect(priceRangeSection).toHaveCount(2);
       
-      // const parts = product.unit_price.split('-').map(str => str.trim());
-      // const minPrice = parts[0] ? parseFloat(parts[0]) : 0;
-      // const maxPrice = parts[1] ? parseFloat(parts[1]) : 0;
       const raw = product?.unit_price ?? '';
       const unitPriceStr = typeof raw === 'number' ? String(raw) : (raw as string);
       const [minStr = '', maxStr = ''] = unitPriceStr.split('-').map(s => s.trim());
       const minPrice = parseFloat(minStr.replace(/[^\d.]/g, '')) || 0;
       const maxPrice = parseFloat(maxStr.replace(/[^\d.]/g, '')) || 0;
       const moq = product.moq ?? 1;
-      await this.setPriceRangeDetails(minPrice, maxPrice, moq);
-    await this.selectUnit(product.unit || 'Pieces');
+      await this.setPriceRangeDetails(minPrice, maxPrice);
+    await this.selectUnit(product.unit || 'Pieces', moq);
     await this.page.waitForTimeout(3000);
       break;
     }
@@ -214,7 +224,7 @@ export class PricingMOQPage {
       await expect(bulkSection).toHaveCount(0);
       await expect(priceRangeSection).toHaveCount(0);
 
-    await this.selectUnit(product.unit || 'Pieces');
+    await this.selectUnit(product.unit || 'Pieces', product.moq);
     await this.page.waitForTimeout(3000);
       break;
     }
@@ -222,11 +232,12 @@ export class PricingMOQPage {
   }
 }
 
-async selectUnit(unitName: string) {
+async selectUnit(unitName: string, minOrderQuantity: number) {
   const name = (unitName || '').trim();
   // open dropdown (safe to call even if already open)
   await this.selectUnitButton.click();
   await this.page.locator('li.p-dropdown-item[aria-label="' + unitName + '"]').click({force:true});
+  await this.minOrderQuantityInput.fill(minOrderQuantity.toString());
 }
 
 }

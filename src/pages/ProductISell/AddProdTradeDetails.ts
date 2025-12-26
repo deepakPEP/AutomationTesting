@@ -161,10 +161,10 @@ for (let i = 0; i < count; i++) {
   "Credit Card": "credit",
   "Cash": "cash",
   "Cheque": "cheque",
-  "Demand Draft": "dd",          // or "demand draft" if you prefer
+  "Demand Draft": "demandDraft",          // or "demand draft" if you prefer
   "Paypal": "paypal",
-  "MoneyGram": "moneygram",
-  "Western Union": "western union",
+  "MoneyGram": "moneyGram",
+  "Western Union": "westerUnion",
   "Others": "others"
 };
   const paymentOptionStrings = paymentOptions.split(',');

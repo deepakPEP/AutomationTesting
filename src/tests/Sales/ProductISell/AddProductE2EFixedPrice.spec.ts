@@ -10,8 +10,11 @@ import { AddProdShippingLogisticsDetails } from '../../../pages/ProductISell/Add
 import { AddProdAdditionalInformationPage } from '../../../pages/ProductISell/AddProdAdditionalInformationPage';
 import { ViewProductDetailsPage } from '../../../pages/ProductISell/AddViewProductDetailsPage';
 import { ProductISellDashboardPage } from '../../../pages/ProductISell/ProductISellDashboardPage';
+import { superAdminLogin } from '../../../api/SuperAdminLogin';
+import { SuperAdminProductApproval } from '../../../api/SuperAdminProductApproval';
 let product: any;
-
+let productId: string;
+let superAdminToken: string;
 test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag: ['@critical'] }, () => {
 
 // covering 113 testcases in this single e2e
@@ -52,9 +55,22 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag
       await productPage.browseCategory(product?.product_category || '');
       await productPage.uploadImage();
       await productPage.selectCountry();
-      await productPage.submitProduct();
+     
+      const [loginResponse] = await Promise.all([
+      page.waitForResponse(response =>
+        response.url().includes('/product-information') &&
+        response.request().method() === 'POST'
+      ),
+      page.getByRole('button', { name: 'Continue', exact: true }).click()
+    ]);
+
+      const responseBody = await loginResponse.json();
+
+      productId = responseBody.data.productId;
+      console.log('Extracted Product ID:', productId);
 
       TestLogger.log('✅ Verifying product details and progress');
+    //  await page.pause();
       await addProductPreviewPage.verifyDetails(product);
       await addProductPreviewPage.validateProgressBar('12%');
       await productPage.validateProductAddStepCompletion('Product Information');
@@ -67,7 +83,7 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag
       await page.waitForTimeout(2000);
       TestLogger.log(`💵 Setting price: ${product?.unit_price || '100'} and MOQ: ${product?.moq || '1'}`);
       await pricingPage.fillPricingMOQ(product);
-     // await page.pause();
+     
       await productPage.submitProduct();
       TestLogger.log('📊 Validating progress and pricing details');
       await addProductPreviewPage.validateProgressBar('25%');
@@ -163,10 +179,35 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag
         status: product?.status || 'pending',
         sku_code: product?.sku_model || 'SKU123' 
       });
-      TestLogger.success('Step 6 completed: Product successfully added and validated on dashboard');
-      //await page.pause();
     });
-    
+    await test.step('Step 7: Super Admin Approval Process', async () => {
+      test.setTimeout(240000);
+      TestLogger.success('Super Admin Approval Process Started');
+       try {
+        const authResponse = await superAdminLogin(page.context().request);
+        superAdminToken = authResponse.access_token;
+        TestLogger.success(`✅ Super Admin Access Token obtained: ${superAdminToken.substring(0, 20)}...`);
+        console.log('Super Admin Token:', superAdminToken);
+      } catch (error) {
+        TestLogger.error(`❌ Failed to get Super Admin token: ${error}`);
+        throw error;
+      }
+    });
+     const result = await SuperAdminProductApproval(page.context().request, productId, superAdminToken);
+    console.log(result);
+    await page.waitForTimeout(5000); // wait for 5 seconds to reflect status change
+    await page.reload();
+    await page.waitForTimeout(5000);
+    await productISellDashboardPage.validateFirstContactRow({ 
+        productName: product?.name || 'Generic Product',
+        noOfVariants: 'No Variants',
+        category: product?.product_category || 'General',
+        stockAvailability: 'In stock',
+        display: product?.display || 'No',
+        price: product?.unit_price || 'Fixed Price',
+        status: product?.status || 'Live',
+        sku_code: product?.sku_model || 'SKU123' 
+      });
     // Attach all test logs to the HTML report
     await TestLogger.attachLogsToTest(testInfo);
     TestLogger.success('✅ Complete Add Product Flow E2E test completed successfully');
