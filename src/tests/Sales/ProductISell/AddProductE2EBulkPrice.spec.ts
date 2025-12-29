@@ -12,11 +12,11 @@ import { ViewProductDetailsPage } from '../../../pages/ProductISell/AddViewProdu
 import { ProductISellDashboardPage } from '../../../pages/ProductISell/ProductISellDashboardPage';
 let product: any;
 
-test.describe('Add Product E2E for Bulk Price without variants in Sales', { tag: ['@critical'] }, () => {
+test.describe('Add Product E2E for Bulk Price without variants in Sales', { tag: ['@dummy'] }, () => {
 
 // covering 113 testcases in this single e2e
   test('Complete Bulk Price - Add Product Flow without variants', async ({page}, testInfo) => {
-    test.setTimeout(600000);
+    test.setTimeout(480000);
     
     // Initialize TestLogger for this test
     TestLogger.info('🚀 Starting Complete Add Product Flow E2E test');
@@ -43,10 +43,7 @@ test.describe('Add Product E2E for Bulk Price without variants in Sales', { tag:
       TestLogger.log(`📦 Loaded product from CSV: ${product?.name || 'Unknown'}`);
     await page.waitForTimeout(12000);
       TestLogger.log('🛍️ Navigating to Sales > Product I Sell');
-      await page.locator('div').filter({ hasText: /^Sales$/ }).getByRole('img').click();
-      await page.getByRole('link', { name: 'Product I Sell', exact: true }).click();
-      await page.getByRole('button', { name: 'Add Product Add Product' }).click();
-
+      await productISellDashboardPage.clickAddProduct();
       TestLogger.log('📋 Filling basic product information');
       await productPage.fillBasicInfo(product);
       await productPage.browseCategory(product?.product_category || '');

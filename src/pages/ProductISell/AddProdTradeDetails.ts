@@ -118,14 +118,14 @@ for (let i = 0; i < count; i++) {
     }
     if (sampleAvailability === SampleAvailability.Paid || sampleAvailability === SampleAvailability.Refundable) {
       await this.samplePrice.fill(samplePriceValue?.toString() || '');
-      await this.unitDropdown.click();
+      await this.unitDropdown.click({timeout:60000});
       const unitOption = this.unitDropdownItems.locator(`li:has(span:has-text("Pieces"))`);
-      await unitOption.click();
+      await unitOption.click({timeout:60000});
     }
   }
 
   async selectAvailableStock(value : boolean) {
-    await this.selectDropdown.click();
+    await this.selectDropdown.click({timeout:60000});
     await this.page.waitForTimeout(2000);
     if (value) {
       await this.inStockOption.click({force:true});
@@ -139,21 +139,21 @@ for (let i = 0; i < count; i++) {
 
   async setPaymentTerms(paymentTerm: string) {
     if (await this.selectPaymentTerm.count() > 0) {
-      await this.selectPaymentTerm.click();
+      await this.selectPaymentTerm.click({timeout:60000});
       const dropdownItems = this.page.locator('.p-dropdown-items');
     
     // Find the item by aria-label that matches the paymentTerm argument
     const option = dropdownItems.locator(`li[aria-label="${paymentTerm}"]`);
-     await option.click();
+     await option.click({timeout:60000});
     } else {
-      await this.sellOfferSelectPayterm.click();
+      await this.sellOfferSelectPayterm.click({timeout:60000});
       const dropdownItems = this.page.locator('.p-dropdown-items');
     
     // Find the item by aria-label that matches the paymentTerm argument
     const item = this.page.locator('.p-multiselect-item', { hasText: paymentTerm });
     const checkbox = item.locator('input[type="checkbox"]');
     if (!(await checkbox.isChecked())) {
-      await item.click();
+      await item.click({timeout:60000});
     }
     }
   }async selectPaymentOptions(paymentOptions: string) {

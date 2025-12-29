@@ -1,5 +1,6 @@
 import { Locator, Page } from "playwright-core";
 import { expect } from "@playwright/test";
+import { time } from "console";
 
 export class PricingMOQPage {
   readonly page: Page;
@@ -66,21 +67,21 @@ export class PricingMOQPage {
   }
 
   async selectBulkPricing() {
-    await this.bulkPricingRadio.click();
+    await this.bulkPricingRadio.click({ timeout: 60000 });
     await expect(this.bulkPricingRadio).toBeChecked();
   }
 
   async selectRequestQuote() {
-    await this.requestQuoteRadio.click();
+    await this.requestQuoteRadio.click({ timeout: 60000 });
     await expect(this.requestQuoteRadio).toBeChecked();
   }
 
   async selectPriceRange() {
-    await this.priceRangeRadio.click();
+    await this.priceRangeRadio.click({ timeout: 60000 });
     await expect(this.priceRangeRadio).toBeChecked();
   }
   async selectNegotiablePrice() {
-    await this.negotiablePriceRadio.click();
+    await this.negotiablePriceRadio.click({ timeout: 60000 });
     await expect(this.negotiablePriceRadio).toBeChecked();
   }
   // Method to enter Bulk Pricing details
@@ -101,7 +102,7 @@ export class PricingMOQPage {
     //await this.minPriceInput.fill(minPrice.toString());
     //await this.maxPriceInput.fill(maxPrice.toString());
     console.log('unit_price',unit_price);
-    await this.unitPriceInput.fill(unit_price.toString());
+    await this.unitPriceInput.fill(unit_price.toString(),{ timeout: 60000 });
   }
   private unitTypeForRow(rowIndex: number) {
   return this.page.locator(`select[name="unit_type"]`).nth(rowIndex);
@@ -131,8 +132,8 @@ export class PricingMOQPage {
     const priceRangeSection = this.page.locator('input[placeholder*="Min"],input[placeholder*="Max"]');
 
     await this.select_currency.waitFor({ state: 'attached' }); 
-    await this.select_currency.click();
-    await this.currency_option.click();//can be dynamic based on product
+    await this.select_currency.click({timeout:60000});
+    await this.currency_option.click({timeout:60000});//can be dynamic based on product
     await this.page.waitForTimeout(3000);
     
    switch (product.pricing_type) {
@@ -154,7 +155,7 @@ export class PricingMOQPage {
       await expect(fixedPriceSection).toHaveCount(0);
       await expect(bulkSection).toHaveCount(3)
       await expect(priceRangeSection).toHaveCount(0);
-      await this.selectUnitButton.click();
+      await this.selectUnitButton.click({timeout:60000});
   await this.page.locator('li.p-dropdown-item[aria-label="' + product.unit + '"]').click({force:true});
       //await this.selectUnit(product.unit || 'Pieces', product.moq);
 
@@ -169,7 +170,7 @@ export class PricingMOQPage {
   for (let i = 0; i < bulk.length; i++) {
     const tier = bulk[i];
     if (i > 0) {
-      await this.page.locator('button', { hasText: 'Add Tier' }).first().click();
+      await this.page.locator('button', { hasText: 'Add Tier' }).first().click({timeout:60000});
       await this.page.waitForTimeout(200);
     }
 
@@ -235,9 +236,9 @@ export class PricingMOQPage {
 async selectUnit(unitName: string, minOrderQuantity: number) {
   const name = (unitName || '').trim();
   // open dropdown (safe to call even if already open)
-  await this.selectUnitButton.click();
+  await this.selectUnitButton.click({ timeout: 60000 });
   await this.page.locator('li.p-dropdown-item[aria-label="' + unitName + '"]').click({force:true});
-  await this.minOrderQuantityInput.fill(minOrderQuantity.toString());
+  await this.minOrderQuantityInput.fill(minOrderQuantity.toString(),{ timeout: 60000 });
 }
 
 }

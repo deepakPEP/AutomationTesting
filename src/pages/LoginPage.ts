@@ -91,10 +91,24 @@ export class LoginPage {
       await expect(this.page.getByText('Welcome to Pepagora')).toBeVisible();
       console.log('✓ Welcome page loaded');
 
+      await this.page.locator('.selected-flag').click();  // Click on the arrow button
+
+  // Step 2: Wait for the country list to be visible
+  const countryList = this.page.locator('.country-list');
+  await expect(countryList).toBeVisible();  // Wait for the dropdown to be visible
+  
+  // Step 3: Select India from the dropdown
+  await this.page.locator('.country[data-country-code="in"]').click();  // Click on the India option
+  
+  // Step 4: Validate if India was selected by checking the selected flag or the dial code
+  const selectedFlag = await this.page.locator('.selected-flag[title="India: + 91"]');
+  await expect(selectedFlag).toBeVisible();  // Verify India is selected
+
       // Get phone input field
       const phoneInput = this.page.locator('div.react-tel-input input[type="tel"]');
       await phoneInput.waitFor({ state: 'visible', timeout: 5000 });
 
+      
       // Enter phone number
       await phoneInput.click();
       await phoneInput.type(phoneNo);
@@ -110,7 +124,7 @@ export class LoginPage {
       // Fetch OTP from API
       const apiRequest = await request.newContext();
       const opts: GetOtpOptions = {
-        url: 'http://13.234.126.192:4000/findOtp',
+        url: 'http://13.234.126.192:4000/findOtp/sandbox',
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -149,6 +163,15 @@ async acceptCookiesIfPresent() {
   } catch (error) {
     console.log('ℹ️ Cookie banner not present or already dismissed');
   }
+  const acceptButton = await this.page.locator('#zcb-banner .zcb-button-primary#zc-manage');
+
+// Check if the accept button is visible before clicking
+if (await acceptButton.isVisible()) {
+  await acceptButton.click();
+} else {
+  console.log("Accept button is not visible.");
+}
+
 }
 }
 

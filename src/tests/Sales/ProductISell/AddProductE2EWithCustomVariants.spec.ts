@@ -17,7 +17,7 @@ test.describe('Add Product E2E with Custom variants in Sales', { tag: ['@critica
 
 // covering 113 testcases in this single e2e
   test('Complete Add Product Flow with variants', async ({page}, testInfo) => {
-    test.setTimeout(1200000);
+    test.setTimeout(480000);
     
     // Initialize TestLogger for this test
     TestLogger.info('🚀 Starting Complete Add Product Flow E2E test');
@@ -39,8 +39,8 @@ test.describe('Add Product E2E with Custom variants in Sales', { tag: ['@critica
       TestLogger.info('📝 Step 1: Adding Product Basic Information');
       
       //await page.goto('https://sandbox.pepagora.org/en/authenticate');
-      TestLogger.log('🔐 Logging in with phone number: 9632370046');
-      await loginPage.enterEmailAndContinue('9632370046');
+      TestLogger.log('🔐 Logging in with phone number: 9591603604');
+      await loginPage.enterEmailAndContinue('9591603604');
    // await page.goto('https://sandbox.pepagora.org/en/app/sales-product/68ef36872f48bd35bc3f7022');
       product = getProductByName('Mens Cotton Polo T-Shirt');
       //TestLogger.log(`📦 Loaded product from CSV: ${product?.name || 'Unknown'}`);

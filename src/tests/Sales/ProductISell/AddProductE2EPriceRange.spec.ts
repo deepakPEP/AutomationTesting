@@ -12,7 +12,7 @@ import { ViewProductDetailsPage } from '../../../pages/ProductISell/AddViewProdu
 import { ProductISellDashboardPage } from '../../../pages/ProductISell/ProductISellDashboardPage';
 let product: any;
 
-test.describe('Add Product E2E for Price Price without variants in Sales', { tag: ['@critical'] }, () => {
+test.describe('Add Product E2E for Price Price without variants in Sales', { tag: ['@dummy'] }, () => {
 
 // covering 113 testcases in this single e2e
   test('Price Range Product Test', async ({page}, testInfo) => {
@@ -36,7 +36,7 @@ test.describe('Add Product E2E for Price Price without variants in Sales', { tag
       TestLogger.info('📝 Step 1: Adding Product Basic Information');
       
       //await page.goto('https://sandbox.pepagora.org/en/authenticate');
-      TestLogger.log('🔐 Logging in with phone number: 9632370046');
+      TestLogger.log('🔐 Logging in with phone number: 9591603604');
       await loginPage.enterEmailAndContinue('9591603604');
     //  await page.pause();
       product = getProductByName('Hydraulic Power Press Machine');

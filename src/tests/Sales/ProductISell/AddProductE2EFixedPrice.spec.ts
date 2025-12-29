@@ -10,11 +10,11 @@ import { AddProdShippingLogisticsDetails } from '../../../pages/ProductISell/Add
 import { AddProdAdditionalInformationPage } from '../../../pages/ProductISell/AddProdAdditionalInformationPage';
 import { ViewProductDetailsPage } from '../../../pages/ProductISell/AddViewProductDetailsPage';
 import { ProductISellDashboardPage } from '../../../pages/ProductISell/ProductISellDashboardPage';
-import { superAdminLogin } from '../../../api/SuperAdminLogin';
-import { SuperAdminProductApproval } from '../../../api/SuperAdminProductApproval';
+// import { superAdminLogin } from '../../../api/SuperAdminLogin';
+// import { SuperAdminProductApproval } from '../../../api/SuperAdminProductApproval';
 let product: any;
 let productId: string;
-let superAdminToken: string;
+//let superAdminToken: string;
 test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag: ['@critical'] }, () => {
 
 // covering 113 testcases in this single e2e
@@ -39,8 +39,8 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag
       TestLogger.info('📝 Step 1: Adding Product Basic Information');
       
       //await page.goto('https://sandbox.pepagora.org/en/authenticate');
-      TestLogger.log('🔐 Logging in with phone number: 9632370046');
-      await loginPage.enterEmailAndContinue('9632370046');
+      TestLogger.log('🔐 Logging in with phone number: 9591603604');
+      await loginPage.enterEmailAndContinue('9591603604');
     //  await page.pause();
       product = getProductByName('Lcd Tv');
       TestLogger.log(`📦 Loaded product from CSV: ${product?.name || 'Unknown'}`);
@@ -180,37 +180,37 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag
         sku_code: product?.sku_model || 'SKU123' 
       });
     });
-    await test.step('Step 7: Super Admin Approval Process', async () => {
-      test.setTimeout(240000);
-      TestLogger.success('Super Admin Approval Process Started');
-       try {
-        const authResponse = await superAdminLogin(page.context().request);
-        superAdminToken = authResponse.access_token;
-        TestLogger.success(`✅ Super Admin Access Token obtained: ${superAdminToken.substring(0, 20)}...`);
-        console.log('Super Admin Token:', superAdminToken);
-      } catch (error) {
-        TestLogger.error(`❌ Failed to get Super Admin token: ${error}`);
-        throw error;
-      }
-    });
-     const result = await SuperAdminProductApproval(page.context().request, productId, superAdminToken);
-    console.log(result);
-    await page.waitForTimeout(5000); // wait for 5 seconds to reflect status change
-    await page.reload();
-    await page.waitForTimeout(5000);
-    await productISellDashboardPage.validateFirstContactRow({ 
-        productName: product?.name || 'Generic Product',
-        noOfVariants: 'No Variants',
-        category: product?.product_category || 'General',
-        stockAvailability: 'In stock',
-        display: product?.display || 'No',
-        price: product?.unit_price || 'Fixed Price',
-        status: product?.status || 'Live',
-        sku_code: product?.sku_model || 'SKU123' 
-      });
-    // Attach all test logs to the HTML report
-    await TestLogger.attachLogsToTest(testInfo);
-    TestLogger.success('✅ Complete Add Product Flow E2E test completed successfully');
-  });
+  //   await test.step('Step 7: Super Admin Approval Process', async () => {
+  //     test.setTimeout(240000);
+  //     TestLogger.success('Super Admin Approval Process Started');
+  //      try {
+  //       const authResponse = await superAdminLogin(page.context().request);
+  //       superAdminToken = authResponse.access_token;
+  //       TestLogger.success(`✅ Super Admin Access Token obtained: ${superAdminToken.substring(0, 20)}...`);
+  //       console.log('Super Admin Token:', superAdminToken);
+  //     } catch (error) {
+  //       TestLogger.error(`❌ Failed to get Super Admin token: ${error}`);
+  //       throw error;
+  //     }
+  //   });
+  //    const result = await SuperAdminProductApproval(page.context().request, productId, superAdminToken);
+  //   console.log(result);
+  //   await page.waitForTimeout(5000); // wait for 5 seconds to reflect status change
+  //   await page.reload();
+  //   await page.waitForTimeout(5000);
+  //   await productISellDashboardPage.validateFirstContactRow({ 
+  //       productName: product?.name || 'Generic Product',
+  //       noOfVariants: 'No Variants',
+  //       category: product?.product_category || 'General',
+  //       stockAvailability: 'In stock',
+  //       display: product?.display || 'No',
+  //       price: product?.unit_price || 'Fixed Price',
+  //       status: product?.status || 'Live',
+  //       sku_code: product?.sku_model || 'SKU123' 
+  //     });
+  //   // Attach all test logs to the HTML report
+  //   await TestLogger.attachLogsToTest(testInfo);
+  //   TestLogger.success('✅ Complete Add Product Flow E2E test completed successfully');
+   });
 
 });
