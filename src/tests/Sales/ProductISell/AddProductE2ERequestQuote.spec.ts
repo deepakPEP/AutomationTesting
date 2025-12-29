@@ -13,7 +13,7 @@ import { ProductISellDashboardPage } from '../../../pages/ProductISell/ProductIS
 let product: any;
 
 test.describe('Add Product E2E for Request Price without variants in Sales', { tag: ['@product_I_sell_without_variants'] }, () => {
-
+  test.use({ storageState: 'auth-seller.json' });
 // covering 113 testcases in this single e2e
   test('Complete Request Price - Add Product Flow without variants', async ({page}, testInfo) => {
     test.setTimeout(480000);
@@ -37,7 +37,7 @@ test.describe('Add Product E2E for Request Price without variants in Sales', { t
       
       //await page.goto('https://sandbox.pepagora.org/en/authenticate');
       TestLogger.log('🔐 Logging in with phone number: 9591603604');
-      await loginPage.enterEmailAndContinue('9591603604');
+     // await loginPage.enterEmailAndContinue('9591603604');
     //  await page.pause();
       product = getProductByName('Steel Industrial Pipe');
       TestLogger.log(`📦 Loaded product from CSV: ${product?.name || 'Unknown'}`);
