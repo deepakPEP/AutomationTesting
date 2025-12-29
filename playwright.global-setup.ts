@@ -43,7 +43,7 @@ async function globalSetup() {
 
   // Seller login
   const sellerPage = await browser.newPage();
-  await sellerPage.goto('/login');
+ // await sellerPage.goto('/login');
    await sellerPage.goto('https://sandbox.pepagora.org/en/authenticate');
         await sellerPage.waitForTimeout(12000);
       
