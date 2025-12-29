@@ -12,8 +12,11 @@ import { ViewProductDetailsPage } from '../../../pages/ProductISell/AddViewProdu
 import { ProductISellDashboardPage } from '../../../pages/ProductISell/ProductISellDashboardPage';
 let product: any;
 
+
+
 test.describe('Add Product E2E for Bulk Price without variants in Sales', { tag: ['@product_I_sell_without_variants'] }, () => {
 
+  test.use({ storageState: 'auth-seller.json' });
 // covering 113 testcases in this single e2e
   test('Complete Bulk Price - Add Product Flow without variants', async ({page}, testInfo) => {
     test.setTimeout(480000);
@@ -33,11 +36,11 @@ test.describe('Add Product E2E for Bulk Price without variants in Sales', { tag:
     const loginPage = new LoginPage(page);
     
     await test.step('Step 1: Add Product Basic Info', async () => {
-      TestLogger.info('📝 Step 1: Adding Product Basic Information');
+      // TestLogger.info('📝 Step 1: Adding Product Basic Information');
       
-      //await page.goto('https://sandbox.pepagora.org/en/authenticate');
-      TestLogger.log('🔐 Logging in with phone number: 9591603604');
-      await loginPage.enterEmailAndContinue('9591603604');
+      // //await page.goto('https://sandbox.pepagora.org/en/authenticate');
+      // TestLogger.log('🔐 Logging in with phone number: 9591603604');
+      // await loginPage.enterEmailAndContinue('9591603604');
     //  await page.pause();
       product = getProductByName('Aluminum Sheet');
       TestLogger.log(`📦 Loaded product from CSV: ${product?.name || 'Unknown'}`);
