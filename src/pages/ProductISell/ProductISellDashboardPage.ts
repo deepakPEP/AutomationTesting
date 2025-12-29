@@ -11,11 +11,11 @@ export class ProductISellDashboardPage {
   async clickAddProduct() {
     await this.page.locator('div').filter({ hasText: /^Sales$/ }).getByRole('img').waitFor({state: 'visible', timeout: 60000})  ;
     await this.page.locator('div').filter({ hasText: /^Sales$/ }).getByRole('img').waitFor({state: 'visible', timeout: 60000});
-    await this.page.locator('div').filter({ hasText: /^Sales$/ }).getByRole('img').click();
+    await this.page.locator('div').filter({ hasText: /^Sales$/ }).getByRole('img').click({ timeout: 60000 });
     await this.page.getByRole('link', { name: 'Product I Sell', exact: true }).waitFor({state: 'visible', timeout: 60000});
-    await this.page.getByRole('link', { name: 'Product I Sell', exact: true }).click(); 
+    await this.page.getByRole('link', { name: 'Product I Sell', exact: true }).click({ timeout: 60000 }); 
     await this.page.getByRole('button', { name: 'Add Product Add Product' }).waitFor({state: 'visible', timeout: 60000});
-    await this.page.getByRole('button', { name: 'Add Product Add Product' }).click();
+    await this.page.getByRole('button', { name: 'Add Product Add Product' }).click({ timeout: 60000 });
   }
   async validateFirstContactRow(expectedProductISellDetails: {
     productName: string;

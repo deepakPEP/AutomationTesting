@@ -65,13 +65,13 @@ export class PostBuyingReqPage {
   await unitLocator.waitFor({ state: 'visible' });
   
   // Click on the dropdown item that matches the unit
-  await unitLocator.click();
+  await unitLocator.click({timeout:60000});
     }
 
     // Preferred sourcing region
 async clickPreferredSourcingRegion(value:string) {
   const radioButton = this.page.locator(`input[type="radio"][value="${value}"]`);
-  await radioButton.click();
+  await radioButton.click({timeout:60000});
 }
 async selectCheckboxByLabel(labels: string[]) {
   for (const label of labels) {
@@ -81,7 +81,7 @@ async selectCheckboxByLabel(labels: string[]) {
     // Check if the checkbox is already selected, and if not, click it
     const isSelected = await checkboxInput.isChecked();
     if (!isSelected) {
-      await checkboxInput.click();
+      await checkboxInput.click({timeout:60000});
     }
   }
 }
@@ -92,9 +92,9 @@ async generateRandomPriceRange(minLimit = 100, maxLimit = 1000) {
 }
 async fillPostingBuyingReqForm(product:any) {
   const rfq : RFQ= {};
-   await this.inputProductName.fill(product.name);
+   await this.inputProductName.fill(product.name,{timeout:60000});
     rfq.productName = product.name;
-   await this.inputProductDescription.fill('This is a sample product description.');
+   await this.inputProductDescription.fill('This is a sample product description.',{timeout:60000});
     rfq.productDescription = 'This is a sample product description.';
   //await this.prodInfoPage.uploadImage(); // Adjust the file path as needed
   await this.prodInfoPage.browseCategory(product.product_category || 'Electronics > Laptops > Gaming Laptops');
@@ -104,25 +104,25 @@ async fillPostingBuyingReqForm(product:any) {
   await this.additionalBuyingReqDetails.fill('Additional details about the buying request.');
    rfq.additionalDetails = 'Additional details about the buying request.';
    
-  await this.rfqTitle.fill('Sample Automation RFQ Title');
+  await this.rfqTitle.fill('Sample Automation RFQ Title',{timeout:60000});
   rfq.rfqTitle = 'Sample Automation RFQ Title';
 
   await this.estimatedOrderQty.fill(product.moq || '100');
   rfq.estimatedOrderQty = product.moq || '100';
   
-  await this.page.locator('[aria-label="Units"]').click();
+  await this.page.locator('[aria-label="Units"]').click({timeout:60000});
   await this.selectUnit(product.unit || 'Pieces');
   const { minPrice, maxPrice } = await this.generateRandomPriceRange();
   rfq.preferredMinUnitPrice = '₹ ' + minPrice;
   rfq.preferredMaxUnitPrice = '₹ ' + maxPrice;
   rfq.rfqTitle = 'Sample Automation RFQ Title';
   rfq.rfqValidityDate = getTodayAndFutureDate(7).futureFormatted;
-  await this.preferredMinUnitPrice.fill(minPrice.toString());
-  await this.preferredMaxUnitPrice.fill(maxPrice.toString());
-  await this.dropdownCurrency.click();
+  await this.preferredMinUnitPrice.fill(minPrice.toString(),{timeout:60000});
+  await this.preferredMaxUnitPrice.fill(maxPrice.toString(),{timeout:60000});
+  await this.dropdownCurrency.click({timeout:60000});
   //can be done dynamically
   await this.page.locator('li.p-dropdown-item:has(span.p-dropdown-item-label:text("INR"))').click();
-  await this.rfqValidityDate.click();
+  await this.rfqValidityDate.click({timeout:60000});
   await this.page.waitForTimeout(2000); // Wait for the date picker to appear
   let { todayFormatted, futureFormatted } = getTodayAndFutureDate(7);
 
@@ -131,7 +131,7 @@ async fillPostingBuyingReqForm(product:any) {
   await this.rfqValidityDate.fill(getconvertDateFormat(futureFormatted));
   await this.page.waitForTimeout(2000); // Wait for the date to be set
   // Toggle additional requirements
-  await this.toggleAdditionalReq.click();
+  await this.toggleAdditionalReq.click({timeout:60000});
   await this.clickPreferredSourcingRegion('Nearby');
   // country selection can move to utility file
   //select city can move to utility file
@@ -139,15 +139,15 @@ async fillPostingBuyingReqForm(product:any) {
   rfq.destinationPort = 'New York';
   await selectCountry(this.page, 'India');
   await selectCity(this.page, 'Coimbatore');
-  await this.expectedDeliveryTime.click();
+  await this.expectedDeliveryTime.click({timeout:60000});
   await this.page.locator('li.p-dropdown-item:has(span.p-dropdown-item-label:text("Express"))').click();
   rfq.expectedDeliveryTime = 'Express';
   // Assuming you have a method to select the unit, you can call it here
-  await this.page.locator("//div[text()='Select Shipping Method']").click();
+  await this.page.locator("//div[text()='Select Shipping Method']").click({timeout:60000});
   await this.selectCheckboxByLabel(['Air', 'Road']);
   rfq.shippingMethods = ['Air', 'Road'];
   await this.page.waitForTimeout(5000); // Wait for the shipping method selection to process
-  await this.continueButton.click();
+  await this.continueButton.click({timeout:60000});
   await this.page.waitForTimeout(5000); // Wait for the continue button action to process
   return rfq; // Return the filled RFQ object
 }

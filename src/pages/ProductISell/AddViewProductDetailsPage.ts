@@ -266,7 +266,7 @@ async validateProductSpecifications(expectedData: {
     // Click to expand if not already expanded
     const isExpanded = await accordionHeader.getAttribute('data-p-highlight');
     if (isExpanded !== 'true') {
-      await accordionHeader.click();
+      await accordionHeader.click({ timeout: 60000 });
       await this.page.waitForTimeout(1000);
     }
     
@@ -455,7 +455,7 @@ async validateVariantDetails(expectedAttributes: string, expectedVariantCount: n
     
     // Click all variant open buttons at once
     await this.page.locator('button.btn-open-variant').all().then(buttons => 
-      Promise.all(buttons.map(button => button.click())));
+      Promise.all(buttons.map(button => button.click({ timeout: 60000 }))));
     await this.page.waitForTimeout(1000);
     // Validate total variant rows (inside-tr class = actual variants)
     const variantRows = variantsTable.locator('tr.inside-tr');

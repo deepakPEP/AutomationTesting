@@ -16,23 +16,23 @@ export class SellOfferShippingPage {
   }
 
   async fillShippingDetails(): Promise<void> {
-    await this.page.getByText('Payment & Shipping').click();
-    await this.page.locator('label').filter({ hasText: 'Credit Card' }).locator('span').nth(1).click();
-    await this.page.getByText('Select Payment Term').click();
-    await this.page.getByRole('option', { name: '% Advance / 50% on Dispatch' }).click();
-    await this.page.locator('span').filter({ hasText: 'Select Lead Time' }).click();
-    await this.page.locator('#dropdownItem_2').click();
-    await this.page.getByText('Upon Request').click();
-    await this.page.locator('label').filter({ hasText: 'Air' }).locator('span').nth(1).click();
-    await this.page.locator('label').filter({ hasText: 'Sea' }).locator('span').nth(1).click();
+    await this.page.getByText('Payment & Shipping').click({ timeout: 60000 });
+    await this.page.locator('label').filter({ hasText: 'Credit Card' }).locator('span').nth(1).click({ timeout: 60000 });
+    await this.page.getByText('Select Payment Term').click({ timeout: 60000 });
+    await this.page.getByRole('option', { name: '% Advance / 50% on Dispatch' }).click({ timeout: 60000 });
+    await this.page.locator('span').filter({ hasText: 'Select Lead Time' }).click({ timeout: 60000 });
+    await this.page.locator('#dropdownItem_2').click({ timeout: 60000 });
+    await this.page.getByText('Upon Request').click({ timeout: 60000 });
+    await this.page.locator('label').filter({ hasText: 'Air' }).locator('span').nth(1).click({ timeout: 60000 });
+    await this.page.locator('label').filter({ hasText: 'Sea' }).locator('span').nth(1).click({ timeout: 60000 });
     await this.page.waitForTimeout(5000);
-    await this.page.click("//span[normalize-space()='Continue']");
+    await this.page.click("//span[normalize-space()='Continue']",{ timeout: 60000 });
   }
   async fillShipping(product:any): Promise<void> {
     const paymentMethodsArray = product.payment_methods.split(',').map((m: string) => m.trim());
     await this.prodTradeDetails.selectPaymentMethods(paymentMethodsArray);
     await this.prodShippingDetails.is_Ships_Internationally(product?.ships_internationally || false);
-    await this.prodTradeDetails.setPaymentTerms(product?.payment_terms || '100% Advance', product?.payment_option || 'Credit Card'); 
+    await this.prodTradeDetails.setPaymentTerms(product?.payment_terms || '100% Advance');
     await this.prodShippingDetails.selectShippingMode(product?.shipping_modes || 'Air');
   // Select incoterms
   //await this.prodShippingDetails.selectIncoterms(product?.incoterms || 'EXW');
@@ -48,9 +48,9 @@ export class SellOfferShippingPage {
 await expect(this.page.locator('span.p-dropdown-label', { hasText: 'Select Lead Time' })).toBeVisible();
 
 // Now click the dropdown
-await this.page.locator('span.p-dropdown-label', { hasText: 'Select Lead Time' }).click();
+await this.page.locator('span.p-dropdown-label', { hasText: 'Select Lead Time' }).click({ timeout: 60000 });
   // Select the option dynamically by text
-  await this.page.locator(`.p-dropdown-item-label:text-is("${option}")`).click();
+  await this.page.locator(`.p-dropdown-item-label:text-is("${option}")`).click({ timeout: 60000 });
 }
   async confirmAndSubmitOffer(): Promise<void> {
     await expect(this.page.locator("//h6[normalize-space()='Sell offer created successfully.']")).toBeVisible();

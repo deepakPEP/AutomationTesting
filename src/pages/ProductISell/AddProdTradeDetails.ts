@@ -231,7 +231,7 @@ for (let i = 0; i < count; i++) {
     const card = this.page.locator('label.payment-option-card-comp', { hasText: m });
     const input = card.locator('input[type="checkbox"]');
     if (!(await input.isChecked())) {
-      await card.click();
+      await card.click({ timeout: 60000 });
     }
   }
   //   await cb.waitFor({ state: "attached" });

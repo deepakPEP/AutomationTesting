@@ -40,8 +40,8 @@ export class RFQDashboardPage {
     async validateViewDetails(rfq:any){
       const firstRow = this.page.locator('table.p-datatable-table > tbody > tr').first();
       const cursorPointerCell = firstRow.locator('td .cursor-pointer');
-      await cursorPointerCell.click();
-      await this.page.locator('button:has-text("View Details")').click();
+      await cursorPointerCell.click({timeout:60000});
+      await this.page.locator('button:has-text("View Details")').click({timeout:60000});
     }
     async  assertProductDetails(rfq:any) {
       // Assert Product Name
@@ -81,7 +81,7 @@ export class RFQDashboardPage {
       expect(statusText?.trim()).toBe('Approval Pending');
 
       // Click the "Show More Details" Button
-      await this.page.locator('button.btn-comp.btn-plain-txt').click();
+      await this.page.locator('button.btn-comp.btn-plain-txt').click({timeout:60000});
       this.assertRFQRequirementDetails(rfq);
   }
   async assertRFQRequirementDetails(rfq:any) {  

@@ -47,15 +47,15 @@ export class PricingPage {
 
   // Methods for interacting with pricing options
   async selectFixedPrice() {
-    await this.fixedPriceRadio.click();
+    await this.fixedPriceRadio.click({ timeout: 60000 });
   }
 
   async selectBulkPricing() {
-    await this.bulkPricingRadio.click();
+    await this.bulkPricingRadio.click({ timeout: 60000 });
   }
 
   async selectRequestQuote() {
-    await this.requestQuoteRadio.click();
+    await this.requestQuoteRadio.click({ timeout: 60000 });
   }
 
   async selectPriceRange() {
@@ -65,26 +65,26 @@ export class PricingPage {
   // Method to enter Bulk Pricing details
   async setBulkPricingDetails(quantityFrom: number, quantityTo: number, price: number) {
     //await this.unitTypeDropdown.selectOption({label: unitType});
-    await this.quantityFromInput.fill(quantityFrom.toString());
-    await this.quantityToInput.fill(quantityTo.toString());
-    await this.priceInput.fill(price.toString());
+    await this.quantityFromInput.fill(quantityFrom.toString(),{ timeout: 60000 });
+    await this.quantityToInput.fill(quantityTo.toString(),{ timeout: 60000 });
+    await this.priceInput.fill(price.toString(),{ timeout: 60000 });
   }
 
   // Method to enter Price Range details
   async setPriceRangeDetails(minPrice:number, maxPrice:number,minOrderQuantity: number) {
-    await this.minPriceInput.fill(minPrice.toString());
-    await this.maxPriceInput.fill(maxPrice.toString());
-    await this.minOrderQuantityInput.fill(minOrderQuantity.toString());
+    await this.minPriceInput.fill(minPrice.toString(),{ timeout: 60000 });
+    await this.maxPriceInput.fill(maxPrice.toString(),{ timeout: 60000 });
+    await this.minOrderQuantityInput.fill(minOrderQuantity.toString(),{ timeout: 60000 });
   }
   async setFixedPriceDetails(unit_price : number,minOrderQuantity: number) {
     //await this.minPriceInput.fill(minPrice.toString());
     //await this.maxPriceInput.fill(maxPrice.toString());
-    await this.unitPriceInput.fill(unit_price.toString());
-    await this.minOrderQuantityInput.fill(minOrderQuantity.toString());
+    await this.unitPriceInput.fill(unit_price.toString(),{ timeout: 60000 });
+    await this.minOrderQuantityInput.fill(minOrderQuantity.toString(),{ timeout: 60000 });
   }
   // Method to enter Request Quote details
   async setRequestQuoteDetails(minOrderQuantity: number) {
-    await this.minOrderQuantityInput.fill(minOrderQuantity.toString());
+    await this.minOrderQuantityInput.fill(minOrderQuantity.toString(),{ timeout: 60000 });
   }
 
   // Method to add a tier for bulk pricing

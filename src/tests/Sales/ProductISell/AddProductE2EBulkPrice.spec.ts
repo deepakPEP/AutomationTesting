@@ -12,7 +12,7 @@ import { ViewProductDetailsPage } from '../../../pages/ProductISell/AddViewProdu
 import { ProductISellDashboardPage } from '../../../pages/ProductISell/ProductISellDashboardPage';
 let product: any;
 
-test.describe('Add Product E2E for Bulk Price without variants in Sales', { tag: ['@dummy'] }, () => {
+test.describe('Add Product E2E for Bulk Price without variants in Sales', { tag: ['@product_I_sell_without_variants'] }, () => {
 
 // covering 113 testcases in this single e2e
   test('Complete Bulk Price - Add Product Flow without variants', async ({page}, testInfo) => {
@@ -80,10 +80,10 @@ test.describe('Add Product E2E for Bulk Price without variants in Sales', { tag:
       TestLogger.log('⏭️ Skipping variants - using no variant flow');
       await productPage.submitProduct();
       await page.waitForTimeout(60000);
-      //await addProductPreviewPage.validateProgressBar('37%');
+      await addProductPreviewPage.validateProgressBar('37%');
       await productPage.submitProduct(); // Skipping variants
       await page.waitForTimeout(5000);
-      //await addProductPreviewPage.validateProgressBar('50%');
+      await addProductPreviewPage.validateProgressBar('50%');
       await productPage.validateProductAddStepCompletion('Product Specifications');
       TestLogger.success('Step 3 completed: Variants skipped');
     });

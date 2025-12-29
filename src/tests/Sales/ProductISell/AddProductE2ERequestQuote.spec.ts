@@ -12,7 +12,7 @@ import { ViewProductDetailsPage } from '../../../pages/ProductISell/AddViewProdu
 import { ProductISellDashboardPage } from '../../../pages/ProductISell/ProductISellDashboardPage';
 let product: any;
 
-test.describe('Add Product E2E for Request Price without variants in Sales', { tag: ['@critical'] }, () => {
+test.describe('Add Product E2E for Request Price without variants in Sales', { tag: ['@product_I_sell_without_variants'] }, () => {
 
 // covering 113 testcases in this single e2e
   test('Complete Request Price - Add Product Flow without variants', async ({page}, testInfo) => {

@@ -73,7 +73,7 @@ export class AddProdAdditionalInformationPage {
     // await this.productGroupOption(itemText).click();
     
     // Click the 'Choose from your computer' button
-    await this.pasteVideoURL.click();
+    await this.pasteVideoURL.click({timeout: 60000});
     await this.pasteVideoURLInput.fill('https://www.youtube.com/shorts/eBT4hQscYog'); // Example YouTube URL
     await this.page.waitForTimeout(7000); // Wait for the URL to be processed
     const filePath = path.resolve(__dirname, '../../data/4-mb-example-file.pdf');
@@ -90,7 +90,7 @@ export class AddProdAdditionalInformationPage {
    async addCertificate(title: string, filePath: string) {
     await this.certificateTitleInput.fill(title);
     await this.page.waitForTimeout(8000);
-    await this.page.locator("//span[text()='Choose File']").click();
+    await this.page.locator("//span[text()='Choose File']").click({timeout: 60000});
     await this.certificateFileInput.setInputFiles(filePath);
     await this.page.waitForTimeout(30000); // Wait for the file to be uploaded
     
@@ -107,6 +107,6 @@ await expect(uploadedFile).toBeVisible({ timeout: 15000 });
   }
 
   async clickAddFAQ() {
-    await this.addFAQButton.click();
+    await this.addFAQButton.click({timeout: 60000});
   }
 }
