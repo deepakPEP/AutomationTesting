@@ -20,7 +20,7 @@ export default defineConfig({
   globalSetup: require.resolve('./playwright.global-setup'),
   // Force single worker execution (no parallel execution)
   //workers: 1,
-  workers: process.env.CI ? 2 : 1, // 2 workers in CI, 1 worker locally
+  workers: process.env.CI ? 3 : 1, // 3 workers in CI, 1 worker locally
   
   // Retry configuration for failed tests
   retries: process.env.CI ? 1 : 0, // 1 retry in CI, 0 retries locally
@@ -45,28 +45,10 @@ export default defineConfig({
     headless: !!process.env.CI,
     baseURL: 'http://localhost:3000',
     // Keep artifacts only on failure (both CI and local)
-    video: 'retain-on-failure',
+    video: 'on-first-retry',
     screenshot: 'only-on-failure', 
-    trace: 'retain-on-failure',
+    trace: 'on-first-retry',
   },
   // Create directories for test results
   outputDir: 'test-results',
 });
-// import { defineConfig } from '@playwright/test';
-
-// export default defineConfig({
-//   testDir: './src/tests',
-//   reporter: [['html', { outputFolder: 'playwright-report', open: 'never' }]],  // HTML Reporter
-//   timeout: 30000,
-//   use: {
-//     headless: false,
-//     baseURL: 'http://localhost:3000',
-//     video: { 
-//       mode: 'on',  // Ensures video is recorded
-//       size: '1280x720',  // Optional: Set video size
-//     },
-//     screenshot: 'on',
-//     trace: 'on',
-//   },
-//   outputDir: 'playwright-report',  // Ensure output directory is correct
-// });
