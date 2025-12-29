@@ -67,7 +67,7 @@ async fillShippingAndLogisticsDetails(ships_internationally: string, incoterms: 
   optionLocator = this.page.locator(`.p-dropdown-items li:has(span.p-dropdown-item-label:has-text("${packagingType}"))`);
 
   // Click the option
-  await optionLocator.click();
+  await optionLocator.click({timeout: 60000});
     await this.unitsPerPackage.fill(unitsPerPackage.toString(),{ timeout: 60000 });
   // Fill shipment identifier
   await this.shipmentIdentifier.fill(shipmentIdentifier,{ timeout: 60000 });

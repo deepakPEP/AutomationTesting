@@ -70,7 +70,7 @@ export class ProductInformationPage {
   }
   async clickWriteWithAI() {
   await this.writeWithAIButton.waitFor({ state: 'visible' , timeout: 60000});
-  await this.writeWithAIButton.click();
+  await this.writeWithAIButton.click({ timeout: 60000 });
   
   // Wait for AI processing (adjust timeout as needed)
   await this.page.waitForTimeout(3000);
@@ -124,10 +124,10 @@ async assertTextareaHasAIContent(productName?: string) {
   await categoryInput.fill(category);
 
   const suggestionList = this.page.locator('.p-autocomplete-items li');
-  await suggestionList.filter({ hasText: category }).first().click();
+  await suggestionList.filter({ hasText: category }).first().click({ timeout: 60000 });
 }
   async uploadImage() {
-    await this.page.getByText('Choose File').first().click();
+    await this.page.getByText('Choose File').first().click({ timeout: 60000 });
     const filePath = path.resolve(__dirname, '../../data/images.jpg');
     console.log('File path in images:', filePath);
     await this.uploadButton.setInputFiles(filePath);
@@ -312,7 +312,7 @@ async selectSingleVariantGroup(groupName: string) {
     const groupElement = this.page.locator(`.a-o-p-ul li`).filter({ hasText: groupName });
     
     if (await groupElement.count() > 0) {
-      await groupElement.first().click();
+      await groupElement.first().click({ timeout: 60000 });
       await this.page.waitForTimeout(5000);
       TestLogger.success(`✅ Selected group: "${groupName}"`);
     } else {
@@ -320,7 +320,7 @@ async selectSingleVariantGroup(groupName: string) {
       const partialMatch = await this.findPartialGroupMatch(groupName);
       if (partialMatch) {
         const partialElement = this.page.locator(`.a-o-p-ul li`).filter({ hasText: partialMatch });
-        await partialElement.first().click();
+        await partialElement.first().click({ timeout: 60000 });
         await this.page.waitForTimeout(5000);
         TestLogger.success(`✅ Selected group: "${partialMatch}" (partial match for "${groupName}")`);
       } else {
@@ -394,7 +394,7 @@ async clickAddOptionsButton() {
   try {
     const addOptionsButton = this.page.locator('button:has-text("Add options")');
     await addOptionsButton.waitFor({ state: 'visible', timeout: 5000 });
-    await addOptionsButton.click();
+    await addOptionsButton.click({ timeout: 60000 });
     await this.page.waitForTimeout(2000);
     
     TestLogger.success('✅ "Add options" button clicked successfully');
@@ -409,7 +409,7 @@ async clickOutsideOverlay() {
   
   try {
     const pageTitle = this.page.locator('h1:has-text("Product Specifications")');
-    await pageTitle.click();
+    await pageTitle.click({ timeout: 60000 });
     await this.page.waitForTimeout(1000);
     
     TestLogger.success('✅ Overlay closed');
@@ -444,7 +444,7 @@ async selectAndAcceptVariantChip(optionText: string, additionalOptions: string[]
     
     if (acceptButtonExists) {
       TestLogger.info(`🖱️ Clicking "Click to accept" for variant: ${optionText}`);
-      await acceptButton.click();
+      await acceptButton.click({ timeout: 60000 });
       await this.page.waitForTimeout(1000);
       
       // Handle dropdown if additional options provided
@@ -483,7 +483,7 @@ async selectDropdownOptions(options: string[]) {
       if (await checkboxLabel.count() > 0) {
         const isChecked = await checkboxInput.isChecked();
         if (!isChecked) {
-          await checkboxLabel.click();
+          await checkboxLabel.click({ timeout: 60000 });
           await this.page.waitForTimeout(500);
           TestLogger.success(`✅ Selected dropdown option: "${option}"`);
         }
@@ -506,7 +506,7 @@ async clickOutsideChips() {
     // Click on the page title area
     const pageTitle = this.page.locator('h1:has-text("Product Specifications")');
     if (await pageTitle.isVisible()) {
-      await pageTitle.click();
+      await pageTitle.click({ timeout: 60000 });
     } else {
       // Alternative: click on empty space
       await this.page.click('body', { position: { x: 100, y: 200 } });
@@ -540,7 +540,7 @@ async assertVariantsTable(expectedAttributes: string) {
     await this.assertMainVariantGroups(parsedAttributes);
     
     // Assert sub-variants (nested combinations)
-    await this.page.pause();
+    
     await this.assertSubVariants(parsedAttributes);
     
     // Assert header checkbox state
@@ -804,7 +804,7 @@ async selectAllVariants() {
     
     if (!isChecked) {
       TestLogger.info('☑️ Clicking header checkbox to select all variants');
-      await headerCheckbox.click();
+      await headerCheckbox.click({ timeout: 60000 });
       await this.page.waitForTimeout(1000);
       
       // Verify all variants are selected

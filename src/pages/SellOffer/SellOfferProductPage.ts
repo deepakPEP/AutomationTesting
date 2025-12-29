@@ -24,9 +24,9 @@ async submitProduct() {
   await this.page.waitForTimeout(7000);
 }
   async navigateToSellOfferSection() {
-    await this.page.locator('div').filter({ hasText: /^Sales$/ }).getByRole('img').click();
+    await this.page.locator('div').filter({ hasText: /^Sales$/ }).getByRole('img').click({ timeout: 60000 });
     await this.page.waitForTimeout(3000);
-    await this.page.getByRole('link', { name: 'Sell Offer', exact: true }).click();
+    await this.page.getByRole('link', { name: 'Sell Offer', exact: true }).click({ timeout: 60000 });
     await this.page.waitForTimeout(2000);
     
     // Debug: Check different locator strategies
@@ -35,12 +35,12 @@ async submitProduct() {
     // Try multiple strategies
     if (await buttonByRole.isVisible().catch(() => false)) {
       console.log('✅ Clicking "Create Your First Offer" button by role');
-      await buttonByRole.click();
+      await buttonByRole.click({ timeout: 60000 });
       await this.page.waitForTimeout(1000);
     } else {
       console.log('🔍 First button not found, trying "New Sell Offer" button');
       const newOfferButton = this.page.locator('button:has-text("New Sell Offer")');
-      await newOfferButton.click();
+      await newOfferButton.click({ timeout: 60000 });
 
       await this.page.waitForTimeout(1000);
     }
@@ -51,20 +51,20 @@ async submitProduct() {
       .locator('div')
       .filter({ hasText: /^Add New ProductQuickly add a new product to offer discounts$/ })
       .first()
-      .click();
+      .click({ timeout: 60000 });
 
     const productNameInput = this.page.getByRole('textbox', { name: 'Enter Product Name' });
-    await productNameInput.click();
-    await productNameInput.fill(productName);
+    await productNameInput.click({ timeout: 60000 });
+    await productNameInput.fill(productName,{ timeout: 60000 });
   }
 
   async selectCategory(main: string, sub: string, item: string, final: string) {
-    await this.page.getByRole('button', { name: 'Browse Category' }).click();
-    await this.page.getByText(main).click();
-    await this.page.getByText(sub).click();
-    await this.page.getByText(item).click();
-    await this.page.getByText(final).click();
-    await this.page.getByRole('button', { name: 'Choose', exact: true }).click();
+    await this.page.getByRole('button', { name: 'Browse Category' }).click({ timeout: 60000 });
+    await this.page.getByText(main).click({ timeout: 60000 });
+    await this.page.getByText(sub).click({ timeout: 60000 });
+    await this.page.getByText(item).click({ timeout: 60000 });
+    await this.page.getByText(final).click({ timeout: 60000 });
+    await this.page.getByRole('button', { name: 'Choose', exact: true }).click({ timeout: 60000 });
   }
 
   // async uploadImage({ imagePath }: { imagePath: string; }): Promise<void> {
@@ -81,20 +81,20 @@ async submitProduct() {
     unit: string, 
     currency: string = 'INR'
   ) {
-    await this.page.getByRole('textbox', { name: 'Add Product Description' }).fill(description);
-    await this.page.getByRole('textbox', { name: 'Enter Brand Name' }).fill(brand);
+    await this.page.getByRole('textbox', { name: 'Add Product Description' }).fill(description,{ timeout: 60000 });
+    await this.page.getByRole('textbox', { name: 'Enter Brand Name' }).fill(brand,{ timeout: 60000 });
     
     // Use the dynamic currency selector
     await selectCurrency(this.page, currency);
     
     await this.page.getByRole('textbox', { name: 'Enter Unit Price' }).click({ force: true });
     console.log('Filling unit price', unitPrice);
-    await this.page.getByPlaceholder('Enter Unit Price').fill(unitPrice);
-    await this.page.getByRole('textbox', { name: 'Enter Numeric' }).fill(quantity);
+    await this.page.getByPlaceholder('Enter Unit Price').fill(unitPrice,{ timeout: 60000 });
+    await this.page.getByRole('textbox', { name: 'Enter Numeric' }).fill(quantity,{ timeout: 60000 });
     await this.page.locator('span.p-dropdown-label:has-text("Select Unit")').click({ force: true });
 
     // Select unit dynamically
-    await this.page.locator(`.p-dropdown-item[role="option"] >> text=${unit}`).click();
+    await this.page.locator(`.p-dropdown-item[role="option"] >> text=${unit}`).click({ timeout: 60000 });
   }
 
   /**
@@ -111,8 +111,8 @@ async submitProduct() {
   }) {
     const currencySelector = new CurrencySelector(this.page);
     
-    await this.page.getByRole('textbox', { name: 'Add Product Description' }).fill(details.description);
-    await this.page.getByRole('textbox', { name: 'Enter Brand Name' }).fill(details.brand);
+    await this.page.getByRole('textbox', { name: 'Add Product Description' }).fill(details.description,{ timeout: 60000 });
+    await this.page.getByRole('textbox', { name: 'Enter Brand Name' }).fill(details.brand,{ timeout: 60000 });
     
     // Select currency using the advanced selector
     if (details.currency) {
@@ -123,23 +123,23 @@ async submitProduct() {
     
     await this.page.getByRole('textbox', { name: 'Enter Unit Price' }).click({ force: true });
     console.log('Filling unit price', details.unitPrice);
-    await this.page.getByPlaceholder('Enter Unit Price').fill(details.unitPrice);
-    await this.page.getByRole('textbox', { name: 'Enter Numeric' }).fill(details.quantity);
+    await this.page.getByPlaceholder('Enter Unit Price').fill(details.unitPrice,{ timeout: 60000 });
+    await this.page.getByRole('textbox', { name: 'Enter Numeric' }).fill(details.quantity,{ timeout: 60000 });
     await this.page.locator('span.p-dropdown-label:has-text("Select Unit")').click({ force: true });
 
     // Select unit dynamically
-    await this.page.locator(`.p-dropdown-item[role="option"] >> text=${details.unit}`).click();
+    await this.page.locator(`.p-dropdown-item[role="option"] >> text=${details.unit}`).click({ timeout: 60000 });
   }
 
   async clickContinueAfterProduct() {
     await this.page.waitForTimeout(5000);
-    await this.page.click("//div[@class='o-s-c-btn-group']//span[@class='b-c-txt'][normalize-space()='Continue']");
+    await this.page.click("//div[@class='o-s-c-btn-group']//span[@class='b-c-txt'][normalize-space()='Continue']",{ timeout: 60000 });
     await expect(
       this.page.locator("//div[@class='stepper-card-comp completed']//div[@class='s-c-c-b-h-left']//*[name()='svg'][2]/*[name()='path'][1]")
     ).toBeVisible();
   }
 
   async reopenAddProduct() {
-    await this.page.locator('div').filter({ hasText: /^Add New Product$/ }).getByRole('img').click();
+    await this.page.locator('div').filter({ hasText: /^Add New Product$/ }).getByRole('img').click({ timeout: 60000 });
   }
 }

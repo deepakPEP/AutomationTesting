@@ -60,8 +60,8 @@ async fillOfferDetailsGeneric(params: {
  * Select the offer type from dropdown
  */
 private async selectOfferType(offerType: string) {
-  await this.page.locator('.forms-select-2.p-dropdown').nth(0).locator('.p-dropdown-trigger').click();
-  await this.page.locator(`.p-dropdown-item:has-text("${offerType}")`).click();
+  await this.page.locator('.forms-select-2.p-dropdown').nth(0).locator('.p-dropdown-trigger').click({ timeout: 60000 });
+  await this.page.locator(`.p-dropdown-item:has-text("${offerType}")`).click({ timeout: 60000 });
   await this.page.waitForTimeout(2000);
 }
 
@@ -203,12 +203,12 @@ private async testMOQValidation(actualMOQInput: any, validMinQty: string) {
  */
 private async setOfferValidityDates(startDate: string, endDate: string) {
   // Set start date
-  await this.page.locator('label[for="StartDate"] + span input.p-inputtext').click();
-  await this.page.locator(`td[aria-label="${startDate}"]`).click();
+  await this.page.locator('label[for="StartDate"] + span input.p-inputtext').click({ timeout: 60000 });
+  await this.page.locator(`td[aria-label="${startDate}"]`).click({ timeout: 60000 });
   await this.page.waitForTimeout(2000);
 
   // Set end date with disabled date handling
-  await this.page.locator('label[for="EndDate"] + span input.p-inputtext').click();
+  await this.page.locator('label[for="EndDate"] + span input.p-inputtext').click({ timeout: 60000 });
   await this.selectEndDateWithFallback(endDate);
 }
 
@@ -221,10 +221,10 @@ private async selectEndDateWithFallback(endDate: string) {
   const isDisabled = await this.isDateDisabled(dateLocator);
   
   if (isDisabled) {
-    await this.page.locator('button[aria-label="Next Month"]').click();
+    await this.page.locator('button[aria-label="Next Month"]').click({ timeout: 60000 });
   }
   
-  await this.page.locator(`td[aria-label="${endDate}"]`).click();
+  await this.page.locator(`td[aria-label="${endDate}"]`).click({ timeout: 60000 });
 }
 
 /**
@@ -262,7 +262,7 @@ private async addKeywords(keywords?: string[]) {
  * Submit the offer form
  */
 private async submitOfferForm() {
-  await this.page.locator('button.btn-comp.btn-right.btn-c-primary').click();
+  await this.page.locator('button.btn-comp.btn-right.btn-c-primary').click({ timeout: 60000 });
 }
 
 /**

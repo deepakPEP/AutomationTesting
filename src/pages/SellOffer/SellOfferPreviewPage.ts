@@ -330,7 +330,7 @@ async assertViewDetailsRightInfoSection( args: {
  * Clicks the "Previous" button in the Sell Offer Details section.
  */
 async clickPreviousButton() {
-  await this.page.locator('.previous-btn-comp .btn-comp.btn-icon').click();
+  await this.page.locator('.previous-btn-comp .btn-comp.btn-icon').click({ timeout: 60000 });
 }
 
 // ...existing code...

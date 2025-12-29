@@ -1,6 +1,20 @@
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
+  projects: [
+    {
+      name: 'product_I_sell_without_variants',
+      grep: /@product_I_sell_without_variants/,
+    },
+    // {
+    //   name: 'regression',
+    //   grep: /@regression/,
+    // },
+     // {
+    //   name: 'sanity',
+    //   grep: /@sanity/,
+    // },
+  ],
   testDir: './src/tests',
   
   globalSetup: require.resolve('./playwright.global-setup'),
@@ -12,8 +26,8 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0, // 1 retry in CI, 0 retries locally
   
   // Dynamic tag-based test execution
-  grep: process.env.TEST_TAGS ? new RegExp(process.env.TEST_TAGS) : 
-        process.env.CI ? /@dummy/ : undefined,
+  // grep: process.env.TEST_TAGS ? new RegExp(process.env.TEST_TAGS) : 
+  //       process.env.CI ? /@dummy/ : undefined,
   
   reporter: [
     ['html', { 

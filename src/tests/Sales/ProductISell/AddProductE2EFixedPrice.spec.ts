@@ -15,7 +15,7 @@ import { ProductISellDashboardPage } from '../../../pages/ProductISell/ProductIS
 let product: any;
 let productId: string;
 //let superAdminToken: string;
-test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag: ['@critical'] }, () => {
+test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag: ['@product_I_sell_without_variants'] }, () => {
 
 // covering 113 testcases in this single e2e
   test('Complete Add Product Flow without variants - AUTO_SAL_ADD_PROD_001_to_006', async ({page}, testInfo) => {

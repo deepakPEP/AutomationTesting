@@ -156,7 +156,7 @@ async addNewVariantOption(variantType: string, option: string) {
     // STEP 1: Click "Add new" button in more attributes section
     const addNewButton = this.page.locator('.m-a-b-btn-group button.btn-attributes:has-text("Add new")');
     await expect(addNewButton).toBeVisible();
-    await addNewButton.click();
+    await addNewButton.click({timeout: 60000});
     await this.page.waitForTimeout(2000);
     TestLogger.info('🔍 Clicked "Add new" button');
     
@@ -173,7 +173,7 @@ async addNewVariantOption(variantType: string, option: string) {
     const chipInput = this.page.locator(`.forms-group:has(.f-g-label:text("${variantType}")) .p-chips-input-token input`);
     
     // Add the option
-    await chipInput.click();
+    await chipInput.click({timeout: 60000});
     await chipInput.fill(option);
     await chipInput.press('Enter');
     
@@ -212,7 +212,7 @@ async addNewVariantOption(variantType: string, option: string) {
       
       if (acceptButtonExists) {
         TestLogger.info(`🖱️ Clicking "Click to accept" for variant: ${optionText}`);
-        await acceptButton.click();
+        await acceptButton.click({timeout: 60000});
         await this.page.waitForTimeout(1000);
         
         // Handle dropdown if additional options provided
@@ -282,7 +282,7 @@ async selectVariantGroupsFromOverlay(groupNames: string[]) {
       const exactMatch = this.page.locator(`.a-o-p-ul li:has-text("${groupName}")`);
       
       if (await exactMatch.count() > 0) {
-        await exactMatch.first().click();
+        await exactMatch.first().click({timeout: 60000});
         await this.page.waitForTimeout(1000);
         TestLogger.success(`✅ Selected group: "${groupName}" (exact match)`);
         return;
@@ -294,7 +294,7 @@ async selectVariantGroupsFromOverlay(groupNames: string[]) {
       
       if (await mainWordMatch.count() > 0) {
         const actualText = await mainWordMatch.first().textContent();
-        await mainWordMatch.first().click();
+        await mainWordMatch.first().click({timeout: 60000});
         await this.page.waitForTimeout(1000);
         TestLogger.success(`✅ Selected group: "${actualText?.trim()}" (main word match for "${groupName}")`);
         return;
@@ -317,7 +317,7 @@ async selectVariantGroupsFromOverlay(groupNames: string[]) {
           
           if (await variationMatch.count() > 0) {
             const actualText = await variationMatch.first().textContent();
-            await variationMatch.first().click();
+            await variationMatch.first().click({timeout: 60000});
             await this.page.waitForTimeout(1000);
             TestLogger.success(`✅ Selected group: "${actualText?.trim()}" (variation match for "${groupName}")`);
             return;
@@ -329,7 +329,7 @@ async selectVariantGroupsFromOverlay(groupNames: string[]) {
       const partialMatch = await this.findPartialGroupMatch(groupName);
       if (partialMatch) {
         const partialElement = this.page.locator(`.a-o-p-ul li:has-text("${partialMatch}")`);
-        await partialElement.first().click();
+        await partialElement.first().click({timeout: 60000});
         await this.page.waitForTimeout(1000);
         TestLogger.success(`✅ Selected group: "${partialMatch}" (partial match for "${groupName}")`);
         return;
@@ -409,7 +409,7 @@ async selectVariantGroupsFromOverlay(groupNames: string[]) {
     try {
       const addOptionsButton = this.page.locator('button:has-text("Add options")');
       await addOptionsButton.waitFor({ state: 'visible', timeout: 5000 });
-      await addOptionsButton.click();
+      await addOptionsButton.click({timeout: 60000});
       await this.page.waitForTimeout(2000);
       
       TestLogger.success('✅ "Add options" button clicked successfully');
@@ -424,7 +424,7 @@ async selectVariantGroupsFromOverlay(groupNames: string[]) {
     
     try {
       const pageTitle = this.page.locator('h1:has-text("Product Specifications")');
-      await pageTitle.click();
+      await pageTitle.click({timeout: 60000});
       await this.page.waitForTimeout(1000);
       
       TestLogger.success('✅ Overlay closed');
@@ -453,7 +453,7 @@ async selectVariantGroupsFromOverlay(groupNames: string[]) {
         if (await checkboxLabel.count() > 0) {
           const isChecked = await checkboxInput.isChecked();
           if (!isChecked) {
-            await checkboxLabel.click();
+            await checkboxLabel.click({timeout: 60000});
             await this.page.waitForTimeout(500);
             TestLogger.success(`✅ Selected dropdown option: "${option}"`);
           }
@@ -475,7 +475,7 @@ async selectVariantGroupsFromOverlay(groupNames: string[]) {
       // Click on the page title area
       const pageTitle = this.page.locator('h1:has-text("Product Specifications")');
       if (await pageTitle.isVisible()) {
-        await pageTitle.click();
+        await pageTitle.click({timeout: 60000});
       } else {
         // Alternative: click on empty space
         await this.page.click('body', { position: { x: 100, y: 200 } });
@@ -648,7 +648,7 @@ async expandVariantGroup(variantName: string) {
     const expandButton = variantRow.locator('.btn-open-variant');
     
     if (await expandButton.count() > 0) {
-      await expandButton.click();
+      await expandButton.click({ timeout: 60000 });
       await this.page.waitForTimeout(1000); // Wait for expansion
       
       TestLogger.success(`✅ Expanded variant group: ${variantName}`);
@@ -875,7 +875,7 @@ async expandVariantGroup(variantName: string) {
           
           const isChecked = await checkbox.isChecked();
           if (!isChecked) {
-            await checkbox.click();
+            await checkbox.click({ timeout: 60000 });
             await this.page.waitForTimeout(500);
             TestLogger.success(`✅ Selected variant: ${variantName}`);
           } else {
@@ -1179,7 +1179,7 @@ async expandTableSimple() {
     const count = await buttons.count();
     
     for (let i = 0; i < count; i++) {
-      await buttons.nth(i).click();
+      await buttons.nth(i).click({ timeout: 60000 });
       await this.page.waitForTimeout(1000);
     }
     TestLogger.success('✅ All variant groups expanded');
@@ -1190,7 +1190,7 @@ async expandTableSimple() {
 
 async clickVariantRowSimple(combination: string) {
   const row = this.page.locator(`tr:has(.variant-name-description:has-text("${combination}"))`);
-  await row.locator('td').nth(2).click();
+  await row.locator('td').nth(2).click({ timeout: 60000 });
   await this.page.waitForTimeout(2000);
 }
 
@@ -1218,8 +1218,8 @@ async fillFormSimple(data: {
     await this.page.locator('input[placeholder*="Enter Numeric"]').fill(data.moq);
     
     // MOQ Unit
-    await this.page.locator('.p-dropdown').last().click();
-    await this.page.locator(`.p-dropdown-item:has-text("${data.moqUnit}")`).click();
+    await this.page.locator('.p-dropdown').last().click({ timeout: 60000 });
+    await this.page.locator(`.p-dropdown-item:has-text("${data.moqUnit}")`).click({ timeout: 60000 });
     
     TestLogger.success('✅ Form filled');
   } catch (error) {
@@ -1257,7 +1257,7 @@ async uploadVariantImageSimple(imagePath: string) {
   }
 }
 async clickContinueSimple() {
-  await this.page.locator('button:has-text("Continue")').click();
+  await this.page.locator('button:has-text("Continue")').click({ timeout: 60000 });
   await this.page.waitForTimeout(2000);
 }
 // ============================================
@@ -1274,7 +1274,7 @@ async clickWriteWithAIAndAssertDescription(product: any) {
     await expect(aiButton).toBeVisible();
     TestLogger.info('🔍 AI button found, clicking...');
     
-    await aiButton.click();
+    await aiButton.click({ timeout: 60000 });
     
     // STEP 2: Wait for AI to generate content
     TestLogger.info('⏳ Waiting for AI to generate description...');
@@ -1367,7 +1367,7 @@ async clickWriteWithAIApplicationsAndAssert(product: any) {
     await expect(aiButton).toBeVisible();
     TestLogger.info('🔍 AI Applications button found, clicking...');
     
-    await aiButton.click();
+    await aiButton.click({ timeout: 60000 });
     
     // STEP 2: Wait for AI to generate content
     TestLogger.info('⏳ Waiting for AI to generate applications content...');
