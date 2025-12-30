@@ -45,7 +45,7 @@ export default defineConfig({
     headless: !!process.env.CI,
     baseURL: 'http://localhost:3000',
     // Keep artifacts only on failure (both CI and local)
-    video: 'on-first-retry',
+    video: process.env.CI ? 'on-first-retry' : 'retain-on-failure',
     screenshot: 'only-on-failure', 
     trace: 'on-first-retry',
   },

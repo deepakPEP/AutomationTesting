@@ -158,7 +158,7 @@ export class PricingMOQPage {
       await this.selectUnitButton.click({timeout:60000});
   await this.page.locator('li.p-dropdown-item[aria-label="' + product.unit + '"]').click({force:true});
       //await this.selectUnit(product.unit || 'Pieces', product.moq);
-
+      await this.page.waitForTimeout(2000);
      const bulkCell = product.unit_price;
   let bulk: any[] = [];
   if (Array.isArray(bulkCell)) bulk = bulkCell;

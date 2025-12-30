@@ -1,46 +1,17 @@
-// import { request } from "@playwright/test";
 
-// async function globalSetup() {
-//   const phoneNo = '9591603604';
-//   //const phoneNo = process.env.TEST_PHONE_NO;
-
-//   if (!phoneNo) {
-//     throw new Error("TEST_PHONE_NO is not defined");
-//   }
-
-//   const apiContext = await request.newContext();
-
-//   const response = await apiContext.post(
-//     "http://13.234.126.192:4000/api/delete-user-related-data/sandbox",
-//     {
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       data: {
-//         phoneNo: phoneNo,
-//       },
-//     }
-//   );
-
-//   if (!response.ok()) {
-//     const text = await response.text();
-//     throw new Error(
-//       `Delete user data API failed: ${response.status()} - ${text}`
-//     );
-//   }
-
-//   console.log(`✅ User data deleted successfully for phone: ${phoneNo}`);
-// }
-
-// export default globalSetup;
 import { chromium,expect } from '@playwright/test';
 import { request } from '@playwright/test';
-import { getOtpFromApi, GetOtpOptions } from './src/utils/GetOTPFromAPI'; // Assuming you have an OTP fetcher function
+import { getOtpFromApi, GetOtpOptions } from './src/utils/GetOTPFromAPI';
+import {deleteUserData} from './src/utils/ApiHelpers' // Assuming you have an OTP fetcher function
 
 async function globalSetup() {
   const phoneNo = '9591603604';
-  const browser = await chromium.launch();
-
+  deleteUserData(phoneNo);
+  //const browser = await chromium.launch();
+   const browser = await chromium.launch({
+    headless: !!process.env.CI ? true : false, // 👈 THIS is mandatory
+    slowMo: process.env.CI ? 0 : 100,
+  });
   // Seller login
   const sellerPage = await browser.newPage();
  // await sellerPage.goto('/login');
@@ -100,7 +71,7 @@ async function globalSetup() {
 
       // Fill OTP into input fields
       for (let i = 0; i < otp.length; i++) {
-        await sellerPage.locator('.otp-input').nth(i).fill(otp[i]);
+        await sellerPage.locator('.forms-otp').nth(i).fill(otp[i]);
         await sellerPage.waitForTimeout(200);
       }
       console.log('✓ OTP filled successfully');

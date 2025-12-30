@@ -12,11 +12,11 @@ import { ViewProductDetailsPage } from '../../../pages/ProductISell/AddViewProdu
 import { ProductISellDashboardPage } from '../../../pages/ProductISell/ProductISellDashboardPage';
 let product: any;
 
-
+test.use({ storageState: 'auth-seller.json' });
 
 test.describe('Add Product E2E for Bulk Price without variants in Sales', { tag: ['@product_I_sell_without_variants'] }, () => {
 
-  test.use({ storageState: 'auth-seller.json' });
+  
 // covering 113 testcases in this single e2e
   test('Complete Bulk Price - Add Product Flow without variants', async ({page}, testInfo) => {
     test.setTimeout(480000);
