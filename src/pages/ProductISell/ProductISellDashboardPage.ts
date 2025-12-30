@@ -34,7 +34,9 @@ export class ProductISellDashboardPage {
 
     //const firstRow = this.page.locator('table.p-datatable-table > tbody > tr').first();
      const firstRow = this.page.locator('table.p-datatable-table > tbody > tr')
-        .filter({ has: this.page.locator('.t-p-i-txt', { hasText: expectedProductISellDetails.productName }) });
+        .filter({ has: this.page.locator('.t-p-i-txt', { hasText: expectedProductISellDetails.productName }) }).filter({
+        has: this.page.locator('.table-badge-comp.pending', { hasText: 'pending' })
+    });
   
     const cells = firstRow.locator('td');
 
@@ -99,12 +101,19 @@ export class ProductISellDashboardPage {
     TestLogger.log(`💰 Pricing Type: ${pricingType}`);
     TestLogger.log(`💰 Raw Price Display: ${rawPrice}`);
 
-    if (pricingType === 'request_quote' || pricingType === 'negotiable') {
+    if (pricingType === 'request_quote') {
       // ✅ Request Quote or Negotiable - Should display "--"
-      TestLogger.log(`Expected: --`);
-      await expect(priceCell).toHaveText('--');
-      TestLogger.log(`✓ Negotiable/Request Quote validated`);
+      
+      await expect(priceCell).toHaveText('Request Quote');
+      TestLogger.log(`✓ Request Quote validated`);
     }
+    if (pricingType === 'negotiable') {
+      // ✅ Request Quote or Negotiable - Should display "--"
+      
+      await expect(priceCell).toHaveText('Negotiable');
+      TestLogger.log(`✓ Negotiable validated`);
+    }
+
     else if (pricingType === 'price_range' || pricingType === 'bulk') {
       // ✅ Price Range or Bulk - Format: "₹ MIN - ₹ MAX"
       
