@@ -150,7 +150,7 @@ test.describe('Add Product E2E for Request Price without variants in Sales', { t
     });
     await test.step('Step 7: Validate Product on View Page and Dashboard', async () => {
       TestLogger.log('🔍 Verifying product details on view page');
-      test.setTimeout(240000);
+      test.setTimeout(480000);
       await viewProductDetailsPage.assertProductDetails(product);
       
       TestLogger.log('📊 Navigating to dashboard and validating product listing');

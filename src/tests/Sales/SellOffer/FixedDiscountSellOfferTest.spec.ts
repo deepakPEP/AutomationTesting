@@ -16,7 +16,7 @@ import { TestLogger } from '../../../utils/TestLogger';
 
 // Bug - offer price not correct in preview page for Fixed Discount offer type
 // 40 testcases covered in this single e2e
-test.describe('Fixed Discount Sell Offer Flow',  { tag: ['@critical', '@product'] }, () => {
+test.describe('Fixed Discount Sell Offer Flow',  { tag: ['@critical', '@selloffer_flow'] }, () => {
   test('Sell Offer Flow through add new product', async ({ page }, testInfo) => {
     const addProductPreviewPage = new AddProductPreviewPage(page);
     const previewPage = new SellOfferPreviewPage(page);

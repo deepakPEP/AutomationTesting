@@ -12,7 +12,7 @@ import { AddProductPreviewPage } from '../../../pages/ProductISell/AddProductPre
 import { getTodayAndFutureDate} from '../../../utils/Dateutlis';
 import { SellDashboardPage } from '../../../pages/SellOffer/SellOfferDashboardPage';
 //
-test.describe('Buy More Get More Sell Offer Flow', { tag: ['@critical'] }, () => {
+test.describe('Buy More Get More Sell Offer Flow', { tag: ['@selloffer_flow'] }, () => {
   test('Sell Offer Flow through add new product', async ({ page }, testInfo) => {
     // Initialize TestLogger for this test
     TestLogger.info('🚀 Starting Buy More Get More Sell Offer Flow test');
