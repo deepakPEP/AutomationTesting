@@ -14,10 +14,10 @@ import { SellDashboardPage } from '../../../pages/SellOffer/SellOfferDashboardPa
 import { LoginPage } from '../../../pages/LoginPage';
 import { PriceFormatter, formatDashboardPrice } from '../../../utils/PriceFormatter';
 import { TestLogger } from '../../../utils/TestLogger';
-import { off } from 'process';
+
 
 // Bug - offer price not correct in preview page for Fixed Discount offer type
-test.describe('LOW MOQ Sell Offer Flow', { tag: ['@critical']},() => {
+test.describe('LOW MOQ Sell Offer Flow', { tag: ['@selloffer_flow']},() => {
   test('Sell Offer Flow through add new product', async ({ page }, testInfo) => {
     const addProductPreviewPage = new AddProductPreviewPage(page);
     const previewPage = new SellOfferPreviewPage(page);

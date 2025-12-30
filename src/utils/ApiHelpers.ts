@@ -1,6 +1,7 @@
 // src/utils/ApiHelpers.ts
 
 import { APIRequestContext, expect } from '@playwright/test';
+import { request } from '@playwright/test';
 
 export interface ApiResponse<T = any> {
   success: boolean;
@@ -208,4 +209,35 @@ export async function cleanupTestData(
   }
   
   console.log('✅ Test data cleanup completed');
+}
+
+export async function deleteUserData(phoneNo: string) {
+  if (!phoneNo) {
+    throw new Error('TEST_PHONE_NO is not defined');
+  }
+
+  const apiContext = await request.newContext({
+    baseURL: 'http://13.234.126.192:4000',
+    timeout: 120000, // ⏱️ increase timeout
+  });
+
+  try {
+    const response = await apiContext.post(
+      '/api/delete-user-related-data/sandbox',
+      {
+        data: { phoneNo },
+      }
+    );
+
+    if (!response.ok()) {
+      const text = await response.text();
+      throw new Error(
+        `Delete user data API failed: ${response.status()} - ${text}`
+      );
+    }
+
+    console.log(`✅ User data deleted successfully for phone: ${phoneNo}`);
+  } finally {
+    await apiContext.dispose(); // 🔥 MUST
+  }
 }

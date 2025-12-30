@@ -12,11 +12,12 @@ import { ViewProductDetailsPage } from '../../../pages/ProductISell/AddViewProdu
 import { ProductISellDashboardPage } from '../../../pages/ProductISell/ProductISellDashboardPage';
 let product: any;
 
+test.use({ storageState: 'auth-seller.json' });
 test.describe('Add Product E2E for Request Price without variants in Sales', { tag: ['@product_I_sell_without_variants'] }, () => {
 
 // covering 113 testcases in this single e2e
   test('Complete Request Price - Add Product Flow without variants', async ({page}, testInfo) => {
-    test.use({ storageState: 'auth-seller.json' });
+    
     test.setTimeout(480000);
     
     // Initialize TestLogger for this test
@@ -36,11 +37,12 @@ test.describe('Add Product E2E for Request Price without variants in Sales', { t
     await test.step('Step 1: Add Product Basic Info', async () => {
       TestLogger.info('📝 Step 1: Adding Product Basic Information');
       
-      //await page.goto('https://sandbox.pepagora.org/en/authenticate');
+      await page.goto('https://sandbox.pepagora.org/en/app');
+      loginPage.acceptCookiesIfPresent();
     //   TestLogger.log('🔐 Logging in with phone number: 9591603604');
     //   await loginPage.enterEmailAndContinue('9591603604');
     // //  await page.pause();
-    //   product = getProductByName('Organic Basmati Rice');
+    product = getProductByName('Organic Basmati Rice');
     //   TestLogger.log(`📦 Loaded product from CSV: ${product?.name || 'Unknown'}`);
     // await page.waitForTimeout(12000);
       TestLogger.log('🛍️ Navigating to Sales > Product I Sell');

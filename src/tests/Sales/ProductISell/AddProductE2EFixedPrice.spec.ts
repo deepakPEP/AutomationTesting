@@ -16,8 +16,9 @@ let product: any;
 let productId: string;
 //let superAdminToken: string;
 
+test.use({ storageState: 'auth-seller.json' });
 test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag: ['@product_I_sell_without_variants'] }, () => {
-  test.use({ storageState: 'auth-seller.json' });
+  
 // covering 113 testcases in this single e2e
   test('Complete Add Product Flow without variants - AUTO_SAL_ADD_PROD_001_to_006', async ({page}, testInfo) => {
     test.setTimeout(480000);
@@ -39,7 +40,8 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag
     await test.step('Step 1: Add Product Basic Info', async () => {
       // TestLogger.info('📝 Step 1: Adding Product Basic Information');
       
-      // //await page.goto('https://sandbox.pepagora.org/en/authenticate');
+      await page.goto('https://sandbox.pepagora.org/en/app');
+      loginPage.acceptCookiesIfPresent();
       // TestLogger.log('🔐 Logging in with phone number: 9591603604');
       // await loginPage.enterEmailAndContinue('9591603604');
     //  await page.pause();
@@ -72,6 +74,7 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag
 
       TestLogger.log('✅ Verifying product details and progress');
     //  await page.pause();
+      await page.waitForTimeout(5000);
       await addProductPreviewPage.verifyDetails(product);
       await addProductPreviewPage.validateProgressBar('12%');
       await productPage.validateProductAddStepCompletion('Product Information');

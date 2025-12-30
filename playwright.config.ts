@@ -6,14 +6,14 @@ export default defineConfig({
       name: 'product_I_sell_without_variants',
       grep: /@product_I_sell_without_variants/,
     },
-    // {
-    //   name: 'regression',
-    //   grep: /@regression/,
-    // },
-     // {
-    //   name: 'sanity',
-    //   grep: /@sanity/,
-    // },
+    {
+      name: 'product_I_sell_with_variants',
+      grep: /@product_I_sell_with_variants/,
+    },
+     {
+      name: 'selloffer_flow',
+      grep: /@selloffer_flow/,
+    },
   ],
   testDir: './src/tests',
   
@@ -45,7 +45,7 @@ export default defineConfig({
     headless: !!process.env.CI,
     baseURL: 'http://localhost:3000',
     // Keep artifacts only on failure (both CI and local)
-    video: 'on-first-retry',
+    video: process.env.CI ? 'on-first-retry' : 'retain-on-failure',
     screenshot: 'only-on-failure', 
     trace: 'on-first-retry',
   },
