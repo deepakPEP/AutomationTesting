@@ -43,7 +43,6 @@ export default defineConfig({
   use: {
     // Use headless mode in CI environments, headed mode locally
     headless: !!process.env.CI,
-    viewport: { width: 1024, height: 576 },
     baseURL: 'http://localhost:3000',
     // Keep artifacts only on failure (both CI and local)
     video: process.env.CI ? 'on-first-retry' : 'retain-on-failure',
