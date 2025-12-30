@@ -6,14 +6,14 @@ export default defineConfig({
       name: 'product_I_sell_without_variants',
       grep: /@product_I_sell_without_variants/,
     },
-    // {
-    //   name: 'regression',
-    //   grep: /@regression/,
-    // },
-     // {
-    //   name: 'sanity',
-    //   grep: /@sanity/,
-    // },
+    {
+      name: 'product_I_sell_with_variants',
+      grep: /@product_I_sell_with_variants/,
+    },
+     {
+      name: 'selloffer_flow',
+      grep: /@selloffer_flow/,
+    },
   ],
   testDir: './src/tests',
   
