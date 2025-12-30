@@ -35,7 +35,7 @@ test.describe('Add Product E2E for Request Price without variants in Sales', { t
     await test.step('Step 1: Add Product Basic Info', async () => {
       TestLogger.info('📝 Step 1: Adding Product Basic Information');
       
-      //await page.goto('https://sandbox.pepagora.org/en/authenticate');
+      await page.goto('https://sandbox.pepagora.org/en/app');
       TestLogger.log('🔐 Logging in with phone number: 9591603604');
      // await loginPage.enterEmailAndContinue('9591603604');
     //  await page.pause();
