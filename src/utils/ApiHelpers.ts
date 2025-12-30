@@ -218,7 +218,7 @@ export async function deleteUserData(phoneNo: string) {
 
   const apiContext = await request.newContext({
     baseURL: 'http://13.234.126.192:4000',
-    timeout: 60000, // ⏱️ increase timeout
+    timeout: 120000, // ⏱️ increase timeout
   });
 
   try {

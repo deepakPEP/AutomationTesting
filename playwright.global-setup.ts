@@ -6,7 +6,7 @@ import {deleteUserData} from './src/utils/ApiHelpers' // Assuming you have an OT
 
 async function globalSetup() {
   const phoneNo = '9591603604';
-  deleteUserData(phoneNo);
+  await deleteUserData(phoneNo);
   //const browser = await chromium.launch();
    const browser = await chromium.launch({
     headless: !!process.env.CI ? true : false, // 👈 THIS is mandatory
