@@ -38,16 +38,18 @@ test.describe('Add Product E2E for Bulk Price without variants in Sales', { tag:
     await test.step('Step 1: Add Product Basic Info', async () => {
       // TestLogger.info('📝 Step 1: Adding Product Basic Information');
       
-      await page.goto('https://sandbox.pepagora.org/en/app');
-      loginPage.acceptCookiesIfPresent();
+     // await page.goto('https://sandbox.pepagora.org/en/app');
+      
       // TestLogger.log('🔐 Logging in with phone number: 9591603604');
       // await loginPage.enterEmailAndContinue('9591603604');
     //  await page.pause();
       product = getProductByName('Aluminum Sheet');
       TestLogger.log(`📦 Loaded product from CSV: ${product?.name || 'Unknown'}`);
+       await page.goto('https://www.sandbox.pepagora.org/app/sales-product/form');
+       await loginPage.acceptCookiesIfPresent();
     await page.waitForTimeout(12000);
       TestLogger.log('🛍️ Navigating to Sales > Product I Sell');
-      await productISellDashboardPage.clickAddProduct();
+    //  await productISellDashboardPage.clickAddProduct();
       TestLogger.log('📋 Filling basic product information');
       await productPage.fillBasicInfo(product);
       await productPage.browseCategory(product?.product_category || '');

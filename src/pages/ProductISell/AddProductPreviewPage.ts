@@ -30,6 +30,7 @@ export class AddProductPreviewPage {
 
 
 async verifyDetails(product: any) {
+    await this.productTitle.waitFor({ state: 'visible' });
     await expect(this.productTitle).toHaveText(product?.name || 'Electric Screwdriver');
     const actualSKU = await this.skuText.textContent();
     console.log('SKU Text:', actualSKU);//test.info
