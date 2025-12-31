@@ -1,5 +1,5 @@
 name: Product I sell with variants - Regrssion Tests
-#command : npx playwright test --grep @product_I_sell_with_variants
+
 on:
   workflow_dispatch:
 # on:
@@ -31,7 +31,7 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p artifacts
-          npx playwright test --grep @product_I_sell_without_variants
+          npx playwright test --grep @product_I_sell_with_variants
           rc=$?
           echo "$rc" > artifacts/tests_failed
         env:

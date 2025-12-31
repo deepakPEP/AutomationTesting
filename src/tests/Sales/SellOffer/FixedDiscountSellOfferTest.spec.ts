@@ -14,6 +14,7 @@ import { SellDashboardPage } from '../../../pages/SellOffer/SellOfferDashboardPa
 import { LoginPage } from '../../../pages/LoginPage';
 import { TestLogger } from '../../../utils/TestLogger';
 
+test.use({ storageState: 'auth-seller.json' });
 // Bug - offer price not correct in preview page for Fixed Discount offer type
 // 40 testcases covered in this single e2e
 test.describe('Fixed Discount Sell Offer Flow',  { tag: ['@critical', '@selloffer_flow'] }, () => {
@@ -38,8 +39,9 @@ test.describe('Fixed Discount Sell Offer Flow',  { tag: ['@critical', '@selloffe
       const productInformationPage = new ProductInformationPage(page);
       
       TestLogger.log('🔐 Logging in with phone number: 9632370046');
-      await loginPage.enterEmailAndContinue('9632370046');
-          
+      //await loginPage.enterEmailAndContinue('9632370046');
+      await page.goto('https://sandbox.pepagora.org/en/app');
+      await loginPage.acceptCookiesIfPresent();  
       await page.waitForTimeout(12000);
 
       TestLogger.log('📱 Navigating to Sell Offer section');

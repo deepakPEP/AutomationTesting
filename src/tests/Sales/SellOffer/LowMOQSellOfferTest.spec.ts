@@ -15,7 +15,7 @@ import { LoginPage } from '../../../pages/LoginPage';
 import { PriceFormatter, formatDashboardPrice } from '../../../utils/PriceFormatter';
 import { TestLogger } from '../../../utils/TestLogger';
 
-
+test.use({ storageState: 'auth-seller.json' });
 // Bug - offer price not correct in preview page for Fixed Discount offer type
 test.describe('LOW MOQ Sell Offer Flow', { tag: ['@selloffer_flow']},() => {
   test('Sell Offer Flow through add new product', async ({ page }, testInfo) => {
@@ -40,8 +40,11 @@ test.describe('LOW MOQ Sell Offer Flow', { tag: ['@selloffer_flow']},() => {
       const loginPage = new LoginPage(page);
 
       TestLogger.log('🔐 Logging in with phone number: 9632370046');
-      await loginPage.enterEmailAndContinue('9632370046');
-      
+      //await loginPage.enterEmailAndContinue('9632370046');
+
+      await page.goto('https://sandbox.pepagora.org/en/app');
+      await loginPage.acceptCookiesIfPresent();  
+
       await page.waitForTimeout(12000);
 
       TestLogger.log('📱 Navigating to Sell Offer section');

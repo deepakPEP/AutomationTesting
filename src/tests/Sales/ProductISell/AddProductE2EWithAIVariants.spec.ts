@@ -12,7 +12,7 @@ import { AddProdAdditionalInformationPage } from '../../../pages/ProductISell/Ad
 import { ViewProductDetailsPage } from '../../../pages/ProductISell/AddViewProductDetailsPage';
 import { ProductISellDashboardPage } from '../../../pages/ProductISell/ProductISellDashboardPage';
 let product: any;
-
+test.use({ storageState: 'auth-seller.json' });
 test.describe('Add Product E2E with AI variants in Sales', { tag: ['@product_I_sell_with_variants'] }, () => {
 
 // covering 113 testcases in this single e2e
@@ -39,17 +39,18 @@ test.describe('Add Product E2E with AI variants in Sales', { tag: ['@product_I_s
       
       //await page.goto('https://sandbox.pepagora.org/en/authenticate');
       TestLogger.log('🔐 Logging in with phone number: 9591603604');
-      await loginPage.enterEmailAndContinue('9591603604');
-   // await page.goto('https://sandbox.pepagora.org/en/app/sales-product/68ef36872f48bd35bc3f7022');
+      //await loginPage.enterEmailAndContinue('9591603604');
+    await page.goto('https://www.sandbox.pepagora.org/app/sales-product/form');
+       await loginPage.acceptCookiesIfPresent();
       product = getProductByName('Mens Cotton Polo T-Shirt');
       //TestLogger.log(`📦 Loaded product from CSV: ${product?.name || 'Unknown'}`);
       TestLogger.log(`📦 Loaded product from CSV: ${product || 'Unknown'}`);
     await page.waitForTimeout(12000);
       TestLogger.log('🛍️ Navigating to Sales > Product I Sell');
-      await page.locator('div').filter({ hasText: /^Sales$/ }).getByRole('img').click();
-      await page.getByRole('link', { name: 'Product I Sell', exact: true }).click();
+      // await page.locator('div').filter({ hasText: /^Sales$/ }).getByRole('img').click();
+      // await page.getByRole('link', { name: 'Product I Sell', exact: true }).click();
       
-      await page.getByRole('button', { name: 'Add Product Add Product' }).click();
+      // await page.getByRole('button', { name: 'Add Product Add Product' }).click();
 
       TestLogger.log('📋 Filling basic product information');
       await productPage.fillBasicInfo(product,true);

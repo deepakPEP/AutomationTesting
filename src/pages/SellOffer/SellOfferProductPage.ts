@@ -24,7 +24,13 @@ async submitProduct() {
   await this.page.waitForTimeout(7000);
 }
   async navigateToSellOfferSection() {
-    await this.page.locator('div').filter({ hasText: /^Sales$/ }).getByRole('img').click({ timeout: 60000 });
+   // await this.page.pause();
+   await this.page.getByAltText('Close').click({force:true});
+   // await this.page.locator('div.s-c-close-block').click();
+
+   await this.page.locator('span.s-c-nav-items', { hasText: 'Sales' }).first().click({ force: true });
+
+    //await this.page.locator('div').filter({ hasText: /^Sales$/ }).locator('path').first().click({ timeout: 60000 });
     await this.page.waitForTimeout(3000);
     await this.page.getByRole('link', { name: 'Sell Offer', exact: true }).click({ timeout: 60000 });
     await this.page.waitForTimeout(2000);
