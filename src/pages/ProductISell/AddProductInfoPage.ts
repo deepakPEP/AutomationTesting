@@ -125,6 +125,7 @@ async assertTextareaHasAIContent(productName?: string) {
   // await categoryInput.fill(category);
 
   const suggestionList = this.page.locator('.p-autocomplete-items li');
+
   await suggestionList.filter({ hasText: category }).first().click({ timeout: 60000 });
 }
   async uploadImage() {
