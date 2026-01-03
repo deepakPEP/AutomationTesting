@@ -1,4 +1,4 @@
-name: Product I sell without variants - Regrssion Tests
+name: Product I sell without variants - Regression Tests
 #command : npx playwright test --grep @product_I_sell_without_variants
 on:
   workflow_dispatch:

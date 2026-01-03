@@ -23,7 +23,11 @@ export class SellDashboardPage {
       expiringIn: string;
       status: string;
     }) {
-      const firstRow = this.page.locator('table.p-datatable-table > tbody > tr').first();
+      //const firstRow = this.page.locator('table.p-datatable-table > tbody > tr').first();
+      const firstRow = this.page.locator('table.p-datatable-table > tbody > tr')
+        .filter({ has: this.page.locator('.t-p-i-txt', { hasText: expectedSellOfferDetails.productName }) }).filter({
+        has: this.page.locator('.table-badge-comp.pending', { hasText: 'pending' }).first()
+    });
       const cells = firstRow.locator('td');
   
       // ✅ Validate dynamic values

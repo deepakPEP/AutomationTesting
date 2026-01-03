@@ -1,4 +1,4 @@
-name: Product I sell with variants - Regrssion Tests
+name: Product I sell with variants - Regression Tests
 
 on:
   workflow_dispatch:
