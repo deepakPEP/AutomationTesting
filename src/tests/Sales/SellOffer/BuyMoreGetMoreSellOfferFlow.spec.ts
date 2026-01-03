@@ -11,7 +11,7 @@ import { ProductInformationPage } from '../../../pages/ProductISell/AddProductIn
 import { AddProductPreviewPage } from '../../../pages/ProductISell/AddProductPreviewPage';
 import { getTodayAndFutureDate} from '../../../utils/Dateutlis';
 import { SellDashboardPage } from '../../../pages/SellOffer/SellOfferDashboardPage';
-//
+test.use({ storageState: 'auth-seller.json' });
 test.describe('Buy More Get More Sell Offer Flow', { tag: ['@selloffer_flow'] }, () => {
   test('Sell Offer Flow through add new product', async ({ page }, testInfo) => {
     // Initialize TestLogger for this test
@@ -34,10 +34,11 @@ test.describe('Buy More Get More Sell Offer Flow', { tag: ['@selloffer_flow'] },
       const loginPage = new LoginPage(page);
 
       TestLogger.log('🔐 Logging in with phone number: 9632370046');
-      await loginPage.enterEmailAndContinue('9632370046');
-      
+      //await loginPage.enterEmailAndContinue('9632370046');
+      await page.goto('https://sandbox.pepagora.org/en/app');
+      await loginPage.acceptCookiesIfPresent();
       await page.waitForTimeout(12000);
-
+     
       TestLogger.log('🛍️ Navigating to Sell Offer section');
       await productPage.navigateToSellOfferSection();
       TestLogger.log(`📋 Product details loaded: ${product?.name || 'Industrial Hydraulic Pump'}`);

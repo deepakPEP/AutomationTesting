@@ -35,20 +35,22 @@ test.describe('Add Product E2E for Price Price without variants in Sales', { tag
     await test.step('Step 1: Add Product Basic Info', async () => {
       TestLogger.info('📝 Step 1: Adding Product Basic Information');
       
-      await page.goto('https://sandbox.pepagora.org/en/app');
-      loginPage.acceptCookiesIfPresent();
+     // await page.goto('https://sandbox.pepagora.org/en/app');
+      
       // TestLogger.log('🔐 Logging in with phone number: 9591603604');
       // await loginPage.enterEmailAndContinue('9591603604');
     //  await page.pause();
       product = getProductByName('Hydraulic Power Press Machine');
       await console.log('Product from CSV',product.pricing_type);
       TestLogger.log(`📦 Loaded product from CSV: ${product?.name || 'Unknown'}`);
-    await page.waitForTimeout(12000);
+    
       TestLogger.log('🛍️ Navigating to Sales > Product I Sell');
-      await page.locator('div').filter({ hasText: /^Sales$/ }).getByRole('img').click();
-      await page.getByRole('link', { name: 'Product I Sell', exact: true }).click();
-      await page.getByRole('button', { name: 'Add Product Add Product' }).click();
-
+      // await page.locator('div').filter({ hasText: /^Sales$/ }).getByRole('img').click();
+      // await page.getByRole('link', { name: 'Product I Sell', exact: true }).click();
+      // await page.getByRole('button', { name: 'Add Product Add Product' }).click();
+      await page.goto('https://www.sandbox.pepagora.org/app/sales-product/form');
+      await page.waitForTimeout(10000);
+      loginPage.acceptCookiesIfPresent();
       TestLogger.log('📋 Filling basic product information');
       await productPage.fillBasicInfo(product,true);
       await productPage.selectAICategory(product.product_category)
@@ -75,7 +77,7 @@ test.describe('Add Product E2E for Price Price without variants in Sales', { tag
       await addProductPreviewPage.validateProgressBar('25%');
       // await page.pause();
       await addProductPreviewPage.assertMOQ(page, product?.moq || '1',product.unit || 'Pieces');
-      let expectedPrice = await addProductPreviewPage.assertPrice(product?.unit_price || '100');
+      let expectedPrice = await addProductPreviewPage.assertPrice(product?.unit_price || '100',product.unit_type,product.pricing_type || 'fixed_price');
       product.unit_price=expectedPrice; // updating product object with formatted price for later validation
       await productPage.validateProductAddStepCompletion('Pricing & MOQ');
       TestLogger.success('Step 2 completed: Pricing and MOQ added');

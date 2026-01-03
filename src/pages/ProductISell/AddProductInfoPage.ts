@@ -73,7 +73,7 @@ export class ProductInformationPage {
   await this.writeWithAIButton.click({ timeout: 60000 });
   
   // Wait for AI processing (adjust timeout as needed)
-  await this.page.waitForTimeout(3000);
+  await this.page.waitForTimeout(10000);
   
   console.log('✅ Clicked "Write with AI" button');
 }
@@ -121,9 +121,11 @@ async assertTextareaHasAIContent(productName?: string) {
   const categoryInput = this.page.locator('input.p-autocomplete-input[placeholder="Select AI Category"]');
   await categoryInput.click();
   await this.page.waitForTimeout(5000);
-  await categoryInput.fill(category);
+ // as of now commenting out the fill action since searching not working as expected
+  // await categoryInput.fill(category);
 
   const suggestionList = this.page.locator('.p-autocomplete-items li');
+
   await suggestionList.filter({ hasText: category }).first().click({ timeout: 60000 });
 }
   async uploadImage() {

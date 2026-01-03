@@ -108,14 +108,14 @@ async acceptCookiesIfPresent() {
   } catch (error) {
     console.log('ℹ️ Cookie banner not present or already dismissed');
   }
-  const acceptButton = await this.page.locator('#zcb-banner .zcb-button-primary#zc-manage');
+//   const acceptButton = await this.page.locator('#zcb-banner .zcb-button-primary#zc-manage');
 
-// Check if the accept button is visible before clicking
-if (await acceptButton.isVisible()) {
-  await acceptButton.click();
-} else {
-  console.log("Accept button is not visible.");
-}
+// // Check if the accept button is visible before clicking
+// if (await acceptButton.isVisible()) {
+//   await acceptButton.click();
+// } else {
+//   console.log("Accept button is not visible.");
+// }
 
 }
 }

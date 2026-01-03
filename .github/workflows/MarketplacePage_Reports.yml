@@ -1,4 +1,4 @@
-name: Playwright Tests with Reports
+name: MarketplacePages - Regression Tests
 
 on:
   workflow_dispatch:
@@ -31,7 +31,7 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p artifacts
-          npx playwright test --config=playwright.config.ts
+          npx playwright test --grep @marketplace_pages
           rc=$?
           echo "$rc" > artifacts/tests_failed
         env:

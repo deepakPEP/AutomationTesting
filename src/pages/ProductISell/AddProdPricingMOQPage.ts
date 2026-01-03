@@ -94,8 +94,8 @@ export class PricingMOQPage {
 
   // Method to enter Price Range details
   async setPriceRangeDetails(minPrice:number, maxPrice:number) {
-    await this.minPriceInput.fill(minPrice.toString());
-    await this.maxPriceInput.fill(maxPrice.toString());
+    await this.minPriceInput.fill(minPrice.toString(),{timeout: 60000 });
+    await this.maxPriceInput.fill(maxPrice.toString(),{ timeout: 60000 });
     //await this.minOrderQuantityInput.fill(minOrderQuantity.toString());
   }
   async setFixedPriceDetails(unit_price : number) {

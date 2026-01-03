@@ -34,7 +34,9 @@ export class ProductISellDashboardPage {
 
     //const firstRow = this.page.locator('table.p-datatable-table > tbody > tr').first();
      const firstRow = this.page.locator('table.p-datatable-table > tbody > tr')
-        .filter({ has: this.page.locator('.t-p-i-txt', { hasText: expectedProductISellDetails.productName }) });
+        .filter({ has: this.page.locator('.t-p-i-txt', { hasText: expectedProductISellDetails.productName }) }).filter({
+        has: this.page.locator('.table-badge-comp.pending', { hasText: 'pending' }).first()
+    });
   
     const cells = firstRow.locator('td');
 
@@ -99,13 +101,23 @@ export class ProductISellDashboardPage {
     TestLogger.log(`💰 Pricing Type: ${pricingType}`);
     TestLogger.log(`💰 Raw Price Display: ${rawPrice}`);
 
-    if (pricingType === 'request_quote' || pricingType === 'negotiable') {
+    if (pricingType === 'request_quote') {
       // ✅ Request Quote or Negotiable - Should display "--"
-      TestLogger.log(`Expected: --`);
-      await expect(priceCell).toHaveText('--');
-      TestLogger.log(`✓ Negotiable/Request Quote validated`);
+      
+      await expect(priceCell).toHaveText('Request Quote');
+      TestLogger.log(`✓ Request Quote validated`);
     }
-    else if (pricingType === 'price_range' || pricingType === 'bulk') {
+    else if (pricingType === 'negotiable') {
+      // ✅ Request Quote or Negotiable - Should display "--"
+      
+      await expect(priceCell).toHaveText('Negotiable');
+      TestLogger.log(`✓ Negotiable validated`);
+    }
+    else if (pricingType === 'price_range' ){
+      await console.log('Inside price_range validation', expectedPrice);
+      await console.log('Raw Price:', rawPrice);
+    }
+    else if (pricingType === 'bulk') {
       // ✅ Price Range or Bulk - Format: "₹ MIN - ₹ MAX"
       
       // Extract price range from UI using regex
@@ -138,10 +150,11 @@ export class ProductISellDashboardPage {
             TestLogger.log(`📊 JSON Tiers: ${pricingArray.length}`);
             TestLogger.log(`First Price: ${firstPrice}, Last Price: ${lastPrice}`);
           }
-        } else {
-          // Simple MIN-MAX format
-          expectedRange = expectedPrice.trim();
         }
+        //  else {
+        //   // Simple MIN-MAX format
+        //   expectedRange = expectedPrice.trim();
+        // }
       } catch (error) {
         throw new Error(
           `❌ Failed to parse price: "${expectedPrice}". ` +

@@ -34,19 +34,21 @@ test.describe('Add Product E2E for Request Price without variants in Sales', { t
     
     await test.step('Step 1: Add Product Basic Info', async () => {
       TestLogger.info('📝 Step 1: Adding Product Basic Information');
-      
-      await page.goto('https://sandbox.pepagora.org/en/app');
-      loginPage.acceptCookiesIfPresent();
+      await test.setTimeout(240000);
+      await page.goto('https://www.sandbox.pepagora.org/app/sales-product/form');
+      await page.waitForTimeout(12000);
+      await loginPage.acceptCookiesIfPresent();
       TestLogger.log('🔐 Logging in with phone number: 9591603604');
      // await loginPage.enterEmailAndContinue('9591603604');
     //  await page.pause();
       product = getProductByName('Steel Industrial Pipe');
       TestLogger.log(`📦 Loaded product from CSV: ${product?.name || 'Unknown'}`);
-    await page.waitForTimeout(12000);
       TestLogger.log('🛍️ Navigating to Sales > Product I Sell');
-      await page.locator('div').filter({ hasText: /^Sales$/ }).getByRole('img').click();
-      await page.getByRole('link', { name: 'Product I Sell', exact: true }).click();
-      await page.getByRole('button', { name: 'Add Product Add Product' }).click();
+     // await page.locator('div').filter({ hasText: /^Sales$/ }).getByRole('img').click();
+    //  await page.locator('//span[contains(@class,"s-c-nav-items")][.//span[text()="Sales"]]').click({timeout:60000});
+    //    await page.locator('//span[contains(@class,"s-c-nav-items")][.//span[text()="Sales"]]').click({timeout:60000});
+    //   await page.getByRole('link', { name: 'Product I Sell', exact: true }).click({timeout:60000});
+    //   await page.getByRole('button', { name: 'Add Product Add Product' }).click({timeout:60000});
 
       TestLogger.log('📋 Filling basic product information');
       await productPage.fillBasicInfo(product);
