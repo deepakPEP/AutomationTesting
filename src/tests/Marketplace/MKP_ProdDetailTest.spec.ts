@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { CasualWearProductsPage } from '../../pages/Marketplace/MKP_ProdDetailPage';
 import {MKP_AllCategoriesPage} from '../../pages/Marketplace/MKP_AllCategoriesPage';
-test.describe('Casual Wear Products Flow', () => {
+
+test.describe('Product Detail Page Test from All categories -> Apparel & Fashion -> Casual Wear ', () => {
   let casualWearPage: CasualWearProductsPage;
   let allCategoriesPage: MKP_AllCategoriesPage;
 
@@ -10,7 +11,7 @@ test.describe('Casual Wear Products Flow', () => {
     allCategoriesPage = new MKP_AllCategoriesPage(page);
   });
 
-  test('@marketplace Navigate to Casual Wear and click Universal Cap product', async ({ page }) => {
+  test('@marketplace Navigate to Casual Wear and click Universal Cap product',  {tag: ['@marketplace_pages']},async ({ page }) => {
     test.setTimeout(60000);
     // Step 1: Navigate to home
     await casualWearPage.navigateToHome();
