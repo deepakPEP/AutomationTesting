@@ -13,7 +13,15 @@ export default defineConfig({
      {
       name: 'selloffer_flow',
       grep: /@selloffer_flow/,
+    }, 
+     {
+      name: 'marketplace_pages',
+      grep: /@marketplace_pages/,
     },
+    {
+      name: 'marketing',
+      grep: /@marketing/,
+    }
   ],
   testDir: './src/tests',
   

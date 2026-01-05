@@ -3,7 +3,7 @@ import { MarketplaceHomePage } from '../../pages/Marketplace/MarketplaceHomePage
 import { SearchResultsPage } from '../../pages/Marketplace/SearchResultsPage';
 import { TestLogger } from '../../utils/TestLogger';
 
-test.describe('Marketplace Search Tests', () => {
+test.describe('Marketplace Search Tests',  {tag: ['@marketplace_pages']}, () => {
   let homePage: MarketplaceHomePage;
   let searchResultsPage: SearchResultsPage;
 
