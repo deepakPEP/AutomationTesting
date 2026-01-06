@@ -1,5 +1,7 @@
 import { defineConfig } from '@playwright/test';
 
+const shouldRunGlobalSetup = process.env.SKIP_GLOBAL_SETUP !== 'true';
+
 export default defineConfig({
   projects: [
     {
@@ -25,9 +27,14 @@ export default defineConfig({
   ],
   testDir: './src/tests',
   
-  globalSetup: require.resolve('./playwright.global-setup'),
+ // globalSetup: require.resolve('./playwright.global-setup'),
   // Force single worker execution (no parallel execution)
   //workers: 1,
+  globalSetup: shouldRunGlobalSetup
+    ? require.resolve('./playwright.global-setup')
+    : undefined,
+
+
   workers: process.env.CI ? 3 : 1, // 3 workers in CI, 1 worker locally
   
   // Retry configuration for failed tests

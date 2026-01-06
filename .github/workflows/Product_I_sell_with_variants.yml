@@ -36,7 +36,8 @@ jobs:
           echo "$rc" > artifacts/tests_failed
         env:
           CI: true
-
+          PHONE_NO: 9591603604
+          
       - name: Prepare artifacts dir
         if: ${{ always() }}
         run: mkdir -p artifacts
