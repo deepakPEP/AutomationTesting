@@ -5,7 +5,10 @@ import { getOtpFromApi, GetOtpOptions } from './src/utils/GetOTPFromAPI';
 import {deleteUserData} from './src/utils/ApiHelpers' // Assuming you have an OTP fetcher function
 
 async function globalSetup() {
-  const phoneNo = '9591603604';
+  const phoneNo = process.env.PHONE_NO || '9591603604';
+   if (!phoneNo) {
+    throw new Error('PHONE_NO is not set');
+  }
   await deleteUserData(phoneNo);
   //const browser = await chromium.launch();
    const browser = await chromium.launch({

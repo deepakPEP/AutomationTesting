@@ -36,6 +36,7 @@ jobs:
           echo "$rc" > artifacts/tests_failed
         env:
           CI: true
+          SKIP_GLOBAL_SETUP: true
 
       - name: Prepare artifacts dir
         if: ${{ always() }}
