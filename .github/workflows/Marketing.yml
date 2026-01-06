@@ -1,4 +1,4 @@
-name: Product I sell with variants - Regression Tests
+name: Marketing - Regression Tests
 
 on:
   workflow_dispatch:
@@ -31,7 +31,7 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p artifacts
-          npx playwright test --grep @product_I_sell_with_variants
+          npx playwright test --grep @marketing
           rc=$?
           echo "$rc" > artifacts/tests_failed
         env:
