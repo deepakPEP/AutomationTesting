@@ -3,7 +3,7 @@ import { TestLogger } from '../../utils/TestLogger';
 import { MKPPostBuyingRequestPage } from '../../pages/Marketplace/MKP_PostBuyingRequestPage';
 import { LoginPage } from '../../pages/LoginPage';
 
-test.describe('Marketplace Post Buying Request Tests', () => {
+test.describe('Marketplace Post Buying Request Tests', {tag: ['@marketplace_pages']}, () => {
   let buyingRequestPage: MKPPostBuyingRequestPage;
   let loginPage : LoginPage;
 

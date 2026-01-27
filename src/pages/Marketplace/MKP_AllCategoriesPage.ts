@@ -42,8 +42,8 @@ export class MKP_AllCategoriesPage{
     }).first();
     // page title can add
     await categoryLocator.waitFor({ state: 'visible', timeout: 10000 });
-    await categoryLocator.click();
-    await this.page.waitForTimeout(2000);
+    await categoryLocator.click({ force: true });
+    await this.page.waitForTimeout(10000);
   }
 
   /**

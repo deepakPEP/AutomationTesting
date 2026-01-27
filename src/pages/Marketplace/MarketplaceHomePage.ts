@@ -26,11 +26,13 @@ export class MarketplaceHomePage {
       timeout: 60000,
       waitUntil: 'domcontentloaded'
     });
-    
+    await this.page.waitForTimeout(10000); // Wait for page to load completely
     // Wait for search input to be available and fill it
     await this.searchInput.waitFor({ state: 'visible', timeout: 15000 });
     await this.searchInput.fill(query);
+    await this.page.waitForTimeout(5000); // Small delay to ensure input is registered
     await this.searchInput.press('Enter');
+     await this.searchInput.press('Enter');
     
     // Wait a moment for results to filter
     await this.page.waitForTimeout(3000);
@@ -38,6 +40,8 @@ export class MarketplaceHomePage {
   
   async clickAllCategories() {
     await this.allCategoriesButton.waitFor({ state: 'visible', timeout: 15000 });
-    await this.allCategoriesButton.click();
+    await this.allCategoriesButton.click({timeout: 60000});
+    await this.page.waitForTimeout(10000);
   }
 }
+export default MarketplaceHomePage;

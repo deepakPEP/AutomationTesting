@@ -49,4 +49,22 @@ export class SearchResultsPage {
 
     return productNames;
   }
+  async clickOnProductByName(productName: string, companyName: string) {
+  const card = this.page
+    .locator('.product-listing-card-comp')
+    .filter({
+      has: this.page.locator('.product-card-name', {
+        hasText: productName,
+      }),
+    })
+    .filter({
+      has: this.page.locator('.company-name-grey', {
+        hasText: companyName,
+      }),
+    });
+
+  await card.first().scrollIntoViewIfNeeded();
+  await card.first().click();
+}
+
 }
