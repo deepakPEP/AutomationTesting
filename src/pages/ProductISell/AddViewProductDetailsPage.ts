@@ -200,7 +200,7 @@ assertNormalizedText(await sl_ShippingIntl.textContent() || 'Undefined', product
 await expect(sl_UnitsPerPackage).toHaveText(product.units_per_package || 'No Units per Package');
 //await expect(sl_DispatchLeadTime).toHaveText(product.dispatch_lead_time || 'No Dispatch Lead Time');
 // as of now hard coding
-await expect(sl_HSN).toHaveText('SHIP123');
+await expect(sl_HSN).toHaveText(product.barcode);
 }
 
 async assertAdditionalDetails(product:any){

@@ -1,5 +1,6 @@
 import { test, expect, Page,BrowserContext } from '@playwright/test';
 import { TestLogger } from '../../../utils/TestLogger';
+
 import { PricingMOQPage } from '../../../pages/ProductISell/AddProdPricingMOQPage';
 import { getProductByName } from '../../../utils/getProductFromCSV'; 
 import { LoginPage } from '../../../pages/LoginPage';
@@ -10,11 +11,14 @@ import { AddProdShippingLogisticsDetails } from '../../../pages/ProductISell/Add
 import { AddProdAdditionalInformationPage } from '../../../pages/ProductISell/AddProdAdditionalInformationPage';
 import { ViewProductDetailsPage } from '../../../pages/ProductISell/AddViewProductDetailsPage';
 import { ProductISellDashboardPage } from '../../../pages/ProductISell/ProductISellDashboardPage';
-// import { superAdminLogin } from '../../../api/SuperAdminLogin';
-// import { SuperAdminProductApproval } from '../../../api/SuperAdminProductApproval';
+import { superAdminLogin } from '../../../api/SuperAdminLogin';
+import { SuperAdminProductApproval } from '../../../api/SuperAdminProductApproval';
+import { MarketplaceHomePage } from '../../../pages/Marketplace/MarketplaceHomePage';
+import { SearchResultsPage } from '../../../pages/Marketplace/SearchResultsPage';
+import {MKP_ProdDetailPage} from '../../../pages/Marketplace/MKP_ProdDetailPage';
 let product: any;
 let productId: string;
-//let superAdminToken: string;
+let superAdminToken: string;
 
 test.use({ storageState: 'auth-seller.json' });
 test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag: ['@product_I_sell_without_variants'] }, () => {
@@ -36,24 +40,28 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag
     const viewProductDetailsPage = new ViewProductDetailsPage(page);
     const productISellDashboardPage = new ProductISellDashboardPage(page);
     const loginPage = new LoginPage(page);
-    
+    const homePage = new MarketplaceHomePage(page);
+    const searchResultsPage = new SearchResultsPage(page);
+    const prodDetailPage = new MKP_ProdDetailPage(page);
+
     await test.step('Step 1: Add Product Basic Info', async () => {
-      // TestLogger.info('📝 Step 1: Adding Product Basic Information');
+      TestLogger.info('📝 Step 1: Adding Product Basic Information');
       
       await page.goto('https://www.sandbox.pepagora.org/app/sales-product/form');
-      loginPage.acceptCookiesIfPresent();
-      // TestLogger.log('🔐 Logging in with phone number: 9591603604');
-      // await loginPage.enterEmailAndContinue('9591603604');
-    //  await page.pause();
-      product = getProductByName('Lcd Tv');
+      await loginPage.acceptCookiesIfPresent();
+    
+    // //   // global login credentials below method can not be used as we are using storage state
+    // //   //await loginPage.enterEmailAndContinue('9591603604');
+    
+       product = getProductByName('Lcd Tv');
       TestLogger.log(`📦 Loaded product from CSV: ${product?.name || 'Unknown'}`);
-    await page.waitForTimeout(12000);
+      //await page.waitForTimeout(12000);
       TestLogger.log('🛍️ Navigating to Sales > Product I Sell');
       // await page.locator('div').filter({ hasText: /^Sales$/ }).getByRole('img').click();
       // await page.getByRole('link', { name: 'Product I Sell', exact: true }).click();
       // await page.getByRole('button', { name: 'Add Product Add Product' }).click();
 
-      TestLogger.log('📋 Filling basic product information');
+    //   TestLogger.log('📋 Filling basic product information');
       await productPage.fillBasicInfo(product);
       await productPage.browseCategory(product?.product_category || '');
       await productPage.uploadImage();
@@ -73,7 +81,7 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag
       console.log('Extracted Product ID:', productId);
 
       TestLogger.log('✅ Verifying product details and progress');
-    //  await page.pause();
+    
       await page.waitForTimeout(5000);
       await addProductPreviewPage.verifyDetails(product);
       await addProductPreviewPage.validateProgressBar('12%');
@@ -131,8 +139,8 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag
       //await productPage.submitProduct();
       await page.waitForTimeout(2000);
       TestLogger.log(`💳 Setting payment terms: ${product?.payment_term || '100% Advance'}`);
-      await tradeDetailsPage.setPaymentTerms(product?.payment_term || '100% Advance');
-      await tradeDetailsPage.selectPaymentOptions(product?.payment_option || 'Credit Card');
+      await tradeDetailsPage.setPaymentTerms(product?.payment_terms || '100% Advance');
+      await tradeDetailsPage.selectPaymentOptions(product?.payment_methods || 'Credit Card');
       await productPage.submitProduct();
       await addProductPreviewPage.validateProgressBar('75%');
       await productPage.validateProductAddStepCompletion('Trade Details');
@@ -149,9 +157,9 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag
         product?.port_of_dispatch || 'New York',
         product?.dispatch_lead_time || '5 days',
         product?.units_per_package || 10,
-        product?.shipment_identifier || 'SHIP123',
+        product?.barcode || 'SHIP123',
         product?.packaging_type || 'Box',
-        product?.shipping_mode || 'Air'
+        product?.shipping_modes || 'Air'
       );
       await productPage.submitProduct();
       await addProductPreviewPage.validateProgressBar('87%');
@@ -163,6 +171,7 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag
       TestLogger.info('📋 Step 6: Adding Additional Information and Certificates');
       test.setTimeout(480000);
       TestLogger.log(`🏷️ Setting brand name: ${product.brand || 'Generic Brand'}`);
+      product.customisable = 'No';
       await additionalInfoPage.fillAdditionalInformation({ isCustomizable: false, brandName: product.brand || 'Generic Brand' });
       await productPage.submitProduct();
       TestLogger.success(`Product submitted successfully: ${product?.name || 'Unknown Product'}`);
@@ -181,40 +190,52 @@ test.describe('Add Product E2E for Fixed Price without variants in Sales', { tag
         display: product?.display || 'No',
         price: product?.unit_price || 'Fixed Price',
         status: product?.status || 'pending',
-        sku_code: product?.sku_model || 'SKU123' 
+        sku_code: product?.sku_model || 'SKU123', 
+        pricing_type: 'Fixed Price'
       });
     });
-  //   await test.step('Step 7: Super Admin Approval Process', async () => {
-  //     test.setTimeout(240000);
-  //     TestLogger.success('Super Admin Approval Process Started');
-  //      try {
-  //       const authResponse = await superAdminLogin(page.context().request);
-  //       superAdminToken = authResponse.access_token;
-  //       TestLogger.success(`✅ Super Admin Access Token obtained: ${superAdminToken.substring(0, 20)}...`);
-  //       console.log('Super Admin Token:', superAdminToken);
-  //     } catch (error) {
-  //       TestLogger.error(`❌ Failed to get Super Admin token: ${error}`);
-  //       throw error;
-  //     }
-  //   });
-  //    const result = await SuperAdminProductApproval(page.context().request, productId, superAdminToken);
-  //   console.log(result);
-  //   await page.waitForTimeout(5000); // wait for 5 seconds to reflect status change
-  //   await page.reload();
-  //   await page.waitForTimeout(5000);
-  //   await productISellDashboardPage.validateFirstContactRow({ 
-  //       productName: product?.name || 'Generic Product',
-  //       noOfVariants: 'No Variants',
-  //       category: product?.product_category || 'General',
-  //       stockAvailability: 'In stock',
-  //       display: product?.display || 'No',
-  //       price: product?.unit_price || 'Fixed Price',
-  //       status: product?.status || 'Live',
-  //       sku_code: product?.sku_model || 'SKU123' 
-  //     });
-  //   // Attach all test logs to the HTML report
-  //   await TestLogger.attachLogsToTest(testInfo);
-  //   TestLogger.success('✅ Complete Add Product Flow E2E test completed successfully');
+    await test.step('Step 7: Super Admin Approval Process', async () => {
+      test.setTimeout(360000);
+      TestLogger.success('Super Admin Approval Process Started');
+       
+        const authResponse = await superAdminLogin(page.context().request);
+        superAdminToken = authResponse.access_token;
+        TestLogger.success(`✅ Super Admin Access Token obtained: ${superAdminToken.substring(0, 20)}...`);
+        console.log('Super Admin Token:', superAdminToken);
+      
+  
+     const result = await SuperAdminProductApproval(page.context().request, productId, superAdminToken);
+    console.log(result);
+    await page.waitForTimeout(5000); // wait for 5 seconds to reflect status change
+    await page.reload();
+    await page.waitForTimeout(5000);
+    await productISellDashboardPage.validateFirstContactRow({ 
+        productName: product?.name || 'Generic Product',
+        noOfVariants: 'No Variants',
+        category: product?.product_category || 'General',
+        stockAvailability: 'In stock',
+        display: product?.display || 'No',
+        price: product?.unit_price || 'Fixed Price',
+        status: product?.status || 'Live',
+        sku_code: product?.sku_model || 'SKU123', 
+        pricing_type: 'Fixed Price'
+      });
+    
+      // Attach all test logs to the HTML report
+    await TestLogger.attachLogsToTest(testInfo);
+    TestLogger.success('✅ Complete Add Product Flow E2E test completed successfully');
+    });
+   await test.step('Step 9: Whether added product visible in marketplace,after super admin approval process', async () => {
+   
+    test.setTimeout(360000);
+    TestLogger.info('🔎 Step 8: Verifying product visibility in Marketplace after Super Admin approval');
+    await page.waitForLoadState('domcontentloaded');
+    await homePage.search(product.name);
+    await page.waitForLoadState('domcontentloaded');
+    await searchResultsPage.clickOnProductByName(product.name, 'ABC');
+    await prodDetailPage.validateProductDetailPageInMKP(product);
    });
+   
+   
+  });});
 
-});

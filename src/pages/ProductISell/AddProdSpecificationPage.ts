@@ -973,15 +973,21 @@ async processCompleteVariantWorkflow(expectedAttributes: string, variantData: {
       await this.fillFormSimple(uniqueVariantData);
       await this.assertFormValuesSimple(uniqueVariantData);
       
+      
       // Click Continue and assert modal closed
-      const closeSVG = this.page.locator('.o-s-c-header svg[width="19"][height="18"]');
-    await closeSVG.click({ force: true });
-    await this.page.waitForTimeout(2000);
-     await this.assertModalClosedSimple();
+    //   const closeSVG = this.page.locator('.o-s-c-header svg[width="19"][height="18"]');
+    //   await this.page.pause();
+    // await closeSVG.click({ force: true });
+      await this.page.locator('.p-sidebar-mask').click({
+      position: { x: 100, y: 100 }
+    });
+        await this.page.waitForTimeout(2000);
+
     //  await this.page.pause();
       TestLogger.success(`✅ Variant ${i + 1}/${combinations.length} completed: ${combination}`);
     }
     
+    await this.assertModalClosedSimple();
     // STEP 5: Final validation
     TestLogger.info('🔍 Step 5: Final validation');
     await this.assertAllVariantsProcessed(combinations.length);
