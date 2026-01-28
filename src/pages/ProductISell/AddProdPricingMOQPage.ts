@@ -237,7 +237,9 @@ async selectUnit(unitName: string, minOrderQuantity: number) {
   const name = (unitName || '').trim();
   // open dropdown (safe to call even if already open)
   await this.selectUnitButton.click({ timeout: 60000 });
+  await this.page.waitForTimeout(2000);
   await this.page.locator('li.p-dropdown-item[aria-label="' + unitName + '"]').click({force:true});
+  await this.page.waitForTimeout(2000);
   await this.minOrderQuantityInput.fill(minOrderQuantity.toString(),{ timeout: 60000 });
 }
 

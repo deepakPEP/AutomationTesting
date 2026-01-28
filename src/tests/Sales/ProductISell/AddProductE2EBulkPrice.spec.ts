@@ -156,7 +156,7 @@ test.describe('Add Product E2E for Bulk Price without variants in Sales', { tag:
     });
     await test.step('Step 7: Validate Product on View Page and Dashboard', async () => {
       TestLogger.log('🔍 Verifying product details on view page');
-      test.setTimeout(480000);
+      test.setTimeout(240000);
       await console.log('Product data for validation:', product);
       await viewProductDetailsPage.assertProductDetails(product);
       

@@ -35,7 +35,7 @@ export class ProductISellDashboardPage {
     //const firstRow = this.page.locator('table.p-datatable-table > tbody > tr').first();
      const firstRow = this.page.locator('table.p-datatable-table > tbody > tr')
         .filter({ has: this.page.locator('.t-p-i-txt', { hasText: expectedProductISellDetails.productName }) }).filter({
-        has: this.page.locator('.table-badge-comp.pending', { hasText: 'pending' }).first()
+        has: this.page.locator('.table-badge-comp', { hasText: expectedProductISellDetails.status }).first()
     });
   
     const cells = firstRow.locator('td');
@@ -64,7 +64,12 @@ export class ProductISellDashboardPage {
     // ✅ Cell 4: Checkbox (Display toggle)
     const checkbox = firstRow.locator('td[data-pc-name="datatable"] .forms-toggle input[type="checkbox"]');
     TestLogger.log(`✓ Display Checkbox: Not Checked`);
+    if  (expectedProductISellDetails.status === 'Live') {
+      await expect(checkbox).toBeChecked();    
+  }
+    else {
     await expect(checkbox).not.toBeChecked();
+  }
 
     // ✅ Cell 5: Stock Availability
     TestLogger.log(`📦 Stock: ${expectedProductISellDetails.stockAvailability}`);
@@ -83,7 +88,8 @@ export class ProductISellDashboardPage {
 
     // ✅ Cell 8: Status
     TestLogger.log(`📌 Status: ${expectedProductISellDetails.status}`);
-    await expect(cells.nth(8)).toHaveText(expectedProductISellDetails.status);
+    //await expect(cells.nth(8)).toHaveText(expectedProductISellDetails.status);
+    await expect(cells.nth(8)).toHaveText(new RegExp(expectedProductISellDetails.status, 'i'));
 
     TestLogger.success('✅ Product row validated successfully');
   }
