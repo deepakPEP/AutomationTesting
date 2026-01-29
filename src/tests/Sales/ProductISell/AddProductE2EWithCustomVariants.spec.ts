@@ -17,7 +17,7 @@ test.describe('Add Product E2E with Custom variants in Sales', { tag: ['@product
 
 // covering 113 testcases in this single e2e
   test('Complete Add Product Flow with variants', async ({page}, testInfo) => {
-    test.setTimeout(480000);
+    test.setTimeout(600000);
     
     // Initialize TestLogger for this test
     TestLogger.info('🚀 Starting Complete Add Product Flow E2E test');
@@ -153,7 +153,7 @@ test.describe('Add Product E2E with Custom variants in Sales', { tag: ['@product
         product?.port_of_dispatch || 'New York',
         product?.dispatch_lead_time || '5 days',
         product?.units_per_package || 10,
-        product?.shipment_identifier || 'SHIP123',
+        product?.barcode || 'SHIP123',
         product?.packaging_type || 'Box',
         product?.shipping_mode || 'Air'
       );

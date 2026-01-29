@@ -132,7 +132,7 @@ test.describe('Add Product E2E for Bulk Price without variants in Sales', { tag:
         product?.port_of_dispatch || 'New York',
         product?.dispatch_lead_time || '5 days',
         product?.units_per_package || 10,
-        product?.shipment_identifier || 'SHIP123',
+        product?.barcode || 'SHIP123',
         product?.packaging_type || 'Box',
         product?.shipping_mode || 'Air'
       );
@@ -148,6 +148,7 @@ test.describe('Add Product E2E for Bulk Price without variants in Sales', { tag:
       TestLogger.log(`🏷️ Setting brand name: ${product.brand || 'Generic Brand'}`);
       //await additionalInfoPage.fillAdditionalInformation({ isCustomizable: false, brandName: product.brand || 'Generic Brand' });
        //await page.pause();
+       await page.waitForTimeout(5000);
       await productPage.submitProduct();
       await page.waitForTimeout(10000);
      // await addProductPreviewPage.validateProgressBar('100%');
@@ -161,7 +162,7 @@ test.describe('Add Product E2E for Bulk Price without variants in Sales', { tag:
       await viewProductDetailsPage.assertProductDetails(product);
       
       TestLogger.log('📊 Navigating to dashboard and validating product listing');
-      await page.goto('https://sandbox.pepagora.org/en/app/sales-product');
+      await page.goto('https://sandbox.pepagora.org/en/app/sales-product',{waitUntil: 'domcontentloaded'});
       await page.waitForTimeout(10000);
       await productISellDashboardPage.validateFirstContactRow({ 
         productName: product?.name || 'Generic Product',
