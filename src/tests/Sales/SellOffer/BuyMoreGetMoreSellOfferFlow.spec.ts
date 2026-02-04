@@ -35,12 +35,12 @@ test.describe('Buy More Get More Sell Offer Flow', { tag: ['@selloffer_flow'] },
 
       TestLogger.log('🔐 Logging in with phone number: 9632370046');
       //await loginPage.enterEmailAndContinue('9632370046');
-      await page.goto('https://sandbox.pepagora.org/en/app');
+      await page.goto('https://www.sandbox.pepagora.org/app/sales-sell-offer/form');
       await loginPage.acceptCookiesIfPresent();
       await page.waitForTimeout(12000);
      
       TestLogger.log('🛍️ Navigating to Sell Offer section');
-      await productPage.navigateToSellOfferSection();
+      //await productPage.navigateToSellOfferSection();
       TestLogger.log(`📋 Product details loaded: ${product?.name || 'Industrial Hydraulic Pump'}`);
       await productPage.addNewProduct(product?.name || 'Industrial Hydraulic Pump');
       TestLogger.log(`🏷️ Product category: ${product?.product_category}`);

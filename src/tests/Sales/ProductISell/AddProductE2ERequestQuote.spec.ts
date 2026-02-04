@@ -131,7 +131,7 @@ test.describe('Add Product E2E for Request Price without variants in Sales', { t
         product?.port_of_dispatch || 'New York',
         product?.dispatch_lead_time || '5 days',
         product?.units_per_package || 10,
-        product?.shipment_identifier || 'SHIP123',
+        product?.barcode || 'SHIP123',
         product?.packaging_type || 'Box',
         product?.shipping_mode || 'Air'
       );

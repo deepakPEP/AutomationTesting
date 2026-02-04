@@ -2,12 +2,11 @@ name: SellOffer - Regression Tests
 
 on:
   workflow_dispatch:
-  # Uncomment if needed
-  # push:
-  #   branches: [ main, master ]
-  # pull_request:
-  #   branches: [ main, master ]
-
+# on:
+#   push:
+#       branches: [ main, master ]
+#   pull_request:
+#       branches: [ main, master ]  
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -27,82 +26,105 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      - name: Run Playwright tests
+      - name: Run Playwright tests (capture exit code)
         id: run_tests
+        run: |
+          set -o pipefail
+          mkdir -p artifacts
+          npx playwright test --grep @selloffer_flow
+          rc=$?
+          echo "$rc" > artifacts/tests_failed
         env:
           CI: true
           PHONE_NO: 7538898838
-        run: |
-          set +e
-          mkdir -p artifacts
-          npx playwright test \
-            --grep @selloffer_flow \
-            --reporter=html \
-            --output=selloffer-report
-          echo $? > artifacts/tests_failed
+          
+      - name: Prepare artifacts dir
+        if: ${{ always() }}
+        run: mkdir -p artifacts
 
-      - name: Debug report folders
+      - name: Show largest files (debug)
         if: ${{ always() }}
         run: |
-          echo "=== WORKSPACE ==="
-          pwd
-          ls -la
+          echo "WORKDIR: $(pwd)"
+          echo "LIST ROOT:"
+          ls -la || true
 
-          echo "=== SELLOFFER-REPORT ==="
-          if [ -d "selloffer-report" ]; then
-            du -sh selloffer-report
-            find selloffer-report -type f -print0 | xargs -0 du -h | sort -rh | head -20
+          echo "=== ARTIFACTS FOLDER ==="
+          ls -la artifacts || echo "artifacts missing"
+
+          echo "=== PLAYWRIGHT-REPORT ==="
+          if [ -d "playwright-report" ]; then
+            du -sh playwright-report || true
+            echo "Top files in playwright-report:"
+            find playwright-report -type f -print0 | xargs -0 du -h | sort -rh | head -40 || true
           else
-            echo "selloffer-report not found"
+            echo "no playwright-report directory"
           fi
 
           echo "=== TEST-RESULTS ==="
           if [ -d "test-results" ]; then
-            du -sh test-results
+            du -sh test-results || true
+            echo "Top files in test-results:"
+            find test-results -type f -print0 | xargs -0 du -h | sort -rh | head -40 || true
           else
-            echo "test-results not found"
+            echo "no test-results directory"
           fi
 
-      - name: Package SellOffer report
+      - name: Create compressed report archive (tar.xz) with fallback
         if: ${{ always() }}
         run: |
           set -eux
-          rc=$(cat artifacts/tests_failed || echo 1)
-          echo "Test exit code: $rc"
+          mkdir -p artifacts
+          rc=$(cat artifacts/tests_failed 2>/dev/null || echo 1)
+          echo "tests exit code: $rc"
 
           if [ "$rc" -eq 0 ]; then
-            if [ -d "selloffer-report" ]; then
-              tar -cJf artifacts/selloffer-report.tar.xz \
-                --exclude='**/*.webm' \
-                --exclude='**/trace.zip' \
-                --exclude='**/*.png' \
-                --exclude='**/*.jpg' \
-                -C . selloffer-report
+            if [ -d "playwright-report" ]; then
+              echo "Creating compact tar.xz (exclude videos/traces/screenshots)"
+              tar -cJf artifacts/playwright-report.tar.xz \
+                --exclude='**/*.webm' --exclude='**/trace.zip' --exclude='**/*.png' --exclude='**/*.jpg' \
+                -C . playwright-report
             else
-              tar -cJf artifacts/selloffer-report.tar.xz --files-from /dev/null
+              echo "playwright-report missing; creating empty placeholder tar.xz"
+              tar -cJf artifacts/playwright-report.tar.xz --files-from /dev/null
             fi
           else
             to_archive=""
-            [ -d "selloffer-report" ] && to_archive="$to_archive selloffer-report"
+            [ -d "playwright-report" ] && to_archive="$to_archive playwright-report"
             [ -d "test-results" ] && to_archive="$to_archive test-results"
-
             if [ -n "$to_archive" ]; then
-              tar -cJf artifacts/selloffer-report.tar.xz -C . $to_archive || true
+              echo "Creating tar.xz including: $to_archive"
+              tar -cJf artifacts/playwright-report.tar.xz -C . $to_archive || true
             else
-              tar -cJf artifacts/selloffer-report.tar.xz --files-from /dev/null
+              echo "no report/test-results found; creating empty placeholder tar.xz"
+              tar -cJf artifacts/playwright-report.tar.xz --files-from /dev/null
             fi
           fi
 
-          ls -lh artifacts
+          echo "ARTIFACTS CONTENTS:"
+          ls -la artifacts || true
+          du -h artifacts/* || true
 
-      - name: Upload SellOffer report
+          # fallback to zip if tar.xz not created for any reason
+          if [ ! -f artifacts/playwright-report.tar.xz ]; then
+            echo "tar.xz missing, creating zip fallback"
+            rm -f artifacts/playwright-report.zip || true
+            if [ -d "playwright-report" ] || [ -d "test-results" ]; then
+              zip -r -9 artifacts/playwright-report.zip playwright-report test-results || true
+            else
+              # empty zip placeholder
+              zip -r artifacts/playwright-report.zip --filesync --junk-paths /dev/null || true
+            fi
+          fi
+
+      - name: Upload produced artifacts (always)
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: selloffer-report
+          name: playwright-report
           path: artifacts/*
           retention-days: 30
 
-      - name: Done
+      - name: Post Checkout
         if: ${{ always() }}
-        run: echo "SellOffer Playwright report uploaded successfully"
+        run: echo "done"
