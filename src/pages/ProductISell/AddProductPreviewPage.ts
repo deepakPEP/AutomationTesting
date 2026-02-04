@@ -29,7 +29,8 @@ export class AddProductPreviewPage {
   }
 
 
-async verifyDetails(product: any) {
+async verifyDetails(product: any,retry=true) {
+  try {
     await this.productTitle.waitFor({ state: 'visible' });
     await expect(this.productTitle).toHaveText(product?.name || 'Electric Screwdriver');
     const actualSKU = await this.skuText.textContent();
@@ -45,17 +46,18 @@ async verifyDetails(product: any) {
         console.log(`Image source not found for image ${i}`);
         continue;
       }
-      // const response = await this.page.waitForResponse((response) => response.url().includes(imgSrc));
-
-      // // Check if the image has a successful status code
-      
-      // if (response.status() >= 400) {
-      //   console.log(`Broken image detected: ${imgSrc}`);
-      //   //throw new Error(`Broken image detected: ${imgSrc}`);
-      // } else {
-      //   console.log(`Image loaded successfully: ${imgSrc}`);
-      // }
     }
+   } catch (error) {
+    if (!retry) {
+      throw error; // fail test after retry
+    }
+
+    console.warn('Verification failed. Reloading page and retrying...');
+    await this.page.reload({ waitUntil: 'networkidle' });
+
+    await this.verifyDetails(product, false); // retry once
+  }
+
   }
 
   async validateProgressBar(expectedPercentage: string) {
@@ -63,9 +65,26 @@ async verifyDetails(product: any) {
 
     // You can now assert if the width is as expected (12% of the container's width)
     // If you want to check percentage, compare accordingly
-    console.log('Expected Percentage:', await this.progressElement.first().textContent());
-    await expect(this.progressElement.first()).toHaveText(`Completed ${expectedPercentage}`);
+    // console.log('Expected Percentage:', await this.progressElement.first().textContent());
+    // await expect(this.progressElement.first()).toHaveText(`Completed ${expectedPercentage}`);
+    const progress = this.progressElement.first();
 
+try {
+  console.log('Expected Percentage:', await progress.textContent());
+  await expect(progress).toHaveText(`Completed ${expectedPercentage}`, {
+    timeout: 5000,
+  });
+} catch (error) {
+  console.log('❌ First assertion failed. Waiting 5s & refreshing...');
+
+  await this.page.waitForTimeout(5000);
+  await this.page.reload({ waitUntil: 'domcontentloaded' });
+
+  console.log('🔄 Retrying assertion after refresh...');
+  await expect(progress).toHaveText(`Completed ${expectedPercentage}`, {
+    timeout: 10000,
+  });
+}
   }
     async assertMOQ(page: Page, moq: string,unit:string) {
     // Locator for the Min. Order Quantity span

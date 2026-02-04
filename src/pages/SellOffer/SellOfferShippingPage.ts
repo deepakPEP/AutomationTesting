@@ -37,7 +37,7 @@ export class SellOfferShippingPage {
   // Select incoterms
   //await this.prodShippingDetails.selectIncoterms(product?.incoterms || 'EXW');
   //  await this.page.getByRole('button', { name: 'Select Lead Time' }).click();
-    await this.selectDispatchLeadTime(product?.dispatch_lead_time || 'Default Lead Time');
+    await this.selectDispatchLeadTime(product?.shipping_lead_time || 'Default Lead Time');
     
   // Fill port of dispatch
   }
@@ -45,12 +45,14 @@ export class SellOfferShippingPage {
   // Click the dropdown label
   //await this.page.locator('span.p-dropdown-label').click();
     // Assert "Select Lead Time" is visible before clicking
+    
 await expect(this.page.locator('span.p-dropdown-label', { hasText: 'Select Lead Time' })).toBeVisible();
 
 // Now click the dropdown
-await this.page.locator('span.p-dropdown-label', { hasText: 'Select Lead Time' }).click({ timeout: 60000 });
+await this.page.locator('span.p-dropdown-label', { hasText: 'Select Lead Time' }).click({ force: true, timeout: 60000 });
   // Select the option dynamically by text
-  await this.page.locator(`.p-dropdown-item-label:text-is("${option}")`).click({ timeout: 60000 });
+  await console.log('Selecting dispatch lead time option:', option);
+  await this.page.locator(`.p-dropdown-item-label:text-is("${option}")`).click({ force: true, timeout: 60000 });
 }
   async confirmAndSubmitOffer(): Promise<void> {
     await expect(this.page.locator("//h6[normalize-space()='Sell offer created successfully.']")).toBeVisible();

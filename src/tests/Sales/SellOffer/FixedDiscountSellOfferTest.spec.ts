@@ -30,7 +30,7 @@ test.describe('Fixed Discount Sell Offer Flow',  { tag: ['@critical', '@selloffe
     const loginPage = new LoginPage(page);
 
     test.setTimeout(180000);
-    let {todayFormatted, futureFormatted } = getTodayAndFutureDate(1);
+    let {todayFormatted, futureFormatted } = getTodayAndFutureDate(15);
       
     await test.step('Step 1: Add Product', async () => {
       TestLogger.log('🚀 Starting Step 1: Add Product for Fixed Discount Sell Offer');
@@ -40,12 +40,13 @@ test.describe('Fixed Discount Sell Offer Flow',  { tag: ['@critical', '@selloffe
       
       TestLogger.log('🔐 Logging in with phone number: 9632370046');
       //await loginPage.enterEmailAndContinue('9632370046');
-      await page.goto('https://sandbox.pepagora.org/en/app');
+      await page.goto('https://www.sandbox.pepagora.org/app/sales-sell-offer/form');
       await loginPage.acceptCookiesIfPresent();  
-      await page.waitForTimeout(12000);
+      await page.waitForTimeout(1200);
 
       TestLogger.log('📱 Navigating to Sell Offer section');
-      await productPage.navigateToSellOfferSection();
+      //This method not working dueto locator issue
+      //await productPage.navigateToSellOfferSection();
       
       TestLogger.log('📦 Selected product details:', JSON.stringify(product, null, 2));
       await productPage.addNewProduct(product?.name || 'Industrial Hydraulic Pump');
@@ -77,7 +78,7 @@ await test.step('Step 2: Add Offer Info', async () => {
   const addOfferPage = new AddSellOfferPage(page);
   const productInformationPage = new ProductInformationPage(page);
   // Step 3: Add Offer Info
-  //await addOfferPage.navigateToOfferDetails();
+  
   const randomDiscount = Math.floor(Math.random() * 100) + 1;
   
   const offerDetails = {

@@ -24,13 +24,15 @@ async submitProduct() {
   await this.page.waitForTimeout(7000);
 }
   async navigateToSellOfferSection() {
-   // await this.page.pause();
-   await this.page.getByAltText('Close').click({force:true});
+    
+   //await this.page.getByAltText('Close').click({force:true});
    // await this.page.locator('div.s-c-close-block').click();
 
-   await this.page.locator('span.s-c-nav-items', { hasText: 'Sales' }).first().click({ force: true });
+   //await this.page.locator('span.s-c-nav-items', { hasText: 'Sales' }).click({force:true});
+    await this.page.locator('.s-c-nav-block').nth(0).click();
 
     //await this.page.locator('div').filter({ hasText: /^Sales$/ }).locator('path').first().click({ timeout: 60000 });
+    
     await this.page.waitForTimeout(3000);
     await this.page.getByRole('link', { name: 'Sell Offer', exact: true }).click({ timeout: 60000 });
     await this.page.waitForTimeout(2000);
@@ -53,15 +55,16 @@ async submitProduct() {
   }
 
   async addNewProduct(productName: string) {
-    await this.page
-      .locator('div')
-      .filter({ hasText: /^Add New ProductQuickly add a new product to offer discounts$/ })
-      .first()
-      .click({ timeout: 60000 });
-
+    await this.page.locator('div').filter({ hasText: /^Add New ProductQuickly add a new product to offer discounts$/ }).first().click({ force:true, timeout: 60000 });
+    
     const productNameInput = this.page.getByRole('textbox', { name: 'Enter Product Name' });
     await productNameInput.click({ timeout: 60000 });
     await productNameInput.fill(productName,{ timeout: 60000 });
+  }
+  async addExistingProduct(productName: string) {
+    await this.page.locator("//span[text()='Existing Product']/ancestor::div[contains(@class,'select-product-comp')]").click();
+    await this.page.locator('.autocomplete-dropdown-comp input.p-autocomplete-input').fill(productName,{ timeout: 10000 });
+
   }
 
   async selectCategory(main: string, sub: string, item: string, final: string) {

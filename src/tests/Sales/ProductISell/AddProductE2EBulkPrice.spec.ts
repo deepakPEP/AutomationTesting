@@ -163,7 +163,7 @@ test.describe('Add Product E2E for Bulk Price without variants in Sales', { tag:
       
       TestLogger.log('📊 Navigating to dashboard and validating product listing');
       await page.goto('https://sandbox.pepagora.org/en/app/sales-product',{waitUntil: 'domcontentloaded'});
-      await page.waitForTimeout(10000);
+     // await page.waitForTimeout(10000);
       await productISellDashboardPage.validateFirstContactRow({ 
         productName: product?.name || 'Generic Product',
         noOfVariants: 'No Variants',

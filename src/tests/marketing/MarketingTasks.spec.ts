@@ -5,15 +5,9 @@ test.describe('Marketing Tasks', { tag: ['@marketing'] }, () => {
     test.setTimeout(60000);
   test('Homepage title and description', async ({ page }) => {
 
-    // 🔹 1. Navigate to Marketing SRC / Catalog page
-    // await page.goto('https://www.pepagora.com/en/millennium-machine-works', {
-    //   waitUntil: 'domcontentloaded'
-    // });
+    await page.goto('https://www.sandbox.pepagora.org/');
 
-    await page.goto('https://www.pepagora.com/', {
-      waitUntil: 'domcontentloaded'
-     });
-
+      
     // 🔹 2. Page Title
     const title = await page.title();
     console.log('Page Title:', title);
