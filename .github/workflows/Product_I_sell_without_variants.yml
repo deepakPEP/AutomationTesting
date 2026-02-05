@@ -37,7 +37,10 @@ jobs:
         env:
           CI: true
           PHONE_NO: 9500304116
-          
+          SUPER_ADMIN_EMAIL: ${{ secrets.SA_USN }}
+          SUPER_ADMIN_PASSWORD: ${{ secrets.SA_PWD }}
+          SUPER_ADMIN_IP: ${{ secrets.ALLOWED_IP }}
+      
       - name: Prepare artifacts dir
         if: ${{ always() }}
         run: mkdir -p artifacts
