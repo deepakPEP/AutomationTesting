@@ -3,7 +3,11 @@ import { chromium,expect } from '@playwright/test';
 import { request } from '@playwright/test';
 import { getOtpFromApi, GetOtpOptions } from './src/utils/GetOTPFromAPI';
 import {deleteUserData} from './src/utils/ApiHelpers' // Assuming you have an OTP fetcher function
+import fs from 'fs';
 
+if (!fs.existsSync('artifacts')) {
+  fs.mkdirSync('artifacts');
+}
 async function globalSetup() {
   const phoneNo = process.env.PHONE_NO || '9591603604';
    if (!phoneNo) {
@@ -22,13 +26,25 @@ async function globalSetup() {
    await sellerPage.waitForTimeout(12000);
   
   await console.log('Current URL:', sellerPage.url());
-await sellerPage.screenshot({ path: 'setup-failure.png' });
 
   // Wait for welcome text
   // await expect(sellerPage.getByText('Welcome to Pepagora')).toBeVisible();
    await console.log('✓ Welcome page loaded');
 
-   await sellerPage.locator('.selected-flag').click();  // Click on the arrow button
+  // await sellerPage.locator('.selected-flag').click();  // Click on the arrow button
+  try {
+  // any flaky UI step
+  await sellerPage.locator('.selected-flag').click();
+} catch (error) {
+  console.error('❌ Failed clicking selected-flag');
+
+  await sellerPage.screenshot({
+  path: 'artifacts/screenshots/global-setup.png',
+});
+
+  throw error; // still fail the job
+}
+
 
   // Step 2: Wait for the country list to be visible
   const countryList = sellerPage.locator('.country-list');
