@@ -20,9 +20,10 @@ export async function superAdminLogin(request: APIRequestContext): Promise<AuthT
       timeout: 50000,
     }
   );
+  await console.log('mailllll ', process.env.SUPER_ADMIN_EMAIL, process.env.SUPER_ADMIN_PASSWORD);
    const responseBody = await response.json();
-  console.log('Response Status:', response.status());
-  console.log('Response Body:', JSON.stringify(responseBody, null, 2));
+ await console.log('Response Status:', response.status());
+  await console.log('Response Body:', JSON.stringify(responseBody, null, 2));
 
   await expect(response.ok()).toBeTruthy();
  
