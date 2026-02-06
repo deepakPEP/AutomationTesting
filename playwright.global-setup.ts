@@ -19,14 +19,16 @@ async function globalSetup() {
   const sellerPage = await browser.newPage();
  // await sellerPage.goto('/login');
    await sellerPage.goto('https://sandbox.pepagora.org/en/authenticate');
-        await sellerPage.waitForTimeout(12000);
-      
+   await sellerPage.waitForTimeout(12000);
+  
+  await console.log('Current URL:', sellerPage.url());
+await sellerPage.screenshot({ path: 'setup-failure.png' });
 
-      // Wait for welcome text
-      await expect(sellerPage.getByText('Welcome to Pepagora')).toBeVisible();
-      console.log('✓ Welcome page loaded');
+  // Wait for welcome text
+   await expect(sellerPage.getByText('Welcome to Pepagora')).toBeVisible();
+   await console.log('✓ Welcome page loaded');
 
-      await sellerPage.locator('.selected-flag').click();  // Click on the arrow button
+   await sellerPage.locator('.selected-flag').click();  // Click on the arrow button
 
   // Step 2: Wait for the country list to be visible
   const countryList = sellerPage.locator('.country-list');
