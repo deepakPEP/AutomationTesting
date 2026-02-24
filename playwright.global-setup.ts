@@ -34,7 +34,14 @@ async function globalSetup() {
   // await sellerPage.locator('.selected-flag').click();  // Click on the arrow button
   try {
   // any flaky UI step
-  await sellerPage.locator('.selected-flag').click();
+  
+  await sellerPage.locator('//div[@class="custom-country-selector"]').click();
+  await sellerPage.waitForTimeout(2000);
+  await sellerPage.getByPlaceholder('Search country').fill('India');
+  await sellerPage.waitForTimeout(2000);
+  await sellerPage.locator("span.country-name", { hasText: "India (+91)" }).click();
+  await sellerPage.waitForTimeout(2000);
+  
 } catch (error) {
   console.error('❌ Failed clicking selected-flag');
 
@@ -46,28 +53,7 @@ async function globalSetup() {
 }
 
 
-  // Step 2: Wait for the country list to be visible
-  const countryList = sellerPage.locator('.country-list');
-  await expect(countryList).toBeVisible();  // Wait for the dropdown to be visible
-  
-  // Step 3: Select India from the dropdown
-  await sellerPage.locator('.country[data-country-code="in"]').click();  // Click on the India option
-  
-  // Step 4: Validate if India was selected by checking the selected flag or the dial code
-  const selectedFlag = await sellerPage.locator('.selected-flag[title="India: + 91"]');
-  await expect(selectedFlag).toBeVisible();  // Verify India is selected
-
-      // Get phone input field
-      const phoneInput = sellerPage.locator('div.react-tel-input input[type="tel"]');
-      await phoneInput.waitFor({ state: 'visible', timeout: 5000 });
-
-      
-      // Enter phone number
-      await phoneInput.click();
-      await phoneInput.type(phoneNo);
-      await phoneInput.press('End');
-      console.log(`✓ Phone number entered: ${phoneNo}`);
-
+  await sellerPage.getByPlaceholder('Enter mobile number').fill(phoneNo);
       // Click Continue with Phone button
       const continuePhoneBtn = sellerPage.locator('button:has-text("Continue with Phone")');
       await continuePhoneBtn.click({timeout:60000});
