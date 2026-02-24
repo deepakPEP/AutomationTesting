@@ -20,9 +20,12 @@ export async function superAdminLogin(request: APIRequestContext): Promise<AuthT
       timeout: 50000,
     }
   );
+  await console.log('email:', process.env.SUPER_ADMIN_EMAIL);
+  await console.log('password:', process.env.SUPER_ADMIN_PASSWORD);
+  await console.log('ip:', process.env.SUPER_ADMIN_IP);
    const responseBody = await response.json();
-  console.log('Response Status:', response.status());
-  console.log('Response Body:', JSON.stringify(responseBody, null, 2));
+  await console.log('Response Status:', response.status());
+ await console.log('Response Body:', JSON.stringify(responseBody, null, 2));
 
   await expect(response.ok()).toBeTruthy();
  
@@ -30,7 +33,7 @@ export async function superAdminLogin(request: APIRequestContext): Promise<AuthT
     const access_token = responseBody.data.access_token;
     const refresh_token = responseBody.data.refresh_token;
 
-  console.log('Access Token:', access_token);
-  console.log('Refresh Token:', refresh_token);
+  await console.log('Access Token:', access_token);
+  await console.log('Refresh Token:', refresh_token);
   return { access_token, refresh_token };
 }
