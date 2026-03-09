@@ -23,6 +23,10 @@ export default defineConfig({
     {
       name: 'marketing',
       grep: /@marketing/,
+    },
+    {
+      name: 'onboarding',
+      grep: /@onboarding/,
     }
   ],
   testDir: './src/tests',

@@ -1,154 +1,179 @@
 import { test, expect } from '@playwright/test';
 import { Onboarding } from '../../pages/Onboarding/OnboardingPage';
-import { PersonalDetailsPage } from '../../pages/Settings/PersonalDetailsPage';
-import { SettingsPage } from '../../pages/Settings/SettingsDashboard';
-import { AssertionBusinessProfilePage } from '../../pages/BusinessProfile/AssertionBusinessProfilePage';
+import { MyPepagoraPage } from '../../pages/Onboarding/MyPepagoraPage';
+import {fetchOtp,fillOtp,acceptCookies} from '../../utils/LoginHelpers';
+import {AssertionBusinessProfilePage} from '../../pages/BusinessProfile/AssertionBusinessProfilePage';
+const {readAndManageUserMails} = require('../Email_Triggers/readAndDeleteMail');
+
 let onboarding: Onboarding;
-let personalDetailsPage: PersonalDetailsPage;
-let settingsPage: SettingsPage;
+let myPepagoraPage: MyPepagoraPage;
 let assertionBusinessProfilePage: AssertionBusinessProfilePage;
+import { deleteUserByPhone } from '../../utils/ApiHelpers';
 
-test.beforeEach(async ({ page }) => {
-  // Navigate to the onboarding page before each test
+let phoneNo = process.env.PHONE_NO || '1400000006';
+
+test('Seller User Onboarding', { tag: ['@onboarding'] }, async ({ page }) => {
+  test.setTimeout(120000); // Set timeout to 2 minutes for this test
+ deleteUserByPhone(page.request, phoneNo);
+ let email = 'automationsellerpepagora@gmail.com';
+ let appPassword = process.env.SELLER_EMAIL_APP_PASSWORD || 'jiry lleq qclu rhjl';
   onboarding = new Onboarding(page);
-  personalDetailsPage = new PersonalDetailsPage(page);
-  settingsPage = new SettingsPage(page);
+  myPepagoraPage = new MyPepagoraPage(page);
   assertionBusinessProfilePage = new AssertionBusinessProfilePage(page);
-  test.setTimeout(120000);
+
   await page.goto('https://sandbox.pepagora.org/en/authenticate');
-  await page.waitForTimeout(60000);
-}); // optional: increase if OTP delays
+  await onboarding.fillMobileNumberAndSubmit(phoneNo);
+  await page.waitForTimeout(5000); // Wait for OTP to be generated
+  const otp = await fetchOtp(phoneNo);
 
-test('Buyer User Onboarding with unregistered business', async ({ page }) => {
- await onboarding.assertOnboardingOptions();
- await onboarding.selectServiceOption('Buy Products');
-  await onboarding.selectBusinessType('unregister');
-  await onboarding.assertSourcingDetailsStep();
-  await onboarding.fillSourcingDetailsForm({
-    firstName: 'AutoFirstName',
-    middleName: '',
-    lastName: 'AutoLastName',
-    workEmail: 'auto@example.com',
-    industry: 'Apparel & Fashion',
-    productsISource: ['Lcd Tv', 'Electric Screwdriver'],
-    website: '',
-    businessName: 'AutoTestBusinessName'
+  await fillOtp(page, otp);
+  await onboarding.selectServiceOption('Sell');
+  await acceptCookies(page);
+  await onboarding.fillAboutYourselfForm('John', 'Doe', email, 'Automation Inc');
+  await page.waitForTimeout(10000); // Wait for onboarding to complete and navigation to My Pepagora page
+  await myPepagoraPage.clickProfileIcon();
+   await page.waitForTimeout(2000);
+   await myPepagoraPage.assertProfileIconDetails({
+    name: 'John Doe',
+    company: 'Automation Inc',
+    plan: 'Free'
   });
-  await onboarding.assertBuyerDashboard('AutoFirstName'+' '+'AutoLastName');
-  await settingsPage.clickSettingsSidebarIcon();
-  //await settingsPage.assertSettingsCards();
-  await settingsPage.clickSettingsCard('Profile');
-  expect(await personalDetailsPage.getFirstNameValue()).toBe('AutoFirstName');
-  expect(await personalDetailsPage.getLastNameValue()).toBe('AutoLastName');
-
+  await myPepagoraPage.closeSidebar();
+  // selling mode assertion need to be done
+  await myPepagoraPage.clickBusinessProfile();
+  await page.waitForTimeout(5000); // Wait for Business Profile page to load
+  await assertionBusinessProfilePage.clickGetVerifiedPopup();
+  
+  await assertionBusinessProfilePage.assertBusinessDetails({
+    businessName: 'Automation Inc',
+    ownerName: 'John Doe',
+    mobile: phoneNo,
+    email: email
+  });
+  await page.waitForTimeout(10000); // Wait for navigation to complete
+  await readAndManageUserMails({
+    email: 'automationsellerpepagora@gmail.com',
+    appPassword:'jiry lleq qclu rhjl',
+    subjectSearch: 'Registration Confirmation Welcome to Pepagora',
+    expectedValues: [
+      "Hi John Doe",
+      "Welcome to Pepagora",
+      "To Grow Your Sales (Selling)",
+      "To Streamline Your Sourcing (Buying):",
+      "Add your First Product Now",
+      "Find Products to Source",
+      "Set Up My Profile",
+    ],deleteAfterRead: true
+  });
+  
 });
-// test('Buyer User Onboarding with registered business', async ({ page }) => {
-//   await onboarding.assertOnboardingOptions();
-//   await onboarding.selectServiceOption('Buy Products');
-//   await onboarding.selectBusinessType('register');
-//   await onboarding.assertSourcingDetailsStep();
-//   await onboarding.fillSourcingDetailsForm({
-//     firstName: 'AutoFirstName',
-//     middleName: '',
-//     lastName: 'AutoLastName',
-//     workEmail: 'auto@example.com',
-//     industry: 'Apparel & Fashion',
-//     productsISource: ['Lcd Tv', 'Electric Screwdriver'],
-//     website: 'https://autoexample.com',
-//     businessName: 'AutoBusinessName'
-//   });
-//   await onboarding.assertBuyerDashboard();
-// });
-// test('Buyer User Onboarding with nonprofit organization', async ({ page }) => {
-//   await onboarding.assertOnboardingOptions();
-//   await onboarding.selectServiceOption('Buy Products');
-//   await onboarding.selectBusinessType('nonprofit');
-//   await onboarding.assertSourcingDetailsStep();
-//   await onboarding.fillSourcingDetailsForm({
-//     firstName: 'AutoFirstName',
-//     middleName: '',
-//     lastName: 'AutoLastName',
-//     workEmail: 'auto@example.com',
-//     industry: 'Apparel & Fashion',
-//     productsISource: ['Lcd Tv', 'Electric Screwdriver'],
-//     website: 'https://autoexample.com',
-//     businessName: 'AutoBusinessName'
-//   });
-//   await onboarding.assertBuyerDashboard();
-// });
-// test('Seller User Onboarding with registered user', async ({ page }) => {
-//       await onboarding.assertOnboardingOptions();
-//   await onboarding.selectServiceOption('Sell Products');
-//   await onboarding.selectBusinessType('register');
-//   await onboarding.assertBusinessInformationStep();
-//   await onboarding.fillBusinessInformationFormWithRegisteredUser({
-//     firstName: 'AutoFirstName',
-//     middleName: '',
-//     lastName: 'AutoLastName',
-//     workEmail: '
-//     businessName: 'AutoBusinessName',
-//     website: 'https://autoexample.com',
-//     industry: 'Apparel & Fashion',
-//     productsISell: ['Lcd Tv', 'Electric Screwdriver']
-//   });
-//   await onboarding.assertSellerDashboard();
-// });
+test('Buyer User Onboarding', { tag: ['@onboarding'] }, async ({ page }) => {
+  test.setTimeout(120000); // Set timeout to 2 minutes for this test
+ deleteUserByPhone(page.request, phoneNo);
+ let email = 'automationsellerpepagora@gmail.com';
+ let appPassword = process.env.SELLER_EMAIL_APP_PASSWORD || 'jiry lleq qclu rhjl';
+  onboarding = new Onboarding(page);
+  myPepagoraPage = new MyPepagoraPage(page);
+  assertionBusinessProfilePage = new AssertionBusinessProfilePage(page);
 
+  await page.goto('https://sandbox.pepagora.org/en/authenticate');
+  await onboarding.fillMobileNumberAndSubmit(phoneNo);
+  await page.waitForTimeout(5000); // Wait for OTP to be generated
+  const otp = await fetchOtp(phoneNo);
 
+  await fillOtp(page, otp);
+  await onboarding.selectServiceOption('Sell');
+  await acceptCookies(page);
+  await onboarding.fillAboutYourselfForm('John', 'Doe', email, 'Automation Inc');
+  await page.waitForTimeout(10000); // Wait for onboarding to complete and navigation to My Pepagora page
+  await myPepagoraPage.clickProfileIcon();
+   await page.waitForTimeout(2000);
+   await myPepagoraPage.assertProfileIconDetails({
+    name: 'John Doe',
+    company: 'Automation Inc',
+    plan: 'Free'
+  });
+  await myPepagoraPage.closeSidebar();
+  // selling mode assertion need to be done
+  await myPepagoraPage.clickBusinessProfile();
+  await page.waitForTimeout(5000); // Wait for Business Profile page to load
+  await assertionBusinessProfilePage.clickGetVerifiedPopup();
   
-// });
-// test('Seller User Onboarding with Unregistered business', async ({ page }) => {
-//     const onboarding = new Onboarding(page);
-//   test.setTimeout(120000);
-//   await page.goto('http://183.82.251.239/en/authenticate');
-
-//   await page.waitForTimeout(10000); // optional: increase if OTP delays
-
+  await assertionBusinessProfilePage.assertBusinessDetails({
+    businessName: 'Automation Inc',
+    ownerName: 'John Doe',
+    mobile: phoneNo,
+    email: email
+  });
+  await page.waitForTimeout(10000); // Wait for navigation to complete
+  await readAndManageUserMails({
+    email: 'automationbuyerpepagora@gmail.com',
+    appPassword:'zfpm eruc ygjr tgfr',
+    subjectSearch: 'Registration Confirmation Welcome to Pepagora',
+    expectedValues: [
+      "Hi John Doe",
+      "Welcome to Pepagora",
+      "To Grow Your Sales (Selling)",
+      "To Streamline Your Sourcing (Buying):",
+      "Add your First Product Now",
+      "Find Products to Source",
+      "Set Up My Profile",
+    ],deleteAfterRead: true
+  });
   
-// });
-// test('Seller User Onboarding with registered business', async ({ page }) => {
-//     const onboarding = new Onboarding(page);
-//   test.setTimeout(120000);
-//   await page.goto('http://183.82.251.239/en/authenticate');
+});
+test('Both User Onboarding', { tag: ['@onboarding'] }, async ({ page }) => {
+  test.setTimeout(120000); // Set timeout to 2 minutes for this test
+ deleteUserByPhone(page.request, phoneNo);
+ let email = 'automationsellerpepagora@gmail.com';
+ let appPassword = process.env.SELLER_EMAIL_APP_PASSWORD || 'jiry lleq qclu rhjl';
+  onboarding = new Onboarding(page);
+  myPepagoraPage = new MyPepagoraPage(page);
+  assertionBusinessProfilePage = new AssertionBusinessProfilePage(page);
 
-//   await page.waitForTimeout(10000); // optional: increase if OTP delays
+  await page.goto('https://sandbox.pepagora.org/en/authenticate');
+  await onboarding.fillMobileNumberAndSubmit(phoneNo);
+  await page.waitForTimeout(5000); // Wait for OTP to be generated
+  const otp = await fetchOtp(phoneNo);
 
+  await fillOtp(page, otp);
+  await onboarding.selectServiceOption('Sell');
+  await acceptCookies(page);
+  await onboarding.fillAboutYourselfForm('John', 'Doe', email, 'Automation Inc');
+  await page.waitForTimeout(10000); // Wait for onboarding to complete and navigation to My Pepagora page
+  await myPepagoraPage.clickProfileIcon();
+   await page.waitForTimeout(2000);
+   await myPepagoraPage.assertProfileIconDetails({
+    name: 'John Doe',
+    company: 'Automation Inc',
+    plan: 'Free'
+  });
+  await myPepagoraPage.closeSidebar();
+  // selling mode assertion need to be done
+  await myPepagoraPage.clickBusinessProfile();
+  await page.waitForTimeout(5000); // Wait for Business Profile page to load
+  await assertionBusinessProfilePage.clickGetVerifiedPopup();
   
-// });
-// test('Seller User Onboarding with non profit organisation', async ({ page }) => {
-//     const onboarding = new Onboarding(page);
-//   test.setTimeout(120000);
-//   await page.goto('http://183.82.251.239/en/authenticate');
-
-//   await page.waitForTimeout(10000); // optional: increase if OTP delays
-
+  await assertionBusinessProfilePage.assertBusinessDetails({
+    businessName: 'Automation Inc',
+    ownerName: 'John Doe',
+    mobile: phoneNo,
+    email: email
+  });
+  await page.waitForTimeout(10000); // Wait for navigation to complete
+  await readAndManageUserMails({
+    email: 'automationbothpepagora@gmail.com',
+    appPassword:'flei xqth ysye cqav',
+    subjectSearch: 'Registration Confirmation Welcome to Pepagora',
+    expectedValues: [
+      "Hi John Doe",
+      "Welcome to Pepagora",
+      "To Grow Your Sales (Selling)",
+      "To Streamline Your Sourcing (Buying):",
+      "Add your First Product Now",
+      "Find Products to Source",
+      "Set Up My Profile",
+    ],deleteAfterRead: true
+  });
   
-// });
-// test('Buyer and Seller both User Onboarding with registered business', async ({ page }) => {
-//     const onboarding = new Onboarding(page);
-//   test.setTimeout(120000);
-//   await page.goto('http://183.82.251.239/en/authenticate');
-
-//   await page.waitForTimeout(10000); // optional: increase if OTP delays
-
-  
-// });
-// test('Buyer and Seller both User Onboarding with Unregistered business', async ({ page }) => {
-//     const onboarding = new Onboarding(page);
-//   test.setTimeout(120000);
-//   await page.goto('http://183.82.251.239/en/authenticate');
-
-//   await page.waitForTimeout(10000); // optional: increase if OTP delays
-
-  
-// });
-// test('Buyer and Seller both User Onboarding with non profit organisation', async ({ page }) => {
-//     const onboarding = new Onboarding(page);
-//   test.setTimeout(120000);
-//   await page.goto('http://183.82.251.239/en/authenticate');
-
-//   await page.waitForTimeout(10000); // optional: increase if OTP delays
-
-  
-// });
-
+});
