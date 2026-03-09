@@ -9,7 +9,7 @@ import {
   fetchOtp,
   fillOtp,
   acceptCookies
-} from './src/utils/loginHelpers';
+} from './src/utils/LoginHelpers';
 
 
 async function globalSetup() {
