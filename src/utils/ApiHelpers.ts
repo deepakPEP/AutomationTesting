@@ -40,7 +40,7 @@ export class ApiHelpers {
     try {
       console.log(`🗑️ Deleting data for phone: ${phoneNo}`);
       
-      const response = await this.request.post(`${this.baseUrl}/api/delete-by-phone`, {
+      const response = await this.request.post(`${this.baseUrl}/api/delete-by-phone/sandbox`, {
         headers: {
           'Content-Type': 'application/json',
         },
