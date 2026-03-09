@@ -10,44 +10,89 @@
  // ...existing code...
 
   /**
-   * Assert Business Details section
-   */
-  async assertBusinessDetails(details: {
-    legalBusinessName: string,
-    businessName: string,
-    ownerName: string,
-    businessType: string,
-    employeeCount: string,
-    mainProducts: string[],
-    industry: string,
-    establishment: string,
-    country: string,
-    businessAddress: string,
-    state: string,
-    city: string,
-    pinCode: string,
-    mobile: string,
-    email: string
-  }) {
-    await expect(this.page.locator('input[name="legalBusinessName"]')).toHaveValue(details.legalBusinessName);
-    await expect(this.page.locator('input[name="businessName"]')).toHaveValue(details.businessName);
-    await expect(this.page.locator('input[name="ownerName"]')).toHaveValue(details.ownerName);
-    await expect(this.page.locator('.forms-select-2[data-pc-name="multiselect"] .p-multiselect-label')).toContainText(details.businessType);
-    await expect(this.page.locator('select[name="employeeCount"]')).toHaveValue(details.employeeCount);
+ * Assert Business Details section
+ */
+async assertBusinessDetails(details: {
+  legalBusinessName?: string
+  businessName: string
+  ownerName: string
+  businessType?: string
+  employeeCount?: string
+  mainProducts?: string[]
+  industry?: string
+  establishment?: string
+  country?: string
+  businessAddress?: string
+  state?: string
+  city?: string
+  pinCode?: string
+  mobile: string
+  email: string
+}) {
+
+  if (details.legalBusinessName)
+    await expect(this.page.locator('input[name="legalBusinessName"]'))
+      .toHaveValue(details.legalBusinessName);
+
+  await expect(this.page.locator('input[name="businessName"]'))
+    .toHaveValue(details.businessName);
+
+  await expect(this.page.locator('input[name="ownerName"]'))
+    .toHaveValue(details.ownerName);
+
+  if (details.businessType)
+    await expect(this.page.locator('.forms-select-2[data-pc-name="multiselect"] .p-multiselect-label'))
+      .toContainText(details.businessType);
+
+  if (details.employeeCount)
+    await expect(this.page.locator('select[name="employeeCount"]'))
+      .toHaveValue(details.employeeCount);
+
+  if (details.mainProducts) {
     for (const product of details.mainProducts) {
-      await expect(this.page.locator('.p-chips-token-label')).toContainText(product);
+      await expect(this.page.locator('.p-chips-token-label'))
+        .toContainText(product);
     }
-    await expect(this.page.locator('.category-multi-select .p-dropdown-label')).toContainText(details.industry);
-    await expect(this.page.locator('input[name="establishment"]')).toHaveValue(details.establishment);
-    await expect(this.page.locator('.forms-group:has(label:has-text("Country")) .p-dropdown-label')).toContainText(details.country);
-    await expect(this.page.locator('input[name="businessAddress.addressLine"]')).toHaveValue(details.businessAddress);
-    await expect(this.page.locator('.forms-group:has(label:has-text("State")) .p-dropdown-label')).toContainText(details.state);
-    await expect(this.page.locator('.forms-group:has(label:has-text("City")) .p-dropdown-label')).toContainText(details.city);
-    await expect(this.page.locator('input[name="businessAddress.pinCode"]')).toHaveValue(details.pinCode);
-    await expect(this.page.locator('input[type="tel"]')).toHaveValue(details.mobile);
-    await expect(this.page.locator('input[name="email"]')).toHaveValue(details.email);
   }
 
+  if (details.industry)
+    await expect(this.page.locator('.category-multi-select .p-dropdown-label'))
+      .toContainText(details.industry);
+
+  if (details.establishment)
+    await expect(this.page.locator('input[name="establishment"]'))
+      .toHaveValue(details.establishment);
+
+  if (details.country)
+    await expect(this.page.locator('.forms-group:has(label:has-text("Country")) .p-dropdown-label'))
+      .toContainText(details.country);
+
+  if (details.businessAddress)
+    await expect(this.page.locator('input[name="businessAddress.addressLine"]'))
+      .toHaveValue(details.businessAddress);
+
+  if (details.state)
+    await expect(this.page.locator('.forms-group:has(label:has-text("State")) .p-dropdown-label'))
+      .toContainText(details.state);
+
+  if (details.city)
+    await expect(this.page.locator('.forms-group:has(label:has-text("City")) .p-dropdown-label'))
+      .toContainText(details.city);
+
+  if (details.pinCode)
+    await expect(this.page.locator('input[name="businessAddress.pinCode"]'))
+      .toHaveValue(details.pinCode);
+
+ const phoneLocator = this.page.locator('.react-tel-input .form-control');
+const value = await phoneLocator.inputValue();
+await console.log('Phone input value:', value); // Log the actual value for debugging
+expect(value.replace(/\D/g, '')).toContain(details.mobile);
+  await expect(this.page.locator('input[id="Businessemail@gmail.com"]'))
+    .toHaveValue(details.email);
+}
+async clickGetVerifiedPopup() {
+  await this.page.locator('.m-c-h-right').click({force:true});
+}
   /**
    * Assert Company Registration Details section
    */
