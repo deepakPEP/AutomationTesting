@@ -20,7 +20,7 @@ export async function enterPhoneNumber(page: Page, phoneNo: string) {
   });
 
   await continueBtn.click({ timeout: 60000 });
-
+  await page.waitForTimeout(10000);
   console.log('✓ Continue clicked');
 }
 
@@ -57,7 +57,7 @@ export async function fillOtp(page: Page, otp: string) {
   for (let i = 0; i < otp.length; i++) {
     await page.locator('.forms-otp').nth(i).fill(otp[i]);
   }
-
+  await page.waitForTimeout(5000);
   console.log('✓ OTP filled successfully');
 }
 
