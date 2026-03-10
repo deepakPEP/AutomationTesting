@@ -82,7 +82,7 @@ test('Buyer User Onboarding', { tag: ['@onboarding'] }, async ({ page }) => {
   const otp = await fetchOtp(phoneNo);
 
   await fillOtp(page, otp);
-  await onboarding.selectServiceOption('Sell');
+  await onboarding.selectServiceOption('Buy');
   await acceptCookies(page);
   await onboarding.fillAboutYourselfForm('John', 'Doe', email, 'Automation Inc');
   await page.waitForTimeout(10000); // Wait for onboarding to complete and navigation to My Pepagora page
@@ -137,7 +137,7 @@ test('Both User Onboarding', { tag: ['@onboarding'] }, async ({ page }) => {
   const otp = await fetchOtp(phoneNo);
 
   await fillOtp(page, otp);
-  await onboarding.selectServiceOption('Sell');
+  await onboarding.selectServiceOption('Both');
   await acceptCookies(page);
   await onboarding.fillAboutYourselfForm('John', 'Doe', email, 'Automation Inc');
   await page.waitForTimeout(10000); // Wait for onboarding to complete and navigation to My Pepagora page
