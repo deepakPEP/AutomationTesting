@@ -15,9 +15,8 @@ let phoneNo = process.env.PHONE_NO || '1400000006';
 test('Seller User Onboarding', { tag: ['@onboarding'] }, async ({ page }) => {
   test.setTimeout(120000); // Set timeout to 2 minutes for this test
  deleteUserByPhone(page.request, phoneNo);
-//  let email = 'automationsellerpepagora@gmail.com';
+ let email = 'automationsellerpepagora@gmail.com';
 //  let appPassword = process.env.SELLER_EMAIL_APP_PASSWORD || 'jiry lleq qclu rhjl';
-  let email = process.env.SELLER_EMAIL;
  let appPassword = process.env.SELLER_EMAIL_APP_PASSWORD;
   onboarding = new Onboarding(page);
   myPepagoraPage = new MyPepagoraPage(page);
@@ -77,13 +76,10 @@ test('Seller User Onboarding', { tag: ['@onboarding'] }, async ({ page }) => {
 test('Buyer User Onboarding', { tag: ['@onboarding'] }, async ({ page }) => {
   test.setTimeout(120000); // Set timeout to 2 minutes for this test
  deleteUserByPhone(page.request, phoneNo);
-//  let email = process.env.BUYER_EMAIL;
-//  let appPassword = process.env.BUYER_EMAIL_APP_PASSWORD || 'jiry lleq qclu rhjl';
 
- let email = process.env.BUYER_EMAIL;
  let appPassword = process.env.BUYER_EMAIL_APP_PASSWORD;
 
-//  let email = 'automationbuyerpepagora@gmail.com';
+let email = 'automationbuyerpepagora@gmail.com';
 //  let appPassword = 'zfpm eruc ygjr tgfr';
  
 if (!email || !appPassword) {
@@ -144,10 +140,10 @@ if (!email || !appPassword) {
 test('Both User Onboarding', { tag: ['@onboarding'] }, async ({ page }) => {
   test.setTimeout(120000); // Set timeout to 2 minutes for this test
  deleteUserByPhone(page.request, phoneNo);
-//  let email = 'automationbothpepagora@gmail.com';
+ let email = 'automationbothpepagora@gmail.com';
 //  let appPassword = 'flei xqth ysye cqav';
  
- let email = process.env.BOTH_EMAIL;
+ 
  let appPassword = process.env.BOTH_EMAIL_APP_PASSWORD;
  if (!email || !appPassword) {
   throw new Error('Both email or app password is not set in environment variables');
