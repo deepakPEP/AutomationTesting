@@ -37,6 +37,9 @@ jobs:
         env:
           CI: true
           SKIP_GLOBAL_SETUP: true
+          SELLER_EMAIL_APP_PASSWORD: ${{ secrets.SELLER_EMAIL_APP_PASSWORD }}
+          BUYER_EMAIL_APP_PASSWORD: ${{ secrets.BUYER_EMAIL_APP_PASSWORD }}
+          BOTH_EMAIL_APP_PASSWORD: ${{ secrets.BOTH_EMAIL_APP_PASSWORD }}
 
       - name: Prepare artifacts dir
         if: ${{ always() }}
