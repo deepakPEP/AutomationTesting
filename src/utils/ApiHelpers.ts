@@ -223,7 +223,7 @@ export async function deleteUserData(phoneNo: string) {
 
   try {
     const response = await apiContext.post(
-      '/api/delete-user-related-data/sandbox',
+      '/api/delete-all-documents-except-users-businesses/sandbox',
       {
         data: { phoneNo },
       }
