@@ -12,7 +12,8 @@ async function readAndManageSuperadminMails({
   const config = {
   imap: {
     user: process.env.IMAP_USER || 'qa.pepagora@gmail.com',
-    password: process.env.IMAP_PASS || 'nmbf ydtt knjl rmpj',
+    // Yet to configure. please add it as secret in github repo and access it here
+    password: process.env.IMAP_PASS,
     host: 'imap.gmail.com',
     port: 993,
     tls: true,
@@ -75,8 +76,7 @@ async function readAndManageUserMails({
 }){
   const config = {
   imap: {
-   // user: 'automationsellerpepagora@gmail.com',
-   // password: 'jiry lleq qclu rhjl',
+   
    user: email,
     password: appPassword,
    host: 'imap.gmail.com',
