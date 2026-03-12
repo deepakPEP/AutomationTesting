@@ -67,15 +67,19 @@ for (const value of expectedValues) {
 }
 
 async function readAndManageUserMails({
+  email,
+  appPassword,
   subjectSearch = null,
   expectedValues = [],
   deleteAfterRead = false
 }){
   const config = {
   imap: {
-    user: 'automationsellerpepagora@gmail.com',
-    password: 'jiry lleq qclu rhjl',
-    host: 'imap.gmail.com',
+   // user: 'automationsellerpepagora@gmail.com',
+   // password: 'jiry lleq qclu rhjl',
+   user: email,
+    password: appPassword,
+   host: 'imap.gmail.com',
     port: 993,
     tls: true,
     authTimeout: 10000,
@@ -99,7 +103,7 @@ async function readAndManageUserMails({
 
   const latestMessage = messages[messages.length - 1];
 
-const raw = latestMessage.parts.find(p => p.which === '').body;
+const raw = await latestMessage.parts.find(p => p.which === '').body;
 const parsed = await simpleParser(raw);
 
 const body = parsed.textAsHtml || parsed.text || parsed.html;
@@ -121,7 +125,7 @@ for (const value of expectedValues) {
 
   // ✅ Delete if required
   if (deleteAfterRead) {
-    const uids = messages.map(msg => msg.attributes.uid);
+    const uids = await messages.map(msg => msg.attributes.uid);
     await connection.addFlags(uids, '\\Deleted');
     await connection.imap.expunge();
     console.log(`Deleted ${uids.length} emails`);
