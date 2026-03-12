@@ -16,8 +16,8 @@ test('Seller User Onboarding', { tag: ['@onboarding'] }, async ({ page }) => {
   test.setTimeout(120000); // Set timeout to 2 minutes for this test
  deleteUserByPhone(page.request, phoneNo);
  let email = 'automationsellerpepagora@gmail.com';
-//  let appPassword = process.env.SELLER_EMAIL_APP_PASSWORD || 'jiry lleq qclu rhjl';
- let appPassword = process.env.SELLER_EMAIL_APP_PASSWORD;
+let appPassword = process.env.SELLER_EMAIL_APP_PASSWORD || 'jiry lleq qclu rhjl';
+// let appPassword = process.env.SELLER_EMAIL_APP_PASSWORD;
   onboarding = new Onboarding(page);
   myPepagoraPage = new MyPepagoraPage(page);
   assertionBusinessProfilePage = new AssertionBusinessProfilePage(page);
@@ -80,7 +80,7 @@ test('Buyer User Onboarding', { tag: ['@onboarding'] }, async ({ page }) => {
  let appPassword = process.env.BUYER_EMAIL_APP_PASSWORD;
 
 let email = 'automationbuyerpepagora@gmail.com';
-//  let appPassword = 'zfpm eruc ygjr tgfr';
+//let appPassword = 'zfpm eruc ygjr tgfr';
  
 if (!email || !appPassword) {
   throw new Error('Buyer email or app password is not set in environment variables');
@@ -118,7 +118,7 @@ if (!email || !appPassword) {
     mobile: phoneNo,
     email: email
   });
-  await page.waitForTimeout(10000); // Wait for navigation to complete
+  await page.waitForTimeout(15000); // Wait for navigation to complete
   await readAndManageUserMails({
     // email: 'automationbuyerpepagora@gmail.com',
     // appPassword:'zfpm eruc ygjr tgfr',
@@ -141,7 +141,7 @@ test('Both User Onboarding', { tag: ['@onboarding'] }, async ({ page }) => {
   test.setTimeout(120000); // Set timeout to 2 minutes for this test
  deleteUserByPhone(page.request, phoneNo);
  let email = 'automationbothpepagora@gmail.com';
-//  let appPassword = 'flei xqth ysye cqav';
+// let appPassword = 'flei xqth ysye cqav';
  
  
  let appPassword = process.env.BOTH_EMAIL_APP_PASSWORD;
@@ -181,7 +181,7 @@ test('Both User Onboarding', { tag: ['@onboarding'] }, async ({ page }) => {
     mobile: phoneNo,
     email: email
   });
-  await page.waitForTimeout(10000); // Wait for navigation to complete
+  await page.waitForTimeout(15000); // Wait for navigation to complete
   await readAndManageUserMails({
     // email: 'automationbothpepagora@gmail.com',
     // appPassword:'flei xqth ysye cqav',
